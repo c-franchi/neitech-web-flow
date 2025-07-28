@@ -119,18 +119,26 @@ const HeroSection = () => {
             {/* Área Visual */}
             <div className="lg:w-1/2 mt-12 lg:mt-0 relative">
               <div className="relative">
-                {/* Card flutuante com logo */}
-                <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                  <img 
-                    src="/lovable-uploads/c843c9c6-4e20-47e7-8c42-c19f2f6694bf.png" 
-                    alt="NeiTech Logo" 
-                    className="w-full max-w-sm mx-auto"
-                  />
+                {/* Card flutuante com logo - novo efeito de hover */}
+                <div className="group bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8 transform rotate-3 hover:rotate-0 transition-all duration-500 hover:shadow-2xl">
+                  <div className="relative overflow-hidden rounded-xl">
+                    <img 
+                      src="/lovable-uploads/68a1bb5b-8293-457a-994b-5945c1fdd302.png" 
+                      alt="NeiTech Logo" 
+                      className="w-full max-w-sm mx-auto transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
+                    />
+                    {/* Efeito de brilho ao passar o mouse */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 transform translate-x-[-100%] group-hover:translate-x-[100%]"></div>
+                  </div>
                 </div>
                 
                 {/* Elementos decorativos */}
                 <div className="absolute -top-4 -right-4 w-8 h-8 bg-blue-500 rounded-full animate-pulse"></div>
                 <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-cyan-400 rounded-full animate-pulse delay-300"></div>
+                
+                {/* Círculos decorativos que reagem ao hover */}
+                <div className="absolute -top-8 -left-8 w-16 h-16 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                <div className="absolute -bottom-8 -right-8 w-20 h-20 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
               </div>
             </div>
           </div>
