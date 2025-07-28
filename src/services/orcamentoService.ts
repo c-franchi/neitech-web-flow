@@ -49,12 +49,11 @@ export class OrcamentoService {
     }
   }
 
-  // Buscar solicitações pendentes
-  static async buscarSolicitacoesPendentes(): Promise<SolicitacaoOrcamento[]> {
+  // Buscar todas as solicitações (sem filtro por status para evitar índice)
+  static async buscarTodasSolicitacoes(): Promise<SolicitacaoOrcamento[]> {
     try {
       const q = query(
         collection(db, 'solicitacoes_orcamento'),
-        where('statusSolicitacao', '==', 'pendente'),
         orderBy('dataCreacao', 'desc')
       );
       
@@ -65,6 +64,18 @@ export class OrcamentoService {
         dataCreacao: doc.data().dataCreacao.toDate(),
         dataUltimaAtualizacao: doc.data().dataUltimaAtualizacao.toDate()
       } as SolicitacaoOrcamento));
+    } catch (error) {
+      console.error('Erro ao buscar solicitações:', error);
+      throw error;
+    }
+  }
+
+  // Buscar solicitações pendentes (método simplificado)
+  static async buscarSolicitacoesPendentes(): Promise<SolicitacaoOrcamento[]> {
+    try {
+      // Buscar todas e filtrar no lado do cliente para evitar índice composto
+      const todasSolicitacoes = await this.buscarTodasSolicitacoes();
+      return todasSolicitacoes.filter(solicitacao => solicitacao.statusSolicitacao === 'pendente');
     } catch (error) {
       console.error('Erro ao buscar solicitações pendentes:', error);
       throw error;

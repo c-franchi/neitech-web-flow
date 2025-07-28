@@ -23,8 +23,8 @@ const AdminDashboard = () => {
   const carregarSolicitacoes = async () => {
     try {
       setLoading(true);
-      const solicitacoesPendentes = await OrcamentoService.buscarSolicitacoesPendentes();
-      setSolicitacoes(solicitacoesPendentes);
+      const todasSolicitacoes = await OrcamentoService.buscarTodasSolicitacoes();
+      setSolicitacoes(todasSolicitacoes);
     } catch (error) {
       console.error('Erro ao carregar solicitações:', error);
       toast({
@@ -114,6 +114,77 @@ const AdminDashboard = () => {
           <p className="text-gray-600">
             Gerencie as solicitações de orçamento e acompanhe o status de cada cliente
           </p>
+        </div>
+
+        {/* Estatísticas */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total</p>
+                <p className="text-2xl font-bold text-gray-800">{solicitacoes.length}</p>
+              </div>
+              <div className="p-3 bg-blue-100 rounded-full">
+                <Eye className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Pendentes</p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {solicitacoes.filter(s => s.statusSolicitacao === 'pendente').length}
+                </p>
+              </div>
+              <div className="p-3 bg-yellow-100 rounded-full">
+                <Clock className="h-6 w-6 text-yellow-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Em Andamento</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {solicitacoes.filter(s => s.statusSolicitacao === 'em_andamento').length}
+                </p>
+              </div>
+              <div className="p-3 bg-blue-100 rounded-full">
+                <Eye className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Enviados</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {solicitacoes.filter(s => s.statusSolicitacao === 'orcamento_enviado').length}
+                </p>
+              </div>
+              <div className="p-3 bg-purple-100 rounded-full">
+                <Plus className="h-6 w-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Aprovados</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {solicitacoes.filter(s => s.statusSolicitacao === 'aprovado').length}
+                </p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-full">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Filtros */}
