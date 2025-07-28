@@ -41,7 +41,7 @@ const Footer = () => {
               <img 
                 src="/lovable-uploads/c843c9c6-4e20-47e7-8c42-c19f2f6694bf.png" 
                 alt="NeiTech Logo" 
-                className="h-12 w-auto"
+                className="h-30 w-auto"
                 style={{ filter: 'brightness(0) invert(1)' }}
               />
             </div>
