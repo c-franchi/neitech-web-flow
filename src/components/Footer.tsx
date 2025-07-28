@@ -14,20 +14,28 @@ const Footer = () => {
       { label: 'Desenvolvimento Web', href: '#services' },
       { label: 'Apps Mobile', href: '#services' },
       { label: 'Design Digital', href: '#services' },
+      { label: 'Cartão Digital', href: '#services' },
       { label: 'Vídeos Corporativos', href: '#services' }
     ],
     company: [
       { label: 'Sobre Nós', href: '#about' },
       { label: 'Portfolio', href: '#portfolio' },
       { label: 'Contato', href: '#contact' },
-      { label: 'Blog', href: '#blog' }
+      { label: 'Orçamento', href: '#contact' }
     ],
     social: [
+      { label: 'WhatsApp', href: 'https://wa.me/5516997813038' },
+      { label: 'Email', href: 'mailto:neifranchi@gmail.com' },
       { label: 'LinkedIn', href: '#' },
-      { label: 'Instagram', href: '#' },
-      { label: 'GitHub', href: '#' },
-      { label: 'YouTube', href: '#' }
+      { label: 'Instagram', href: '#' }
     ]
+  };
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
@@ -47,23 +55,36 @@ const Footer = () => {
             
             <p className="text-slate-300 leading-relaxed max-w-md">
               Criamos soluções digitais inovadoras que impulsionam negócios para o futuro. 
-              Especialistas em desenvolvimento web, mobile e design digital.
+              Especialistas em desenvolvimento web, mobile, design digital e vídeos corporativos.
             </p>
 
             {/* Informações de contato direto */}
             <div className="space-y-3">
-              <div className="flex items-center space-x-3 text-slate-300">
+              <a
+                href="mailto:neifranchi@gmail.com"
+                className="flex items-center space-x-3 text-slate-300 hover:text-blue-400 transition-colors duration-200"
+              >
                 <Mail size={18} className="text-blue-400" />
-                <span>contato@neitech.com.br</span>
-              </div>
-              <div className="flex items-center space-x-3 text-slate-300">
+                <span>neifranchi@gmail.com</span>
+              </a>
+              <a
+                href="https://wa.me/5516997813038"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-3 text-slate-300 hover:text-blue-400 transition-colors duration-200"
+              >
                 <Phone size={18} className="text-blue-400" />
-                <span>(11) 99999-9999</span>
-              </div>
-              <div className="flex items-center space-x-3 text-slate-300">
+                <span>(16) 99781-3038</span>
+              </a>
+              <a
+                href="https://maps.google.com/?q=Araraquara,SP"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-3 text-slate-300 hover:text-blue-400 transition-colors duration-200"
+              >
                 <MapPin size={18} className="text-blue-400" />
-                <span>São Paulo, SP</span>
-              </div>
+                <span>Araraquara, SP</span>
+              </a>
             </div>
           </div>
 
@@ -73,12 +94,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.services.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-slate-300 hover:text-white transition-colors duration-200 hover:translate-x-1 inline-block"
+                  <button
+                    onClick={() => scrollToSection(link.href.substring(1))}
+                    className="text-slate-300 hover:text-white transition-colors duration-200 hover:translate-x-1 inline-block text-left"
                   >
                     {link.label}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -90,12 +111,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-slate-300 hover:text-white transition-colors duration-200 hover:translate-x-1 inline-block"
+                  <button
+                    onClick={() => scrollToSection(link.href.substring(1))}
+                    className="text-slate-300 hover:text-white transition-colors duration-200 hover:translate-x-1 inline-block text-left"
                   >
                     {link.label}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
