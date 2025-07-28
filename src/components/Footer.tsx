@@ -44,7 +44,7 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo e descrição */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="md:col-span-2 lg:col-span-2 space-y-6">
             <div className="flex items-center space-x-3">
               <img 
                 src="/img/logo-neitech.png" 
@@ -76,20 +76,15 @@ const Footer = () => {
                 <Phone size={18} className="text-blue-400" />
                 <span>(16) 99781-3038</span>
               </a>
-              <a
-                href="https://maps.google.com/?q=Araraquara,SP"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-3 text-slate-300 hover:text-blue-400 transition-colors duration-200"
-              >
+              <div className="flex items-center space-x-3 text-slate-300">
                 <MapPin size={18} className="text-blue-400" />
                 <span>Araraquara, SP</span>
-              </a>
+              </div>
             </div>
           </div>
 
           {/* Links de Serviços */}
-          <div>
+          <div className="md:col-span-1 lg:col-span-1">
             <h3 className="text-lg font-semibold mb-6 text-blue-400">Serviços</h3>
             <ul className="space-y-3">
               {footerLinks.services.map((link) => (
@@ -106,7 +101,7 @@ const Footer = () => {
           </div>
 
           {/* Links da Empresa */}
-          <div>
+          <div className="md:col-span-1 lg:col-span-1">
             <h3 className="text-lg font-semibold mb-6 text-blue-400">Empresa</h3>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
