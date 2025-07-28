@@ -1,4 +1,6 @@
 
+import React from 'react';
+
 /**
  * Utility para smooth scroll e navegação
  * Centraliza a lógica de scroll suave para as seções
