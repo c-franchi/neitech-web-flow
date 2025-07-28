@@ -100,7 +100,7 @@ const ContactSection = () => {
     href: 'https://maps.google.com/?q=Araraquara,SP',
     description: 'Atendimento presencial'
   }];
-  return <section id="contact" className="py-24 bg-white">
+  return <section id="contact" className="bg-white py-[49px]">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16 space-y-4">
@@ -144,7 +144,7 @@ const ContactSection = () => {
           </div>
 
           {/* Formulário */}
-          <div className="bg-gradient-to-br from-slate-50 to-blue-50 p-8 rounded-2xl shadow-lg px-[30px] py-[25px]">
+          <div className="bg-gradient-to-br from-slate-50 to-blue-50 p-8 rounded-2xl shadow-lg py-[20px] px-[5px]">
             {!isSubmitted ? <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Nome */}
                 <div>
