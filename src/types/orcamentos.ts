@@ -1,4 +1,3 @@
-
 export interface SolicitacaoOrcamento {
   id: string;
   nomeCliente: string;
@@ -6,10 +5,12 @@ export interface SolicitacaoOrcamento {
   whatsappCliente: string;
   servicoInteresse: string;
   mensagem: string;
-  statusSolicitacao: 'pendente' | 'em_andamento' | 'orcamento_enviado' | 'aprovado' | 'rejeitado';
+  statusSolicitacao: 'pendente' | 'em_andamento' | 'orcamento_disponivel' | 'orcamento_enviado' | 'aprovado' | 'rejeitado';
   dataCreacao: Date;
   dataUltimaAtualizacao: Date;
   clienteId?: string;
+  pdfUrl?: string;
+  nomeArquivoPdf?: string;
 }
 
 export interface Orcamento {

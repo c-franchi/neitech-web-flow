@@ -1,4 +1,3 @@
-
 import { 
   collection, 
   addDoc, 
@@ -148,5 +147,59 @@ export class OrcamentoService {
   // Gerar senha numérica de 6 dígitos
   static gerarSenhaAcesso(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  // Anexar orçamento em PDF
+  static async anexarOrcamento(
+    solicitacaoId: string, 
+    dados: { 
+      pdfUrl: string; 
+      nomeArquivoPdf: string; 
+      statusSolicitacao: SolicitacaoOrcamento['statusSolicitacao'] 
+    }
+  ): Promise<void> {
+    try {
+      const docRef = doc(db, 'solicitacoes_orcamento', solicitacaoId);
+      await updateDoc(docRef, {
+        pdfUrl: dados.pdfUrl,
+        nomeArquivoPdf: dados.nomeArquivoPdf,
+        statusSolicitacao: dados.statusSolicitacao,
+        dataUltimaAtualizacao: Timestamp.now()
+      });
+
+      // Registrar no histórico
+      await this.registrarHistorico({
+        clienteId: solicitacaoId, // Usando solicitacaoId como referência
+        tipoInteracao: 'orcamento_enviado',
+        descricao: `Orçamento em PDF anexado: ${dados.nomeArquivoPdf}`,
+        dataInteracao: new Date()
+      });
+    } catch (error) {
+      console.error('Erro ao anexar orçamento:', error);
+      throw error;
+    }
+  }
+
+  // Buscar solicitação por ID
+  static async buscarSolicitacaoPorId(id: string): Promise<SolicitacaoOrcamento | null> {
+    try {
+      const docRef = doc(db, 'solicitacoes_orcamento', id);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          ...data,
+          dataCreacao: data.dataCreacao.toDate(),
+          dataUltimaAtualizacao: data.dataUltimaAtualizacao.toDate()
+        } as SolicitacaoOrcamento;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Erro ao buscar solicitação por ID:', error);
+      throw error;
+    }
   }
 }

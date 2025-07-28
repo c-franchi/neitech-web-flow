@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Index from './pages/Index';
 import Admin from './pages/Admin';
+import OrcamentoPublico from './pages/OrcamentoPublico';
 import NotFound from './pages/NotFound';
 import ScrollToTop from './components/ScrollToTop';
 import { Toaster } from '@/components/ui/toaster';
@@ -19,6 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/orcamento/:id" element={<OrcamentoPublico />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <ScrollToTop />

@@ -1,19 +1,20 @@
 
 import React, { useState, useEffect } from 'react';
-import { Clock, CheckCircle, XCircle, Eye, Plus, Search } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, Eye, Plus, Search, Upload, FileText, ExternalLink } from 'lucide-react';
 import { OrcamentoService } from '@/services/orcamentoService';
 import { SolicitacaoOrcamento } from '@/types/orcamentos';
 import { useToast } from '@/hooks/use-toast';
+import UploadOrcamento from './UploadOrcamento';
+import VisualizarOrcamento from './VisualizarOrcamento';
 
-/**
- * AdminDashboard - Painel administrativo para gerenciar solicitações
- * Features: Visualização de solicitações, filtros, mudança de status
- */
 const AdminDashboard = () => {
   const [solicitacoes, setSolicitacoes] = useState<SolicitacaoOrcamento[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtroStatus, setFiltroStatus] = useState<string>('todas');
   const [searchTerm, setSearchTerm] = useState('');
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [visualizarModalOpen, setVisualizarModalOpen] = useState(false);
+  const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState<SolicitacaoOrcamento | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -55,10 +56,28 @@ const AdminDashboard = () => {
     }
   };
 
+  const abrirUploadModal = (solicitacao: SolicitacaoOrcamento) => {
+    setSolicitacaoSelecionada(solicitacao);
+    setUploadModalOpen(true);
+  };
+
+  const abrirVisualizarModal = (solicitacao: SolicitacaoOrcamento) => {
+    setSolicitacaoSelecionada(solicitacao);
+    setVisualizarModalOpen(true);
+  };
+
+  const gerarLinkWhatsApp = (solicitacao: SolicitacaoOrcamento) => {
+    const linkOrcamento = `${window.location.origin}/orcamento/${solicitacao.id}`;
+    const mensagem = `Olá ${solicitacao.nomeCliente}! Seu orçamento já está disponível: ${linkOrcamento}`;
+    const whatsappUrl = `https://wa.me/55${solicitacao.whatsappCliente.replace(/\D/g, '')}?text=${encodeURIComponent(mensagem)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pendente': return 'bg-yellow-100 text-yellow-800';
       case 'em_andamento': return 'bg-blue-100 text-blue-800';
+      case 'orcamento_disponivel': return 'bg-green-100 text-green-800';
       case 'orcamento_enviado': return 'bg-purple-100 text-purple-800';
       case 'aprovado': return 'bg-green-100 text-green-800';
       case 'rejeitado': return 'bg-red-100 text-red-800';
@@ -70,6 +89,7 @@ const AdminDashboard = () => {
     switch (status) {
       case 'pendente': return <Clock size={16} />;
       case 'em_andamento': return <Eye size={16} />;
+      case 'orcamento_disponivel': return <FileText size={16} />;
       case 'orcamento_enviado': return <Plus size={16} />;
       case 'aprovado': return <CheckCircle size={16} />;
       case 'rejeitado': return <XCircle size={16} />;
@@ -117,7 +137,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Estatísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mb-8">
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <div className="flex items-center justify-between">
               <div>
@@ -154,6 +174,20 @@ const AdminDashboard = () => {
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
                 <Eye className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Disponíveis</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {solicitacoes.filter(s => s.statusSolicitacao === 'orcamento_disponivel').length}
+                </p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-full">
+                <FileText className="h-6 w-6 text-green-600" />
               </div>
             </div>
           </div>
@@ -217,6 +251,7 @@ const AdminDashboard = () => {
                 <option value="todas">Todas</option>
                 <option value="pendente">Pendente</option>
                 <option value="em_andamento">Em Andamento</option>
+                <option value="orcamento_disponivel">Orçamento Disponível</option>
                 <option value="orcamento_enviado">Orçamento Enviado</option>
                 <option value="aprovado">Aprovado</option>
                 <option value="rejeitado">Rejeitado</option>
@@ -282,14 +317,41 @@ const AdminDashboard = () => {
                       >
                         <option value="pendente">Pendente</option>
                         <option value="em_andamento">Em Andamento</option>
+                        <option value="orcamento_disponivel">Orçamento Disponível</option>
                         <option value="orcamento_enviado">Orçamento Enviado</option>
                         <option value="aprovado">Aprovado</option>
                         <option value="rejeitado">Rejeitado</option>
                       </select>
                       
-                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                        Criar Orçamento
-                      </button>
+                      {/* Botões de ação baseados no status */}
+                      {(solicitacao.statusSolicitacao === 'pendente' || solicitacao.statusSolicitacao === 'em_andamento') && (
+                        <button
+                          onClick={() => abrirUploadModal(solicitacao)}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm flex items-center space-x-1"
+                        >
+                          <Upload size={14} />
+                          <span>Anexar Orçamento</span>
+                        </button>
+                      )}
+                      
+                      {solicitacao.pdfUrl && (
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => abrirVisualizarModal(solicitacao)}
+                            className="px-3 py-1 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm flex items-center space-x-1"
+                          >
+                            <Eye size={14} />
+                            <span>Ver PDF</span>
+                          </button>
+                          <button
+                            onClick={() => gerarLinkWhatsApp(solicitacao)}
+                            className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center space-x-1"
+                          >
+                            <ExternalLink size={14} />
+                            <span>WhatsApp</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -298,6 +360,32 @@ const AdminDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Modais */}
+      {uploadModalOpen && solicitacaoSelecionada && (
+        <UploadOrcamento
+          solicitacao={solicitacaoSelecionada}
+          onSuccess={() => {
+            setUploadModalOpen(false);
+            setSolicitacaoSelecionada(null);
+            carregarSolicitacoes();
+          }}
+          onCancel={() => {
+            setUploadModalOpen(false);
+            setSolicitacaoSelecionada(null);
+          }}
+        />
+      )}
+
+      {visualizarModalOpen && solicitacaoSelecionada && (
+        <VisualizarOrcamento
+          solicitacao={solicitacaoSelecionada}
+          onClose={() => {
+            setVisualizarModalOpen(false);
+            setSolicitacaoSelecionada(null);
+          }}
+        />
+      )}
     </div>
   );
 };
