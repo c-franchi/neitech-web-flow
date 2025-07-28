@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Index from './pages/Index';
 import NotFound from './pages/NotFound';
+import ScrollToTop from './components/ScrollToTop';
 import { Toaster } from '@/components/ui/toaster';
 import './App.css';
 
@@ -13,11 +14,12 @@ import './App.css';
 function App() {
   return (
     <Router>
-      <div className="App">
+      <div className="w-full min-h-screen">
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <ScrollToTop />
         <Toaster />
       </div>
     </Router>
