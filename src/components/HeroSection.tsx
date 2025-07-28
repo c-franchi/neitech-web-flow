@@ -1,6 +1,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import { ArrowRight, Code, Smartphone, Palette } from 'lucide-react';
+import { smoothScrollTo } from '../utils/smoothScroll';
 
 /**
  * HeroSection - Seção principal com efeitos de mouse e animações
@@ -34,8 +35,18 @@ const HeroSection = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  // Função para lidar com o clique no botão "Começar Projeto"
+  const handleStartProject = () => {
+    smoothScrollTo('contact');
+  };
+
+  // Função para lidar com o clique no botão "Ver Portfolio"
+  const handleViewPortfolio = () => {
+    smoothScrollTo('portfolio');
+  };
+
   return (
-    <section id="home" className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50">
+    <section id="home" className="min-h-screen w-full relative overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Elementos flutuantes de fundo */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Círculos animados */}
@@ -88,11 +99,17 @@ const HeroSection = () => {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="group bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2">
+              <button 
+                onClick={handleStartProject}
+                className="group bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2"
+              >
                 <span>Começar Projeto</span>
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform duration-200" />
               </button>
-              <button className="border-2 border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-md">
+              <button 
+                onClick={handleViewPortfolio}
+                className="border-2 border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-md"
+              >
                 Ver Portfolio
               </button>
             </div>
