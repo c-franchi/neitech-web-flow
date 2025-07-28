@@ -39,10 +39,9 @@ const Footer = () => {
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center space-x-3">
               <img 
-                src="/lovable-uploads/c843c9c6-4e20-47e7-8c42-c19f2f6694bf.png" 
-                alt="NeiTech Logo" 
-                className="h-16 w-auto"
-                style={{ filter: 'brightness(0) invert(1)' }}
+                src="/img/logo-neitech.png" 
+                alt="NeiTech Soluções Web - Logo" 
+                className="h-16 w-auto brightness-0 invert"
               />
             </div>
             

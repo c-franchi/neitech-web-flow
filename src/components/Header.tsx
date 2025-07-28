@@ -35,9 +35,9 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <img 
-              src="/lovable-uploads/c843c9c6-4e20-47e7-8c42-c19f2f6694bf.png" 
-              alt="NeiTech Logo" 
-              className="h-10 w-auto"
+              src="/img/logo-neitech.png" 
+              alt="NeiTech Soluções Web - Logo" 
+              className="h-12 w-auto"
             />
           </div>
 
