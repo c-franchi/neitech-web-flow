@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import { ArrowRight, Code, Smartphone, Palette } from 'lucide-react';
-import { smoothScrollTo } from '../utils/smoothScroll';
+import { scrollToSection } from '../utils/smoothScroll';
 
 /**
  * HeroSection - Seção principal com efeitos de mouse e animações
@@ -37,12 +37,12 @@ const HeroSection = () => {
 
   // Função para lidar com o clique no botão "Começar Projeto"
   const handleStartProject = () => {
-    smoothScrollTo('contact');
+    scrollToSection('contact');
   };
 
   // Função para lidar com o clique no botão "Ver Portfolio"
   const handleViewPortfolio = () => {
-    smoothScrollTo('portfolio');
+    scrollToSection('portfolio');
   };
 
   return (
