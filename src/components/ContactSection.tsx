@@ -1,16 +1,17 @@
-
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { OrcamentoService } from '@/services/orcamentoService';
 
 /**
  * ContactSection - Formulário de contato e informações
- * Features: Validação, animações de feedback, informações de contato
+ * Features: Validação, animações de feedback, informações de contato, integração com Firebase
  */
 const ContactSection = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    whatsapp: '',
     service: '',
     message: ''
   });
@@ -30,7 +31,7 @@ const ContactSection = () => {
     setIsSubmitting(true);
 
     // Validação básica
-    if (!formData.name || !formData.email || !formData.service || !formData.message) {
+    if (!formData.name || !formData.email || !formData.whatsapp || !formData.service || !formData.message) {
       toast({
         title: "Campos obrigatórios",
         description: "Por favor, preencha todos os campos obrigatórios.",
@@ -40,14 +41,41 @@ const ContactSection = () => {
       return;
     }
 
-    // Simulação de envio para WhatsApp
+    // Validação do WhatsApp (formato básico)
+    const whatsappRegex = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
+    if (!whatsappRegex.test(formData.whatsapp)) {
+      toast({
+        title: "WhatsApp inválido",
+        description: "Por favor, insira o WhatsApp no formato (XX) XXXXX-XXXX",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
+      // Salvar solicitação no Firebase
+      const solicitacaoId = await OrcamentoService.criarSolicitacao({
+        nomeCliente: formData.name,
+        emailCliente: formData.email,
+        whatsappCliente: formData.whatsapp,
+        servicoInteresse: formData.service,
+        mensagem: formData.message
+      });
+
+      console.log('Solicitação criada com ID:', solicitacaoId);
+
+      // Enviar mensagem para WhatsApp (comportamento existente)
       const whatsappMessage = `Olá! Vim do site da NeiTech.
       
 *Nome:* ${formData.name}
 *Email:* ${formData.email}
+*WhatsApp:* ${formData.whatsapp}
 *Serviço:* ${formData.service}
-*Mensagem:* ${formData.message}`;
+*Mensagem:* ${formData.message}
+
+*Código da Solicitação:* ${solicitacaoId}`;
+
       const whatsappUrl = `https://wa.me/5516997813038?text=${encodeURIComponent(whatsappMessage)}`;
 
       // Aguarda um pouco para simular processamento
@@ -57,9 +85,10 @@ const ContactSection = () => {
       window.open(whatsappUrl, '_blank');
       setIsSubmitting(false);
       setIsSubmitted(true);
+      
       toast({
-        title: "Mensagem enviada!",
-        description: "Você será redirecionado para o WhatsApp para finalizar o contato."
+        title: "Solicitação enviada com sucesso!",
+        description: "Sua solicitação foi registrada e você será redirecionado para o WhatsApp. Guarde o código da solicitação para acompanhamento."
       });
 
       // Reset após 3 segundos
@@ -68,19 +97,38 @@ const ContactSection = () => {
         setFormData({
           name: '',
           email: '',
+          whatsapp: '',
           service: '',
           message: ''
         });
       }, 3000);
+
     } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
+      console.error('Erro ao enviar solicitação:', error);
       setIsSubmitting(false);
       toast({
         title: "Erro no envio",
-        description: "Ocorreu um erro. Tente novamente ou entre em contato diretamente.",
+        description: "Ocorreu um erro ao processar sua solicitação. Tente novamente ou entre em contato diretamente.",
         variant: "destructive"
       });
     }
+  };
+
+  // Função para formatar WhatsApp enquanto o usuário digita
+  const formatWhatsApp = (value: string) => {
+    const numbers = value.replace(/\D/g, '');
+    if (numbers.length <= 11) {
+      return numbers.replace(/(\d{2})(\d{4,5})(\d{4})/, '($1) $2-$3');
+    }
+    return value;
+  };
+
+  const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatWhatsApp(e.target.value);
+    setFormData({
+      ...formData,
+      whatsapp: formatted
+    });
   };
 
   const contactInfo = [
@@ -210,6 +258,24 @@ const ContactSection = () => {
                   />
                 </div>
 
+                {/* WhatsApp */}
+                <div>
+                  <label htmlFor="whatsapp" className="block text-sm font-semibold text-slate-700 mb-2">
+                    WhatsApp *
+                  </label>
+                  <input
+                    type="text"
+                    id="whatsapp"
+                    name="whatsapp"
+                    value={formData.whatsapp}
+                    onChange={handleWhatsAppChange}
+                    required
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="(XX) XXXXX-XXXX"
+                    maxLength={15}
+                  />
+                </div>
+
                 {/* Serviço */}
                 <div>
                   <label htmlFor="service" className="block text-sm font-semibold text-slate-700 mb-2">
@@ -264,7 +330,7 @@ const ContactSection = () => {
                   ) : (
                     <>
                       <Send size={20} />
-                      <span>Enviar via WhatsApp</span>
+                      <span>Enviar Solicitação</span>
                     </>
                   )}
                 </button>
@@ -275,9 +341,9 @@ const ContactSection = () => {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto animate-bounce">
                   <Check size={32} className="text-green-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-800">Mensagem Enviada!</h3>
+                <h3 className="text-2xl font-bold text-slate-800">Solicitação Enviada!</h3>
                 <p className="text-slate-600">
-                  Você será redirecionado para o WhatsApp para finalizar o contato.
+                  Sua solicitação foi registrada com sucesso. Você será redirecionado para o WhatsApp e receberá um código para acompanhar o andamento do seu orçamento.
                 </p>
               </div>
             )}
