@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Loader2 } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, FileText } from 'lucide-react';
 import { OrcamentoService } from '@/services/orcamentoService';
 import { SolicitacaoOrcamento } from '@/types/orcamentos';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const FormularioDetalhado = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,17 +13,24 @@ const FormularioDetalhado = () => {
   const { toast } = useToast();
   const [solicitacao, setSolicitacao] = useState<SolicitacaoOrcamento | null>(null);
   const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [respostas, setRespostas] = useState<any>({});
 
   useEffect(() => {
-    if (id) {
+    if (id && id.trim() !== '') {
       carregarSolicitacao(id);
+    } else {
+      setErro(true);
+      setLoading(false);
     }
   }, [id]);
 
   const carregarSolicitacao = async (solicitacaoId: string) => {
     try {
+      setLoading(true);
+      setErro(false);
+      
       const dados = await OrcamentoService.buscarSolicitacaoPorId(solicitacaoId);
       if (dados) {
         // Verificar se a solicitação está no status correto para preenchimento
@@ -37,15 +45,16 @@ const FormularioDetalhado = () => {
         }
         setSolicitacao(dados);
       } else {
+        setErro(true);
         toast({
           title: "Solicitação não encontrada",
-          description: "A solicitação solicitada não foi encontrada.",
+          description: "A solicitação solicitada não foi encontrada ou não existe.",
           variant: "destructive"
         });
-        navigate('/');
       }
     } catch (error) {
       console.error('Erro ao carregar solicitação:', error);
+      setErro(true);
       toast({
         title: "Erro",
         description: "Erro ao carregar dados da solicitação.",
@@ -242,29 +251,63 @@ const FormularioDetalhado = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Carregando formulário...</p>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between mb-6">
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-10 w-24" />
+            </div>
+
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <Skeleton className="h-6 w-40 mb-2" />
+              <Skeleton className="h-4 w-64" />
+              <Skeleton className="h-4 w-48" />
+            </div>
+
+            <div className="space-y-6">
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-32 w-full" />
+            </div>
+
+            <div className="text-center mt-8">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
+              <p className="text-gray-600">Carregando formulário...</p>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
-  if (!solicitacao) {
+  if (erro || !solicitacao) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
+        <div className="bg-white rounded-lg shadow-sm p-8 max-w-md w-full mx-4 text-center">
+          <FileText className="h-16 w-16 text-red-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-800 mb-2">
             Formulário não encontrado
           </h1>
-          <button
-            onClick={() => navigate('/')}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <ArrowLeft size={16} className="mr-2" />
-            Voltar ao início
-          </button>
+          <p className="text-gray-600 mb-6">
+            A solicitação que você está procurando não foi encontrada ou este formulário não está mais disponível.
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate('/')}
+              className="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <ArrowLeft size={16} className="mr-2" />
+              Voltar ao início
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+            >
+              Tentar novamente
+            </button>
+          </div>
         </div>
       </div>
     );
