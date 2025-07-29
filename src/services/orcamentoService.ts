@@ -16,6 +16,11 @@ import { db, storage } from '@/lib/firebase';
 import { SolicitacaoOrcamento, UsuarioCliente, HistoricoInteracao } from '@/types/orcamentos';
 
 export class OrcamentoService {
+  // Obter URL base do site
+  private static getSiteUrl(): string {
+    return import.meta.env.VITE_PUBLIC_SITE_URL || 'https://neitechweb.web.app';
+  }
+
   // Criar solicitação de orçamento
   static async criarSolicitacao(dados: Omit<SolicitacaoOrcamento, 'id' | 'dataCreacao' | 'dataUltimaAtualizacao' | 'statusSolicitacao' | 'accessToken'>): Promise<string> {
     try {
@@ -388,7 +393,7 @@ export class OrcamentoService {
   private static async enviarMensagemWhatsAppInicial(whatsapp: string, nome: string, servico: string, solicitacaoId: string): Promise<void> {
     try {
       const numeroLimpo = this.limparNumeroTelefone(whatsapp);
-      const linkStatus = `https://neitechweb.vercel.app/status/${solicitacaoId}`;
+      const linkStatus = `${this.getSiteUrl()}/status/${solicitacaoId}`;
       
       const mensagem = `Olá ${nome}! 
 
@@ -427,7 +432,7 @@ Equipe NeiTech`;
   private static async enviarMensagemFormularioDetalhado(solicitacao: SolicitacaoOrcamento): Promise<void> {
     try {
       const numeroLimpo = this.limparNumeroTelefone(solicitacao.whatsappCliente);
-      const linkFormulario = `https://neitechweb.vercel.app/formulario/${solicitacao.id}`;
+      const linkFormulario = `${this.getSiteUrl()}/formulario/${solicitacao.id}`;
       
       const mensagem = `Olá ${solicitacao.nomeCliente}! 
 
@@ -468,7 +473,7 @@ Equipe NeiTech`;
   static async notificarOrcamentoPronto(solicitacao: SolicitacaoOrcamento): Promise<void> {
     try {
       const numeroLimpo = this.limparNumeroTelefone(solicitacao.whatsappCliente);
-      const linkOrcamento = `https://neitechweb.vercel.app/orcamento/${solicitacao.id}?token=${solicitacao.accessToken}`;
+      const linkOrcamento = `${this.getSiteUrl()}/orcamento/${solicitacao.id}?token=${solicitacao.accessToken}`;
       
       const mensagem = `${solicitacao.nomeCliente}, seu orçamento está pronto! 
 

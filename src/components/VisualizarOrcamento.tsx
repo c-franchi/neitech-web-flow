@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Download, Eye, X, ExternalLink, Clock } from 'lucide-react';
 import { SolicitacaoOrcamento } from '@/types/orcamentos';
@@ -10,6 +9,11 @@ interface VisualizarOrcamentoProps {
 
 const VisualizarOrcamento: React.FC<VisualizarOrcamentoProps> = ({ solicitacao, onClose }) => {
   const [timeLeft, setTimeLeft] = useState<string>('');
+
+  // Obter URL base do site
+  const getSiteUrl = () => {
+    return import.meta.env.VITE_PUBLIC_SITE_URL || 'https://neitechweb.web.app';
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -50,7 +54,7 @@ const VisualizarOrcamento: React.FC<VisualizarOrcamentoProps> = ({ solicitacao, 
   };
 
   const gerarLinkWhatsApp = () => {
-    const linkOrcamento = `${window.location.origin}/orcamento/${solicitacao.id}`;
+    const linkOrcamento = `${getSiteUrl()}/orcamento/${solicitacao.id}`;
     const mensagem = `Olá ${solicitacao.nomeCliente}! Seu orçamento já está disponível: ${linkOrcamento}
 
 ⏰ *Importante:* Este orçamento ficará disponível por 5 dias corridos. Após este período será automaticamente removido do sistema.
@@ -130,7 +134,7 @@ Acesse o link para visualizar e fazer o download do seu orçamento.`;
 
           <div className="text-sm text-gray-500 flex flex-col gap-1">
             <div>
-              <strong>Link:</strong> {window.location.origin}/orcamento/{solicitacao.id}
+              <strong>Link:</strong> {getSiteUrl()}/orcamento/{solicitacao.id}
             </div>
             <div className="text-amber-600">
               <strong>⚠️ Aviso:</strong> Este orçamento expira automaticamente em 5 dias corridos
