@@ -1,4 +1,3 @@
-
 import { 
   collection, 
   addDoc, 
@@ -233,6 +232,12 @@ export class OrcamentoService {
   // Buscar solicitação por ID
   static async buscarSolicitacaoPorId(id: string): Promise<SolicitacaoOrcamento | null> {
     try {
+      // Validar se o ID é válido
+      if (!id || id.trim() === '') {
+        console.error('ID inválido fornecido');
+        return null;
+      }
+
       const docRef = doc(db, 'solicitacoes_orcamento', id);
       const docSnap = await getDoc(docRef);
       
@@ -246,10 +251,11 @@ export class OrcamentoService {
         } as SolicitacaoOrcamento;
       }
       
+      console.log(`Documento não encontrado para ID: ${id}`);
       return null;
     } catch (error) {
       console.error('Erro ao buscar solicitação por ID:', error);
-      throw error;
+      return null;
     }
   }
 
