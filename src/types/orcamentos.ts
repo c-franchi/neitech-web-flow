@@ -1,3 +1,4 @@
+
 export interface SolicitacaoOrcamento {
   id: string;
   nomeCliente: string;
@@ -52,7 +53,7 @@ export interface HistoricoInteracao {
   id: string;
   clienteId: string;
   orcamentoId?: string;
-  tipoInteracao: 'solicitacao_criada' | 'orcamento_enviado' | 'orcamento_visualizado' | 'orcamento_aprovado' | 'orcamento_rejeitado' | 'alteracao_solicitada';
+  tipoInteracao: 'solicitacao_criada' | 'orcamento_enviado' | 'orcamento_visualizado' | 'orcamento_aprovado' | 'orcamento_rejeitado' | 'alteracao_solicitada' | 'orcamento_expirado';
   descricao: string;
   dataInteracao: Date;
   dadosAdicionais?: any;

@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Download, Eye, X, ExternalLink } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Download, Eye, X, ExternalLink, Clock } from 'lucide-react';
 import { SolicitacaoOrcamento } from '@/types/orcamentos';
 
 interface VisualizarOrcamentoProps {
@@ -9,6 +9,34 @@ interface VisualizarOrcamentoProps {
 }
 
 const VisualizarOrcamento: React.FC<VisualizarOrcamentoProps> = ({ solicitacao, onClose }) => {
+  const [timeLeft, setTimeLeft] = useState<string>('');
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      updateTimeLeft();
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [solicitacao]);
+
+  const updateTimeLeft = () => {
+    const dataExpiracao = new Date(solicitacao.dataUltimaAtualizacao);
+    dataExpiracao.setDate(dataExpiracao.getDate() + 5);
+    
+    const agora = new Date();
+    const diferenca = dataExpiracao.getTime() - agora.getTime();
+    
+    if (diferenca > 0) {
+      const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+      const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+      
+      setTimeLeft(`${dias}d ${horas}h ${minutos}m`);
+    } else {
+      setTimeLeft('Expirado');
+    }
+  };
+
   const handleDownload = () => {
     if (solicitacao.pdfUrl) {
       const link = document.createElement('a');
@@ -23,7 +51,12 @@ const VisualizarOrcamento: React.FC<VisualizarOrcamentoProps> = ({ solicitacao, 
 
   const gerarLinkWhatsApp = () => {
     const linkOrcamento = `${window.location.origin}/orcamento/${solicitacao.id}`;
-    const mensagem = `Olá ${solicitacao.nomeCliente}! Seu orçamento já está disponível: ${linkOrcamento}`;
+    const mensagem = `Olá ${solicitacao.nomeCliente}! Seu orçamento já está disponível: ${linkOrcamento}
+
+⏰ *Importante:* Este orçamento ficará disponível por 5 dias corridos. Após este período será automaticamente removido do sistema.
+
+Acesse o link para visualizar e fazer o download do seu orçamento.`;
+    
     const whatsappUrl = `https://wa.me/55${solicitacao.whatsappCliente.replace(/\D/g, '')}?text=${encodeURIComponent(mensagem)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -33,11 +66,17 @@ const VisualizarOrcamento: React.FC<VisualizarOrcamentoProps> = ({ solicitacao, 
       <div className="bg-white rounded-lg w-full max-w-4xl mx-4 h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <div>
+          <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-800">
               Orçamento - {solicitacao.nomeCliente}
             </h3>
             <p className="text-sm text-gray-600">{solicitacao.servicoInteresse}</p>
+            <div className="flex items-center gap-2 mt-1">
+              <Clock size={14} className="text-amber-500" />
+              <span className="text-xs text-amber-600">
+                Expira em {timeLeft}
+              </span>
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -66,29 +105,36 @@ const VisualizarOrcamento: React.FC<VisualizarOrcamentoProps> = ({ solicitacao, 
         </div>
 
         {/* Actions */}
-        <div className="flex justify-between items-center p-4 border-t bg-gray-50">
-          <div className="flex space-x-3">
-            <button
-              onClick={handleDownload}
-              disabled={!solicitacao.pdfUrl}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Download size={16} className="mr-2" />
-              Download PDF
-            </button>
-            
-            <button
-              onClick={gerarLinkWhatsApp}
-              disabled={!solicitacao.pdfUrl}
-              className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ExternalLink size={16} className="mr-2" />
-              Enviar WhatsApp
-            </button>
+        <div className="flex flex-col gap-4 p-4 border-t bg-gray-50">
+          <div className="flex justify-between items-center">
+            <div className="flex space-x-3">
+              <button
+                onClick={handleDownload}
+                disabled={!solicitacao.pdfUrl}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Download size={16} className="mr-2" />
+                Download PDF
+              </button>
+              
+              <button
+                onClick={gerarLinkWhatsApp}
+                disabled={!solicitacao.pdfUrl}
+                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ExternalLink size={16} className="mr-2" />
+                Enviar WhatsApp
+              </button>
+            </div>
           </div>
 
-          <div className="text-sm text-gray-500">
-            Link: {window.location.origin}/orcamento/{solicitacao.id}
+          <div className="text-sm text-gray-500 flex flex-col gap-1">
+            <div>
+              <strong>Link:</strong> {window.location.origin}/orcamento/{solicitacao.id}
+            </div>
+            <div className="text-amber-600">
+              <strong>⚠️ Aviso:</strong> Este orçamento expira automaticamente em 5 dias corridos
+            </div>
           </div>
         </div>
       </div>

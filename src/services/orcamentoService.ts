@@ -1,3 +1,4 @@
+
 import { 
   collection, 
   addDoc, 
@@ -5,12 +6,14 @@ import {
   doc, 
   getDocs, 
   getDoc,
+  deleteDoc,
   query, 
   where, 
   orderBy,
   Timestamp 
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { ref, deleteObject } from 'firebase/storage';
+import { db, storage } from '@/lib/firebase';
 import { SolicitacaoOrcamento, Orcamento, UsuarioCliente, HistoricoInteracao } from '@/types/orcamentos';
 
 export class OrcamentoService {
@@ -35,7 +38,7 @@ export class OrcamentoService {
 
       // Registrar histórico
       await this.registrarHistorico({
-        clienteId: dados.emailCliente, // Usando email como ID temporário
+        clienteId: dados.emailCliente,
         tipoInteracao: 'solicitacao_criada',
         descricao: `Solicitação de orçamento criada para o serviço: ${dados.servicoInteresse}`,
         dataInteracao: new Date()
@@ -48,7 +51,7 @@ export class OrcamentoService {
     }
   }
 
-  // Buscar todas as solicitações (sem filtro por status para evitar índice)
+  // Buscar todas as solicitações
   static async buscarTodasSolicitacoes(): Promise<SolicitacaoOrcamento[]> {
     try {
       const q = query(
@@ -69,10 +72,9 @@ export class OrcamentoService {
     }
   }
 
-  // Buscar solicitações pendentes (método simplificado)
+  // Buscar solicitações pendentes
   static async buscarSolicitacoesPendentes(): Promise<SolicitacaoOrcamento[]> {
     try {
-      // Buscar todas e filtrar no lado do cliente para evitar índice composto
       const todasSolicitacoes = await this.buscarTodasSolicitacoes();
       return todasSolicitacoes.filter(solicitacao => solicitacao.statusSolicitacao === 'pendente');
     } catch (error) {
@@ -106,14 +108,12 @@ export class OrcamentoService {
       const querySnapshot = await getDocs(q);
       
       if (querySnapshot.empty) {
-        // Criar novo cliente
         await addDoc(collection(db, 'usuarios_clientes'), {
           ...dados,
           dataCadastro: Timestamp.now(),
           ultimoAcesso: Timestamp.now()
         });
       } else {
-        // Atualizar cliente existente
         const clienteDoc = querySnapshot.docs[0];
         await updateDoc(clienteDoc.ref, {
           ...dados,
@@ -167,9 +167,8 @@ export class OrcamentoService {
         dataUltimaAtualizacao: Timestamp.now()
       });
 
-      // Registrar no histórico
       await this.registrarHistorico({
-        clienteId: solicitacaoId, // Usando solicitacaoId como referência
+        clienteId: solicitacaoId,
         tipoInteracao: 'orcamento_enviado',
         descricao: `Orçamento em PDF anexado: ${dados.nomeArquivoPdf}`,
         dataInteracao: new Date()
@@ -199,6 +198,65 @@ export class OrcamentoService {
       return null;
     } catch (error) {
       console.error('Erro ao buscar solicitação por ID:', error);
+      throw error;
+    }
+  }
+
+  // Deletar orçamento expirado
+  static async deletarOrcamentoExpirado(id: string): Promise<void> {
+    try {
+      const solicitacao = await this.buscarSolicitacaoPorId(id);
+      
+      if (solicitacao?.pdfUrl) {
+        // Deletar arquivo do Storage
+        try {
+          const storageRef = ref(storage, `orcamentos/${id}/${solicitacao.nomeArquivoPdf}`);
+          await deleteObject(storageRef);
+        } catch (storageError) {
+          console.error('Erro ao deletar arquivo do storage:', storageError);
+        }
+        
+        // Remover URLs do documento
+        const docRef = doc(db, 'solicitacoes_orcamento', id);
+        await updateDoc(docRef, {
+          pdfUrl: null,
+          nomeArquivoPdf: null,
+          statusSolicitacao: 'pendente',
+          dataUltimaAtualizacao: Timestamp.now()
+        });
+
+        // Registrar no histórico
+        await this.registrarHistorico({
+          clienteId: id,
+          tipoInteracao: 'orcamento_expirado',
+          descricao: 'Orçamento removido automaticamente após 5 dias',
+          dataInteracao: new Date()
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao deletar orçamento expirado:', error);
+      throw error;
+    }
+  }
+
+  // Limpar orçamentos expirados - método para execução periódica
+  static async limparOrcamentosExpirados(): Promise<void> {
+    try {
+      const todasSolicitacoes = await this.buscarTodasSolicitacoes();
+      const agora = new Date();
+      
+      for (const solicitacao of todasSolicitacoes) {
+        if (solicitacao.pdfUrl) {
+          const dataExpiracao = new Date(solicitacao.dataUltimaAtualizacao);
+          dataExpiracao.setDate(dataExpiracao.getDate() + 5);
+          
+          if (agora > dataExpiracao) {
+            await this.deletarOrcamentoExpirado(solicitacao.id);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao limpar orçamentos expirados:', error);
       throw error;
     }
   }
