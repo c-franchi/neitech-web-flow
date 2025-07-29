@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { Clock, CheckCircle, XCircle, Eye, Plus, Search, Upload, FileText, ExternalLink } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, Eye, Plus, Search, Upload, FileText, ExternalLink, MessageCircle } from 'lucide-react';
 import { OrcamentoService } from '@/services/orcamentoService';
 import { SolicitacaoOrcamento } from '@/types/orcamentos';
 import { useToast } from '@/hooks/use-toast';
@@ -50,6 +51,33 @@ const AdminDashboard = () => {
       toast({
         title: "Erro",
         description: "Não foi possível atualizar o status da solicitação.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const reenviarWhatsApp = async (solicitacao: SolicitacaoOrcamento) => {
+    try {
+      let tipoMensagem: 'inicial' | 'formulario' | 'orcamento' = 'inicial';
+      
+      // Determinar tipo de mensagem baseado no status
+      if (solicitacao.statusSolicitacao === 'aguardando_detalhamento') {
+        tipoMensagem = 'formulario';
+      } else if (solicitacao.statusSolicitacao === 'orcamento_disponivel' || solicitacao.statusSolicitacao === 'orcamento_enviado') {
+        tipoMensagem = 'orcamento';
+      }
+
+      await OrcamentoService.reenviarWhatsApp(solicitacao.id, tipoMensagem);
+      
+      toast({
+        title: "WhatsApp enviado",
+        description: "A mensagem foi enviada com sucesso via WhatsApp."
+      });
+    } catch (error) {
+      console.error('Erro ao reenviar WhatsApp:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível enviar a mensagem via WhatsApp.",
         variant: "destructive"
       });
     }
@@ -317,10 +345,12 @@ const AdminDashboard = () => {
                         </div>
                       </div>
                       
-                      <div className="mt-3">
-                        <strong className="text-sm text-gray-700">Mensagem:</strong>
-                        <p className="text-sm text-gray-600 mt-1">{solicitacao.mensagem}</p>
-                      </div>
+                      {solicitacao.mensagem && (
+                        <div className="mt-3">
+                          <strong className="text-sm text-gray-700">Mensagem:</strong>
+                          <p className="text-sm text-gray-600 mt-1">{solicitacao.mensagem}</p>
+                        </div>
+                      )}
                     </div>
                     
                     <div className="flex flex-col space-y-2 ml-4">
@@ -337,6 +367,15 @@ const AdminDashboard = () => {
                         <option value="orcamento_enviado">Orçamento Enviado</option>
                         <option value="finalizado">Finalizado</option>
                       </select>
+                      
+                      {/* Botão Reenviar WhatsApp */}
+                      <button
+                        onClick={() => reenviarWhatsApp(solicitacao)}
+                        className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center space-x-1"
+                      >
+                        <MessageCircle size={14} />
+                        <span>Reenviar WhatsApp</span>
+                      </button>
                       
                       {/* Botões de ação baseados no status */}
                       {(solicitacao.statusSolicitacao === 'aguardando_orcamento') && (

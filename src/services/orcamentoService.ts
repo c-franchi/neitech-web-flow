@@ -24,7 +24,7 @@ export class OrcamentoService {
       
       const solicitacao = {
         ...dados,
-        statusSolicitacao: '' as any, // Status inicia em branco
+        statusSolicitacao: 'solicitacao_recebida' as any,
         accessToken,
         dataCreacao: Timestamp.now(),
         dataUltimaAtualizacao: Timestamp.now()
@@ -50,8 +50,7 @@ export class OrcamentoService {
         dataInteracao: new Date()
       });
 
-      // Enviar mensagem WhatsApp inicial
-      console.log('Enviando mensagem WhatsApp inicial...');
+      // Enviar mensagem WhatsApp inicial automaticamente
       await this.enviarMensagemWhatsAppInicial(dados.whatsappCliente, dados.nomeCliente, dados.servicoInteresse, docRef.id);
 
       console.log('Solicitação criada com sucesso:', docRef.id);
@@ -374,11 +373,15 @@ export class OrcamentoService {
     }
   }
 
-  // Enviar mensagem WhatsApp inicial
+  // Limpar número de telefone (remover caracteres especiais)
+  private static limparNumeroTelefone(numero: string): string {
+    return numero.replace(/\D/g, '');
+  }
+
+  // Enviar mensagem WhatsApp inicial com abertura automática
   private static async enviarMensagemWhatsAppInicial(whatsapp: string, nome: string, servico: string, solicitacaoId: string): Promise<void> {
     try {
-      console.log('Enviando mensagem WhatsApp inicial para:', whatsapp);
-      
+      const numeroLimpo = this.limparNumeroTelefone(whatsapp);
       const linkStatus = `https://neitechweb.vercel.app/status/${solicitacaoId}`;
       
       const mensagem = `Olá ${nome}! 
@@ -390,11 +393,13 @@ Link para acompanhar: ${linkStatus}
 Atenciosamente,
 Equipe NeiTech`;
 
-      // Simular envio via WhatsApp (aqui você integraria com a API real)
-      console.log('📱 MENSAGEM WHATSAPP INICIAL:');
-      console.log(`Para: ${whatsapp}`);
-      console.log(`Mensagem: ${mensagem}`);
-      console.log(`Link de acompanhamento: ${linkStatus}`);
+      // Gerar link do WhatsApp
+      const whatsappLink = `https://wa.me/55${numeroLimpo}?text=${encodeURIComponent(mensagem)}`;
+      
+      // Abrir janela do WhatsApp automaticamente
+      if (typeof window !== 'undefined') {
+        window.open(whatsappLink, '_blank');
+      }
       
       // Registrar no histórico
       await this.registrarHistorico({
@@ -405,7 +410,7 @@ Equipe NeiTech`;
         dataInteracao: new Date()
       });
 
-      console.log('✅ Mensagem WhatsApp inicial registrada com sucesso');
+      console.log('✅ Mensagem WhatsApp inicial enviada automaticamente');
     } catch (error) {
       console.error('❌ Erro ao enviar mensagem WhatsApp inicial:', error);
       throw error;
@@ -415,8 +420,7 @@ Equipe NeiTech`;
   // Enviar mensagem WhatsApp para formulário detalhado
   private static async enviarMensagemFormularioDetalhado(solicitacao: SolicitacaoOrcamento): Promise<void> {
     try {
-      console.log('Enviando mensagem WhatsApp formulário detalhado para:', solicitacao.whatsappCliente);
-      
+      const numeroLimpo = this.limparNumeroTelefone(solicitacao.whatsappCliente);
       const linkFormulario = `https://neitechweb.vercel.app/formulario/${solicitacao.id}`;
       
       const mensagem = `Olá ${solicitacao.nomeCliente}! 
@@ -430,11 +434,13 @@ Este link é válido por 7 dias.
 Atenciosamente,
 Equipe NeiTech`;
 
-      // Simular envio via WhatsApp (aqui você integraria com a API real)
-      console.log('📱 MENSAGEM WHATSAPP FORMULÁRIO:');
-      console.log(`Para: ${solicitacao.whatsappCliente}`);
-      console.log(`Mensagem: ${mensagem}`);
-      console.log(`Link do formulário: ${linkFormulario}`);
+      // Gerar link do WhatsApp
+      const whatsappLink = `https://wa.me/55${numeroLimpo}?text=${encodeURIComponent(mensagem)}`;
+      
+      // Abrir janela do WhatsApp automaticamente
+      if (typeof window !== 'undefined') {
+        window.open(whatsappLink, '_blank');
+      }
       
       // Registrar no histórico
       await this.registrarHistorico({
@@ -445,7 +451,7 @@ Equipe NeiTech`;
         dataInteracao: new Date()
       });
 
-      console.log('✅ Mensagem WhatsApp formulário registrada com sucesso');
+      console.log('✅ Mensagem WhatsApp formulário enviada automaticamente');
     } catch (error) {
       console.error('❌ Erro ao enviar mensagem WhatsApp formulário:', error);
       throw error;
@@ -455,6 +461,7 @@ Equipe NeiTech`;
   // Notificar cliente sobre orçamento pronto
   static async notificarOrcamentoPronto(solicitacao: SolicitacaoOrcamento): Promise<void> {
     try {
+      const numeroLimpo = this.limparNumeroTelefone(solicitacao.whatsappCliente);
       const linkOrcamento = `https://neitechweb.vercel.app/orcamento/${solicitacao.id}?token=${solicitacao.accessToken}`;
       
       const mensagem = `${solicitacao.nomeCliente}, seu orçamento está pronto! 
@@ -466,10 +473,13 @@ Acesse agora: ${linkOrcamento}
 Atenciosamente,
 Equipe NeiTech`;
 
-      console.log('📱 MENSAGEM WHATSAPP ORÇAMENTO PRONTO:');
-      console.log(`Para: ${solicitacao.whatsappCliente}`);
-      console.log(`Mensagem: ${mensagem}`);
-      console.log(`Link do orçamento: ${linkOrcamento}`);
+      // Gerar link do WhatsApp
+      const whatsappLink = `https://wa.me/55${numeroLimpo}?text=${encodeURIComponent(mensagem)}`;
+      
+      // Abrir janela do WhatsApp automaticamente
+      if (typeof window !== 'undefined') {
+        window.open(whatsappLink, '_blank');
+      }
       
       // Registrar no histórico
       await this.registrarHistorico({
@@ -480,9 +490,39 @@ Equipe NeiTech`;
         dataInteracao: new Date()
       });
 
-      console.log('✅ Notificação de orçamento pronto registrada com sucesso');
+      console.log('✅ Notificação de orçamento pronto enviada automaticamente');
     } catch (error) {
       console.error('❌ Erro ao notificar orçamento pronto:', error);
+      throw error;
+    }
+  }
+
+  // Reenviar mensagem WhatsApp (para uso no painel admin)
+  static async reenviarWhatsApp(solicitacaoId: string, tipoMensagem: 'inicial' | 'formulario' | 'orcamento'): Promise<void> {
+    try {
+      const solicitacao = await this.buscarSolicitacaoPorId(solicitacaoId);
+      if (!solicitacao) {
+        throw new Error('Solicitação não encontrada');
+      }
+
+      switch (tipoMensagem) {
+        case 'inicial':
+          await this.enviarMensagemWhatsAppInicial(
+            solicitacao.whatsappCliente,
+            solicitacao.nomeCliente,
+            solicitacao.servicoInteresse,
+            solicitacao.id
+          );
+          break;
+        case 'formulario':
+          await this.enviarMensagemFormularioDetalhado(solicitacao);
+          break;
+        case 'orcamento':
+          await this.notificarOrcamentoPronto(solicitacao);
+          break;
+      }
+    } catch (error) {
+      console.error('Erro ao reenviar WhatsApp:', error);
       throw error;
     }
   }
