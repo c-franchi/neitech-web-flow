@@ -14,7 +14,7 @@ import {
 } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
 import { db, storage } from '@/lib/firebase';
-import { SolicitacaoOrcamento, Orcamento, UsuarioCliente, HistoricoInteracao } from '@/types/orcamentos';
+import { SolicitacaoOrcamento, UsuarioCliente, HistoricoInteracao } from '@/types/orcamentos';
 
 export class OrcamentoService {
   // Criar solicitação de orçamento
@@ -24,11 +24,13 @@ export class OrcamentoService {
       
       const solicitacao = {
         ...dados,
-        statusSolicitacao: 'solicitacao_recebida' as const,
+        statusSolicitacao: '' as any, // Status inicia em branco
         accessToken,
         dataCreacao: Timestamp.now(),
         dataUltimaAtualizacao: Timestamp.now()
       };
+
+      console.log('Criando solicitação:', solicitacao);
 
       const docRef = await addDoc(collection(db, 'solicitacoes_orcamento'), solicitacao);
       
@@ -49,8 +51,10 @@ export class OrcamentoService {
       });
 
       // Enviar mensagem WhatsApp inicial
+      console.log('Enviando mensagem WhatsApp inicial...');
       await this.enviarMensagemWhatsAppInicial(dados.whatsappCliente, dados.nomeCliente, dados.servicoInteresse, docRef.id);
 
+      console.log('Solicitação criada com sucesso:', docRef.id);
       return docRef.id;
     } catch (error) {
       console.error('Erro ao criar solicitação:', error);
@@ -67,12 +71,15 @@ export class OrcamentoService {
       );
       
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        dataCreacao: doc.data().dataCreacao.toDate(),
-        dataUltimaAtualizacao: doc.data().dataUltimaAtualizacao.toDate()
-      } as SolicitacaoOrcamento));
+      return querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          dataCreacao: data.dataCreacao.toDate(),
+          dataUltimaAtualizacao: data.dataUltimaAtualizacao.toDate()
+        } as SolicitacaoOrcamento;
+      });
     } catch (error) {
       console.error('Erro ao buscar solicitações:', error);
       throw error;
@@ -96,28 +103,36 @@ export class OrcamentoService {
   // Atualizar status da solicitação
   static async atualizarStatusSolicitacao(id: string, novoStatus: SolicitacaoOrcamento['statusSolicitacao']): Promise<void> {
     try {
+      console.log(`Atualizando status da solicitação ${id} para: ${novoStatus}`);
+      
       const docRef = doc(db, 'solicitacoes_orcamento', id);
       await updateDoc(docRef, {
         statusSolicitacao: novoStatus,
         dataUltimaAtualizacao: Timestamp.now()
       });
 
+      // Buscar dados da solicitação para envio de mensagens
+      const solicitacao = await this.buscarSolicitacaoPorId(id);
+      if (!solicitacao) {
+        throw new Error('Solicitação não encontrada');
+      }
+
       // Se mudou para "aguardando_detalhamento", enviar mensagem para formulário
       if (novoStatus === 'aguardando_detalhamento') {
-        const solicitacao = await this.buscarSolicitacaoPorId(id);
-        if (solicitacao) {
-          await this.enviarMensagemFormularioDetalhado(solicitacao);
-        }
+        console.log('Enviando mensagem para formulário detalhado...');
+        await this.enviarMensagemFormularioDetalhado(solicitacao);
       }
 
       // Registrar histórico da mudança de status
       await this.registrarHistorico({
-        clienteId: id,
+        clienteId: solicitacao.emailCliente,
         solicitacaoId: id,
         tipoInteracao: 'alteracao_status',
         descricao: `Status alterado para: ${novoStatus}`,
         dataInteracao: new Date()
       });
+
+      console.log('Status atualizado com sucesso');
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
       throw error;
@@ -140,12 +155,14 @@ export class OrcamentoService {
           dataCadastro: Timestamp.now(),
           ultimoAcesso: Timestamp.now()
         });
+        console.log('Cliente criado:', dados.email);
       } else {
         const clienteDoc = querySnapshot.docs[0];
         await updateDoc(clienteDoc.ref, {
           ...dados,
           ultimoAcesso: Timestamp.now()
         });
+        console.log('Cliente atualizado:', dados.email);
       }
     } catch (error) {
       console.error('Erro ao criar/atualizar cliente:', error);
@@ -160,6 +177,7 @@ export class OrcamentoService {
         ...dados,
         dataInteracao: Timestamp.now()
       });
+      console.log('Histórico registrado:', dados.tipoInteracao);
     } catch (error) {
       console.error('Erro ao registrar histórico:', error);
       throw error;
@@ -304,6 +322,8 @@ export class OrcamentoService {
   // Salvar detalhes do formulário específico
   static async salvarDetalhesFormulario(solicitacaoId: string, tipoServico: string, respostas: any): Promise<void> {
     try {
+      console.log(`Salvando detalhes do formulário para solicitação ${solicitacaoId}`);
+      
       await addDoc(collection(db, 'detalhes_formulario'), {
         solicitacaoId,
         tipoServico,
@@ -322,6 +342,8 @@ export class OrcamentoService {
         descricao: `Formulário detalhado preenchido para o serviço: ${tipoServico}`,
         dataInteracao: new Date()
       });
+
+      console.log('Detalhes do formulário salvos com sucesso');
     } catch (error) {
       console.error('Erro ao salvar detalhes do formulário:', error);
       throw error;
@@ -357,28 +379,35 @@ export class OrcamentoService {
     try {
       console.log('Enviando mensagem WhatsApp inicial para:', whatsapp);
       
-      const mensagem = `Olá ${nome}! Recebemos sua solicitação de orçamento para ${servico}. 
+      const linkStatus = `https://neitechweb.vercel.app/status/${solicitacaoId}`;
+      
+      const mensagem = `Olá ${nome}! 
 
-Em breve você poderá acompanhar e detalhar seu pedido.
+Recebemos sua solicitação de orçamento para ${servico}. Em breve você poderá acompanhar e detalhar seu pedido.
 
-Link para acompanhar: https://neitechweb.vercel.app/status/${solicitacaoId}
+Link para acompanhar: ${linkStatus}
 
 Atenciosamente,
 Equipe NeiTech`;
 
-      // Em produção, aqui seria feita a integração com a API do WhatsApp
-      console.log('Mensagem WhatsApp inicial:', mensagem);
+      // Simular envio via WhatsApp (aqui você integraria com a API real)
+      console.log('📱 MENSAGEM WHATSAPP INICIAL:');
+      console.log(`Para: ${whatsapp}`);
+      console.log(`Mensagem: ${mensagem}`);
+      console.log(`Link de acompanhamento: ${linkStatus}`);
       
       // Registrar no histórico
       await this.registrarHistorico({
         clienteId: whatsapp,
         solicitacaoId: solicitacaoId,
         tipoInteracao: 'whatsapp_enviado',
-        descricao: `Mensagem WhatsApp inicial enviada`,
+        descricao: `Mensagem WhatsApp inicial enviada com link de acompanhamento`,
         dataInteracao: new Date()
       });
+
+      console.log('✅ Mensagem WhatsApp inicial registrada com sucesso');
     } catch (error) {
-      console.error('Erro ao enviar mensagem WhatsApp inicial:', error);
+      console.error('❌ Erro ao enviar mensagem WhatsApp inicial:', error);
       throw error;
     }
   }
@@ -388,17 +417,24 @@ Equipe NeiTech`;
     try {
       console.log('Enviando mensagem WhatsApp formulário detalhado para:', solicitacao.whatsappCliente);
       
-      const mensagem = `Olá ${solicitacao.nomeCliente}! Para podermos elaborar seu orçamento com precisão, acesse o link abaixo e preencha um formulário mais detalhado de acordo com o serviço escolhido:
+      const linkFormulario = `https://neitechweb.vercel.app/formulario/${solicitacao.id}`;
+      
+      const mensagem = `Olá ${solicitacao.nomeCliente}! 
 
-https://neitechweb.vercel.app/formulario/${solicitacao.id}
+Para podermos elaborar seu orçamento com precisão, acesse o link abaixo e preencha um formulário mais detalhado de acordo com o serviço escolhido:
+
+${linkFormulario}
 
 Este link é válido por 7 dias.
 
 Atenciosamente,
 Equipe NeiTech`;
 
-      // Em produção, aqui seria feita a integração com a API do WhatsApp
-      console.log('Mensagem WhatsApp formulário:', mensagem);
+      // Simular envio via WhatsApp (aqui você integraria com a API real)
+      console.log('📱 MENSAGEM WHATSAPP FORMULÁRIO:');
+      console.log(`Para: ${solicitacao.whatsappCliente}`);
+      console.log(`Mensagem: ${mensagem}`);
+      console.log(`Link do formulário: ${linkFormulario}`);
       
       // Registrar no histórico
       await this.registrarHistorico({
@@ -408,8 +444,10 @@ Equipe NeiTech`;
         descricao: `Mensagem WhatsApp enviada com link do formulário detalhado`,
         dataInteracao: new Date()
       });
+
+      console.log('✅ Mensagem WhatsApp formulário registrada com sucesso');
     } catch (error) {
-      console.error('Erro ao enviar mensagem WhatsApp formulário:', error);
+      console.error('❌ Erro ao enviar mensagem WhatsApp formulário:', error);
       throw error;
     }
   }
@@ -417,16 +455,21 @@ Equipe NeiTech`;
   // Notificar cliente sobre orçamento pronto
   static async notificarOrcamentoPronto(solicitacao: SolicitacaoOrcamento): Promise<void> {
     try {
+      const linkOrcamento = `https://neitechweb.vercel.app/orcamento/${solicitacao.id}?token=${solicitacao.accessToken}`;
+      
       const mensagem = `${solicitacao.nomeCliente}, seu orçamento está pronto! 
 
-Acesse agora: https://neitechweb.vercel.app/orcamento/${solicitacao.id}?token=${solicitacao.accessToken}
+Acesse agora: ${linkOrcamento}
 
 ⚠️ *Importante:* Este orçamento ficará disponível por 5 dias corridos. Após este período será automaticamente removido do sistema.
 
 Atenciosamente,
 Equipe NeiTech`;
 
-      console.log('Mensagem orçamento pronto:', mensagem);
+      console.log('📱 MENSAGEM WHATSAPP ORÇAMENTO PRONTO:');
+      console.log(`Para: ${solicitacao.whatsappCliente}`);
+      console.log(`Mensagem: ${mensagem}`);
+      console.log(`Link do orçamento: ${linkOrcamento}`);
       
       // Registrar no histórico
       await this.registrarHistorico({
@@ -436,8 +479,10 @@ Equipe NeiTech`;
         descricao: `Notificação de orçamento pronto enviada via WhatsApp`,
         dataInteracao: new Date()
       });
+
+      console.log('✅ Notificação de orçamento pronto registrada com sucesso');
     } catch (error) {
-      console.error('Erro ao notificar orçamento pronto:', error);
+      console.error('❌ Erro ao notificar orçamento pronto:', error);
       throw error;
     }
   }

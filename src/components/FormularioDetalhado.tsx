@@ -1,11 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Send, ArrowLeft, FileText, Upload, Loader2 } from 'lucide-react';
+import { ArrowLeft, Send, Loader2 } from 'lucide-react';
 import { OrcamentoService } from '@/services/orcamentoService';
 import { SolicitacaoOrcamento } from '@/types/orcamentos';
 import { useToast } from '@/hooks/use-toast';
-import { Textarea } from '@/components/ui/textarea';
 
 const FormularioDetalhado = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,7 +13,7 @@ const FormularioDetalhado = () => {
   const [solicitacao, setSolicitacao] = useState<SolicitacaoOrcamento | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState<any>({});
+  const [respostas, setRespostas] = useState<any>({});
 
   useEffect(() => {
     if (id) {
@@ -25,12 +24,22 @@ const FormularioDetalhado = () => {
   const carregarSolicitacao = async (solicitacaoId: string) => {
     try {
       const dados = await OrcamentoService.buscarSolicitacaoPorId(solicitacaoId);
-      if (dados && dados.statusSolicitacao === 'orcamento_recebido') {
+      if (dados) {
+        // Verificar se a solicitação está no status correto para preenchimento
+        if (dados.statusSolicitacao !== 'aguardando_detalhamento') {
+          toast({
+            title: "Formulário não disponível",
+            description: "Este formulário não está mais disponível para preenchimento.",
+            variant: "destructive"
+          });
+          navigate('/');
+          return;
+        }
         setSolicitacao(dados);
       } else {
         toast({
-          title: "Erro",
-          description: "Solicitação não encontrada ou já foi processada.",
+          title: "Solicitação não encontrada",
+          description: "A solicitação solicitada não foi encontrada.",
           variant: "destructive"
         });
         navigate('/');
@@ -39,7 +48,7 @@ const FormularioDetalhado = () => {
       console.error('Erro ao carregar solicitação:', error);
       toast({
         title: "Erro",
-        description: "Erro ao carregar solicitação.",
+        description: "Erro ao carregar dados da solicitação.",
         variant: "destructive"
       });
     } finally {
@@ -49,25 +58,23 @@ const FormularioDetalhado = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!solicitacao) return;
+    if (!id || !solicitacao) return;
 
-    setSubmitting(true);
     try {
-      await OrcamentoService.salvarDetalhesFormulario(solicitacao.id, solicitacao.servicoInteresse, formData);
-      await OrcamentoService.atualizarStatusSolicitacao(solicitacao.id, 'aguardando_orcamento');
+      setSubmitting(true);
+      await OrcamentoService.salvarDetalhesFormulario(id, solicitacao.servicoInteresse, respostas);
       
       toast({
-        title: "Sucesso!",
-        description: "Detalhes enviados com sucesso. Entraremos em contato em breve com seu orçamento personalizado."
+        title: "Formulário enviado com sucesso!",
+        description: "Recebemos suas informações. Você será notificado via WhatsApp quando o orçamento estiver pronto."
       });
-      
-      // Redirecionar para página de confirmação
-      navigate(`/confirmacao/${solicitacao.id}`);
+
+      navigate(`/confirmacao/${id}`);
     } catch (error) {
-      console.error('Erro ao enviar detalhes:', error);
+      console.error('Erro ao enviar formulário:', error);
       toast({
-        title: "Erro",
-        description: "Erro ao enviar detalhes. Tente novamente.",
+        title: "Erro ao enviar formulário",
+        description: "Ocorreu um erro ao enviar o formulário. Tente novamente.",
         variant: "destructive"
       });
     } finally {
@@ -75,277 +82,162 @@ const FormularioDetalhado = () => {
     }
   };
 
-  const renderFormularioDesenvolvimentoWeb = () => (
-    <div className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Tipo do site *
-        </label>
-        <select
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={formData.tipoSite || ''}
-          onChange={(e) => setFormData({...formData, tipoSite: e.target.value})}
-          required
-        >
-          <option value="">Selecione o tipo</option>
-          <option value="institucional">Site Institucional</option>
-          <option value="loja">Loja Virtual</option>
-          <option value="landing-page">Landing Page</option>
-          <option value="blog">Blog</option>
-          <option value="outro">Outro</option>
-        </select>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Quantas páginas aproximadamente? *
-        </label>
-        <input
-          type="text"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={formData.quantidadePaginas || ''}
-          onChange={(e) => setFormData({...formData, quantidadePaginas: e.target.value})}
-          placeholder="Ex: 5 páginas, 10 páginas, etc."
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Precisa de painel administrativo?
-        </label>
-        <div className="flex space-x-4">
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="painelAdministrativo"
-              value="sim"
-              checked={formData.painelAdministrativo === true}
-              onChange={(e) => setFormData({...formData, painelAdministrativo: true})}
-              className="mr-2"
-            />
-            Sim
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="painelAdministrativo"
-              value="nao"
-              checked={formData.painelAdministrativo === false}
-              onChange={(e) => setFormData({...formData, painelAdministrativo: false})}
-              className="mr-2"
-            />
-            Não
-          </label>
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Integrações necessárias:
-        </label>
-        <div className="space-y-2">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={formData.integracoes?.whatsapp || false}
-              onChange={(e) => setFormData({
-                ...formData,
-                integracoes: {
-                  ...formData.integracoes,
-                  whatsapp: e.target.checked
-                }
-              })}
-              className="mr-2"
-            />
-            WhatsApp
-          </label>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={formData.integracoes?.pagamento || false}
-              onChange={(e) => setFormData({
-                ...formData,
-                integracoes: {
-                  ...formData.integracoes,
-                  pagamento: e.target.checked
-                }
-              })}
-              className="mr-2"
-            />
-            Sistema de Pagamento
-          </label>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={formData.integracoes?.email || false}
-              onChange={(e) => setFormData({
-                ...formData,
-                integracoes: {
-                  ...formData.integracoes,
-                  email: e.target.checked
-                }
-              })}
-              className="mr-2"
-            />
-            Email Marketing
-          </label>
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Exemplos de sites de referência
-        </label>
-        <Textarea
-          className="w-full"
-          value={formData.exemplosSites || ''}
-          onChange={(e) => setFormData({...formData, exemplosSites: e.target.value})}
-          placeholder="Cole links ou descreva sites que você gosta..."
-          rows={3}
-        />
-      </div>
-    </div>
-  );
-
-  const renderFormularioAppMobile = () => (
-    <div className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Qual plataforma? *
-        </label>
-        <select
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={formData.plataforma || ''}
-          onChange={(e) => setFormData({...formData, plataforma: e.target.value})}
-          required
-        >
-          <option value="">Selecione a plataforma</option>
-          <option value="android">Android</option>
-          <option value="ios">iOS</option>
-          <option value="ambos">Ambos</option>
-        </select>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Qual a função principal do app? *
-        </label>
-        <Textarea
-          className="w-full"
-          value={formData.funcaoPrincipal || ''}
-          onChange={(e) => setFormData({...formData, funcaoPrincipal: e.target.value})}
-          placeholder="Descreva a função principal do aplicativo..."
-          rows={3}
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Necessidades técnicas:
-        </label>
-        <div className="space-y-2">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={formData.integracaoBanco || false}
-              onChange={(e) => setFormData({...formData, integracaoBanco: e.target.checked})}
-              className="mr-2"
-            />
-            Integração com banco de dados
-          </label>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={formData.integracaoApi || false}
-              onChange={(e) => setFormData({...formData, integracaoApi: e.target.checked})}
-              className="mr-2"
-            />
-            Integração com API externa
-          </label>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={formData.loginNecessario || false}
-              onChange={(e) => setFormData({...formData, loginNecessario: e.target.checked})}
-              className="mr-2"
-            />
-            Sistema de login
-          </label>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={formData.funcionamentoOffline || false}
-              onChange={(e) => setFormData({...formData, funcionamentoOffline: e.target.checked})}
-              className="mr-2"
-            />
-            Funcionamento offline
-          </label>
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Exemplo de app similar
-        </label>
-        <input
-          type="text"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={formData.exemploApp || ''}
-          onChange={(e) => setFormData({...formData, exemploApp: e.target.value})}
-          placeholder="Ex: Instagram, Uber, iFood..."
-        />
-      </div>
-    </div>
-  );
-
-  const renderFormularioOutros = () => (
-    <div className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Descreva detalhadamente sua necessidade *
-        </label>
-        <Textarea
-          className="w-full"
-          value={formData.descricaoDetalhada || ''}
-          onChange={(e) => setFormData({...formData, descricaoDetalhada: e.target.value})}
-          placeholder="Descreva o que você precisa, objetivos, funcionalidades, etc..."
-          rows={6}
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Prazo desejado
-        </label>
-        <input
-          type="text"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={formData.prazoDesejado || ''}
-          onChange={(e) => setFormData({...formData, prazoDesejado: e.target.value})}
-          placeholder="Ex: 30 dias, 2 meses, urgente..."
-        />
-      </div>
-    </div>
-  );
-
-  const renderFormularioPorServico = () => {
+  const renderFormularioEspecifico = () => {
     if (!solicitacao) return null;
 
-    switch (solicitacao.servicoInteresse.toLowerCase()) {
-      case 'desenvolvimento web':
-        return renderFormularioDesenvolvimentoWeb();
-      case 'app mobile':
-        return renderFormularioAppMobile();
-      case 'design digital':
-      case 'cartão digital':
-      case 'vídeo corporativo':
-        return renderFormularioOutros();
-      default:
-        return renderFormularioOutros();
+    const tipoServico = solicitacao.servicoInteresse.toLowerCase();
+
+    // Desenvolvimento Web
+    if (tipoServico.includes('desenvolvimento') || tipoServico.includes('website') || tipoServico.includes('site')) {
+      return (
+        <div className="space-y-6">
+          <h3 className="text-lg font-semibold">Detalhes do Desenvolvimento Web</h3>
+          
+          <div>
+            <label className="block text-sm font-medium mb-2">Tipo do site</label>
+            <select 
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              value={respostas.tipoSite || ''}
+              onChange={(e) => setRespostas({...respostas, tipoSite: e.target.value})}
+              required
+            >
+              <option value="">Selecione o tipo</option>
+              <option value="institucional">Institucional</option>
+              <option value="loja">Loja Virtual</option>
+              <option value="landing-page">Landing Page</option>
+              <option value="blog">Blog</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Quantidade estimada de páginas</label>
+            <input
+              type="text"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="Ex: 5-10 páginas"
+              value={respostas.quantidadePaginas || ''}
+              onChange={(e) => setRespostas({...respostas, quantidadePaginas: e.target.value})}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Precisa de painel administrativo?</label>
+            <div className="flex space-x-4">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="painelAdmin"
+                  value="true"
+                  checked={respostas.painelAdministrativo === true}
+                  onChange={() => setRespostas({...respostas, painelAdministrativo: true})}
+                  className="mr-2"
+                />
+                Sim
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="painelAdmin"
+                  value="false"
+                  checked={respostas.painelAdministrativo === false}
+                  onChange={() => setRespostas({...respostas, painelAdministrativo: false})}
+                  className="mr-2"
+                />
+                Não
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Integrações necessárias</label>
+            <div className="space-y-2">
+              {['WhatsApp', 'Pagamento online', 'Email marketing', 'Outras'].map((integracao) => (
+                <label key={integracao} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={respostas.integracoes?.[integracao] || false}
+                    onChange={(e) => setRespostas({
+                      ...respostas,
+                      integracoes: {
+                        ...respostas.integracoes,
+                        [integracao]: e.target.checked
+                      }
+                    })}
+                    className="mr-2"
+                  />
+                  {integracao}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Exemplos de sites de referência</label>
+            <textarea
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="Cole aqui links de sites que você gosta do design/funcionalidade"
+              value={respostas.exemplosSites || ''}
+              onChange={(e) => setRespostas({...respostas, exemplosSites: e.target.value})}
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Prazo desejado</label>
+            <input
+              type="text"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="Ex: 30 dias, 2 meses"
+              value={respostas.prazoDesejado || ''}
+              onChange={(e) => setRespostas({...respostas, prazoDesejado: e.target.value})}
+            />
+          </div>
+        </div>
+      );
     }
+
+    // Formulário genérico para outros serviços
+    return (
+      <div className="space-y-6">
+        <h3 className="text-lg font-semibold">Detalhes do Serviço: {solicitacao.servicoInteresse}</h3>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2">Descreva detalhadamente sua necessidade</label>
+          <textarea
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            placeholder="Explique com detalhes o que você precisa, suas expectativas, referências, etc."
+            value={respostas.descricaoDetalhada || ''}
+            onChange={(e) => setRespostas({...respostas, descricaoDetalhada: e.target.value})}
+            rows={6}
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Prazo desejado</label>
+          <input
+            type="text"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            placeholder="Ex: 15 dias, 1 mês"
+            value={respostas.prazoDesejado || ''}
+            onChange={(e) => setRespostas({...respostas, prazoDesejado: e.target.value})}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Observações adicionais</label>
+          <textarea
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            placeholder="Alguma informação adicional importante"
+            value={respostas.observacoes || ''}
+            onChange={(e) => setRespostas({...respostas, observacoes: e.target.value})}
+            rows={3}
+          />
+        </div>
+      </div>
+    );
   };
 
   if (loading) {
@@ -363,13 +255,9 @@ const FormularioDetalhado = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-800 mb-2">
             Formulário não encontrado
           </h1>
-          <p className="text-gray-600 mb-6">
-            O formulário solicitado não foi encontrado ou já foi processado.
-          </p>
           <button
             onClick={() => navigate('/')}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -384,53 +272,51 @@ const FormularioDetalhado = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-2xl">
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">
-              Detalhes do Orçamento
+      <div className="container mx-auto px-4 max-w-4xl">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-gray-800">
+              Formulário Detalhado
             </h1>
-            <p className="text-gray-600">
-              Olá {solicitacao.nomeCliente}! Para prepararmos um orçamento personalizado para <strong>{solicitacao.servicoInteresse}</strong>, precisamos de algumas informações adicionais.
+            <button
+              onClick={() => navigate('/')}
+              className="inline-flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <ArrowLeft size={16} className="mr-2" />
+              Voltar
+            </button>
+          </div>
+
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h3 className="font-semibold text-blue-900 mb-2">
+              Informações da Solicitação
+            </h3>
+            <p className="text-blue-800">
+              <strong>Cliente:</strong> {solicitacao.nomeCliente}<br />
+              <strong>Serviço:</strong> {solicitacao.servicoInteresse}
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {renderFormularioPorServico()}
+          <form onSubmit={handleSubmit}>
+            {renderFormularioEspecifico()}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Observações adicionais
-              </label>
-              <Textarea
-                className="w-full"
-                value={formData.observacoes || ''}
-                onChange={(e) => setFormData({...formData, observacoes: e.target.value})}
-                placeholder="Alguma informação adicional que considere importante..."
-                rows={3}
-              />
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                type="button"
-                onClick={() => navigate('/')}
-                className="flex-1 flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <ArrowLeft size={16} className="mr-2" />
-                Voltar
-              </button>
+            <div className="mt-8 flex justify-end">
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {submitting ? (
-                  <Loader2 size={16} className="mr-2 animate-spin" />
+                  <>
+                    <Loader2 size={16} className="mr-2 animate-spin" />
+                    Enviando...
+                  </>
                 ) : (
-                  <Send size={16} className="mr-2" />
+                  <>
+                    <Send size={16} className="mr-2" />
+                    Enviar Detalhes
+                  </>
                 )}
-                {submitting ? 'Enviando...' : 'Enviar Detalhes'}
               </button>
             </div>
           </form>

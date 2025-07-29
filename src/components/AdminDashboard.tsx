@@ -74,6 +74,7 @@ const AdminDashboard = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case '': return 'bg-gray-100 text-gray-800';
       case 'solicitacao_recebida': return 'bg-yellow-100 text-yellow-800';
       case 'aguardando_detalhamento': return 'bg-blue-100 text-blue-800';
       case 'aguardando_orcamento': return 'bg-purple-100 text-purple-800';
@@ -86,6 +87,7 @@ const AdminDashboard = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
+      case '': return <Clock size={16} />;
       case 'solicitacao_recebida': return <Clock size={16} />;
       case 'aguardando_detalhamento': return <Eye size={16} />;
       case 'aguardando_orcamento': return <Clock size={16} />;
@@ -93,6 +95,19 @@ const AdminDashboard = () => {
       case 'orcamento_enviado': return <CheckCircle size={16} />;
       case 'finalizado': return <CheckCircle size={16} />;
       default: return <Clock size={16} />;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case '': return 'Aguardando';
+      case 'solicitacao_recebida': return 'Solicitação Recebida';
+      case 'aguardando_detalhamento': return 'Aguardando Detalhamento';
+      case 'aguardando_orcamento': return 'Aguardando Orçamento';
+      case 'orcamento_disponivel': return 'Orçamento Disponível';
+      case 'orcamento_enviado': return 'Orçamento Enviado';
+      case 'finalizado': return 'Finalizado';
+      default: return 'Status Desconhecido';
     }
   };
 
@@ -283,7 +298,7 @@ const AdminDashboard = () => {
                         </h3>
                         <span className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(solicitacao.statusSolicitacao)}`}>
                           {getStatusIcon(solicitacao.statusSolicitacao)}
-                          <span className="capitalize">{solicitacao.statusSolicitacao.replace('_', ' ')}</span>
+                          <span>{getStatusLabel(solicitacao.statusSolicitacao)}</span>
                         </span>
                       </div>
                       
@@ -314,6 +329,7 @@ const AdminDashboard = () => {
                         value={solicitacao.statusSolicitacao}
                         onChange={(e) => atualizarStatus(solicitacao.id, e.target.value as SolicitacaoOrcamento['statusSolicitacao'])}
                       >
+                        <option value="">Aguardando</option>
                         <option value="solicitacao_recebida">Solicitação Recebida</option>
                         <option value="aguardando_detalhamento">Aguardando Detalhamento</option>
                         <option value="aguardando_orcamento">Aguardando Orçamento</option>

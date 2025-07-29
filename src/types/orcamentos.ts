@@ -6,7 +6,7 @@ export interface SolicitacaoOrcamento {
   whatsappCliente: string;
   servicoInteresse: string;
   mensagem: string;
-  statusSolicitacao: 'solicitacao_recebida' | 'aguardando_detalhamento' | 'aguardando_orcamento' | 'orcamento_disponivel' | 'orcamento_enviado' | 'finalizado';
+  statusSolicitacao: '' | 'solicitacao_recebida' | 'aguardando_detalhamento' | 'aguardando_orcamento' | 'orcamento_disponivel' | 'orcamento_enviado' | 'finalizado';
   dataCreacao: Date;
   dataUltimaAtualizacao: Date;
   clienteId?: string;
