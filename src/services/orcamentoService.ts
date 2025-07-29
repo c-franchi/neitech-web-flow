@@ -1,4 +1,3 @@
-
 import { 
   collection, 
   addDoc, 
@@ -258,6 +257,171 @@ export class OrcamentoService {
     } catch (error) {
       console.error('Erro ao limpar orçamentos expirados:', error);
       throw error;
+    }
+  }
+
+  // Gerar token de acesso seguro
+  static gerarAccessToken(): string {
+    return Math.random().toString(36).substr(2, 16) + Date.now().toString(36);
+  }
+
+  // Criar solicitação de orçamento com novo campo
+  static async criarSolicitacao(dados: Omit<SolicitacaoOrcamento, 'id' | 'dataCreacao' | 'dataUltimaAtualizacao' | 'statusSolicitacao' | 'accessToken'>): Promise<string> {
+    try {
+      const accessToken = this.gerarAccessToken();
+      
+      const solicitacao = {
+        ...dados,
+        statusSolicitacao: 'orcamento_recebido' as const,
+        accessToken,
+        dataCreacao: Timestamp.now(),
+        dataUltimaAtualizacao: Timestamp.now()
+      };
+
+      const docRef = await addDoc(collection(db, 'solicitacoes_orcamento'), solicitacao);
+      
+      // Criar ou atualizar usuário cliente
+      await this.criarOuAtualizarCliente({
+        nome: dados.nomeCliente,
+        email: dados.emailCliente,
+        whatsapp: dados.whatsappCliente
+      });
+
+      // Registrar histórico
+      await this.registrarHistorico({
+        clienteId: dados.emailCliente,
+        tipoInteracao: 'solicitacao_criada',
+        descricao: `Solicitação de orçamento criada para o serviço: ${dados.servicoInteresse}`,
+        dataInteracao: new Date()
+      });
+
+      // Enviar mensagem WhatsApp
+      await this.enviarMensagemWhatsApp(dados.whatsappCliente, dados.nomeCliente, dados.servicoInteresse, docRef.id);
+
+      return docRef.id;
+    } catch (error) {
+      console.error('Erro ao criar solicitação:', error);
+      throw error;
+    }
+  }
+
+  // Salvar detalhes do formulário específico
+  static async salvarDetalhesFormulario(solicitacaoId: string, tipoServico: string, respostas: any): Promise<void> {
+    try {
+      await addDoc(collection(db, 'detalhes_formulario'), {
+        solicitacaoId,
+        tipoServico,
+        respostas,
+        dataPreenchimento: Timestamp.now()
+      });
+
+      // Registrar histórico
+      await this.registrarHistorico({
+        clienteId: solicitacaoId,
+        tipoInteracao: 'formulario_detalhado',
+        descricao: `Formulário detalhado preenchido para o serviço: ${tipoServico}`,
+        dataInteracao: new Date()
+      });
+    } catch (error) {
+      console.error('Erro ao salvar detalhes do formulário:', error);
+      throw error;
+    }
+  }
+
+  // Buscar detalhes do formulário
+  static async buscarDetalhesFormulario(solicitacaoId: string): Promise<any> {
+    try {
+      const q = query(
+        collection(db, 'detalhes_formulario'),
+        where('solicitacaoId', '==', solicitacaoId)
+      );
+      
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        return {
+          id: doc.id,
+          ...doc.data(),
+          dataPreenchimento: doc.data().dataPreenchimento.toDate()
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('Erro ao buscar detalhes do formulário:', error);
+      throw error;
+    }
+  }
+
+  // Enviar mensagem WhatsApp (simulação - em produção usar API do WhatsApp)
+  private static async enviarMensagemWhatsApp(whatsapp: string, nome: string, servico: string, solicitacaoId: string): Promise<void> {
+    try {
+      console.log('Enviando mensagem WhatsApp para:', whatsapp);
+      
+      const mensagem = `Olá ${nome}! Recebemos sua solicitação para o serviço: ${servico}. 
+
+Clique no link abaixo para preencher mais informações específicas e prepararmos seu orçamento personalizado:
+
+https://neitechweb.vercel.app/formulario/${solicitacaoId}
+
+Este link é válido por 7 dias. Caso tenha dúvidas, entre em contato conosco!
+
+Atenciosamente,
+Equipe NeiTech`;
+
+      // Em produção, aqui seria feita a integração com a API do WhatsApp
+      // Para demonstração, vamos apenas logar a mensagem
+      console.log('Mensagem WhatsApp:', mensagem);
+      
+      // Registrar no histórico
+      await this.registrarHistorico({
+        clienteId: whatsapp,
+        tipoInteracao: 'whatsapp_enviado',
+        descricao: `Mensagem WhatsApp enviada com link do formulário detalhado`,
+        dataInteracao: new Date()
+      });
+    } catch (error) {
+      console.error('Erro ao enviar mensagem WhatsApp:', error);
+      throw error;
+    }
+  }
+
+  // Notificar cliente sobre orçamento pronto
+  static async notificarOrcamentoPronto(solicitacao: SolicitacaoOrcamento): Promise<void> {
+    try {
+      const mensagem = `${solicitacao.nomeCliente}, seu orçamento está pronto! 
+
+Acesse o link abaixo para visualizar ou fazer o download:
+
+https://neitechweb.vercel.app/orcamento/${solicitacao.id}?token=${solicitacao.accessToken}
+
+⚠️ *Importante:* Este orçamento ficará disponível por 5 dias corridos. Após este período será automaticamente removido do sistema.
+
+Atenciosamente,
+Equipe NeiTech`;
+
+      console.log('Mensagem orçamento pronto:', mensagem);
+      
+      // Registrar no histórico
+      await this.registrarHistorico({
+        clienteId: solicitacao.emailCliente,
+        tipoInteracao: 'orcamento_enviado',
+        descricao: `Notificação de orçamento pronto enviada via WhatsApp`,
+        dataInteracao: new Date()
+      });
+    } catch (error) {
+      console.error('Erro ao notificar orçamento pronto:', error);
+      throw error;
+    }
+  }
+
+  // Validar token de acesso
+  static async validarAccessToken(id: string, token: string): Promise<boolean> {
+    try {
+      const solicitacao = await this.buscarSolicitacaoPorId(id);
+      return solicitacao?.accessToken === token;
+    } catch (error) {
+      console.error('Erro ao validar token:', error);
+      return false;
     }
   }
 }
