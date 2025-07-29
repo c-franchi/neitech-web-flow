@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Clock, CheckCircle, XCircle, Eye, Plus, Search, Upload, FileText, ExternalLink } from 'lucide-react';
 import { OrcamentoService } from '@/services/orcamentoService';
@@ -75,24 +74,24 @@ const AdminDashboard = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'orcamento_recebido': return 'bg-yellow-100 text-yellow-800';
-      case 'aguardando_orcamento': return 'bg-blue-100 text-blue-800';
+      case 'solicitacao_recebida': return 'bg-yellow-100 text-yellow-800';
+      case 'aguardando_detalhamento': return 'bg-blue-100 text-blue-800';
+      case 'aguardando_orcamento': return 'bg-purple-100 text-purple-800';
       case 'orcamento_disponivel': return 'bg-green-100 text-green-800';
-      case 'orcamento_enviado': return 'bg-purple-100 text-purple-800';
-      case 'aprovado': return 'bg-green-100 text-green-800';
-      case 'rejeitado': return 'bg-red-100 text-red-800';
+      case 'orcamento_enviado': return 'bg-green-100 text-green-800';
+      case 'finalizado': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'orcamento_recebido': return <Clock size={16} />;
-      case 'aguardando_orcamento': return <Eye size={16} />;
+      case 'solicitacao_recebida': return <Clock size={16} />;
+      case 'aguardando_detalhamento': return <Eye size={16} />;
+      case 'aguardando_orcamento': return <Clock size={16} />;
       case 'orcamento_disponivel': return <FileText size={16} />;
-      case 'orcamento_enviado': return <Plus size={16} />;
-      case 'aprovado': return <CheckCircle size={16} />;
-      case 'rejeitado': return <XCircle size={16} />;
+      case 'orcamento_enviado': return <CheckCircle size={16} />;
+      case 'finalizado': return <CheckCircle size={16} />;
       default: return <Clock size={16} />;
     }
   };
@@ -153,9 +152,9 @@ const AdminDashboard = () => {
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Recebidos</p>
+                <p className="text-sm text-gray-600">Recebidas</p>
                 <p className="text-2xl font-bold text-yellow-600">
-                  {solicitacoes.filter(s => s.statusSolicitacao === 'orcamento_recebido').length}
+                  {solicitacoes.filter(s => s.statusSolicitacao === 'solicitacao_recebida').length}
                 </p>
               </div>
               <div className="p-3 bg-yellow-100 rounded-full">
@@ -167,13 +166,27 @@ const AdminDashboard = () => {
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Aguardando</p>
+                <p className="text-sm text-gray-600">Aguard. Detalhe</p>
                 <p className="text-2xl font-bold text-blue-600">
-                  {solicitacoes.filter(s => s.statusSolicitacao === 'aguardando_orcamento').length}
+                  {solicitacoes.filter(s => s.statusSolicitacao === 'aguardando_detalhamento').length}
                 </p>
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
                 <Eye className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Aguard. Orçamento</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {solicitacoes.filter(s => s.statusSolicitacao === 'aguardando_orcamento').length}
+                </p>
+              </div>
+              <div className="p-3 bg-purple-100 rounded-full">
+                <Clock className="h-6 w-6 text-purple-600" />
               </div>
             </div>
           </div>
@@ -195,27 +208,13 @@ const AdminDashboard = () => {
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Enviados</p>
-                <p className="text-2xl font-bold text-purple-600">
-                  {solicitacoes.filter(s => s.statusSolicitacao === 'orcamento_enviado').length}
+                <p className="text-sm text-gray-600">Finalizados</p>
+                <p className="text-2xl font-bold text-gray-600">
+                  {solicitacoes.filter(s => s.statusSolicitacao === 'finalizado').length}
                 </p>
               </div>
-              <div className="p-3 bg-purple-100 rounded-full">
-                <Plus className="h-6 w-6 text-purple-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Aprovados</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {solicitacoes.filter(s => s.statusSolicitacao === 'aprovado').length}
-                </p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-full">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+              <div className="p-3 bg-gray-100 rounded-full">
+                <CheckCircle className="h-6 w-6 text-gray-600" />
               </div>
             </div>
           </div>
@@ -249,12 +248,12 @@ const AdminDashboard = () => {
                 onChange={(e) => setFiltroStatus(e.target.value)}
               >
                 <option value="todas">Todas</option>
-                <option value="orcamento_recebido">Orçamento Recebido</option>
+                <option value="solicitacao_recebida">Solicitação Recebida</option>
+                <option value="aguardando_detalhamento">Aguardando Detalhamento</option>
                 <option value="aguardando_orcamento">Aguardando Orçamento</option>
                 <option value="orcamento_disponivel">Orçamento Disponível</option>
                 <option value="orcamento_enviado">Orçamento Enviado</option>
-                <option value="aprovado">Aprovado</option>
-                <option value="rejeitado">Rejeitado</option>
+                <option value="finalizado">Finalizado</option>
               </select>
             </div>
           </div>
@@ -307,13 +306,6 @@ const AdminDashboard = () => {
                         <strong className="text-sm text-gray-700">Mensagem:</strong>
                         <p className="text-sm text-gray-600 mt-1">{solicitacao.mensagem}</p>
                       </div>
-                      
-                      {solicitacao.detalhesNecessidade && (
-                        <div className="mt-3">
-                          <strong className="text-sm text-gray-700">Detalhes da Necessidade:</strong>
-                          <p className="text-sm text-gray-600 mt-1">{solicitacao.detalhesNecessidade}</p>
-                        </div>
-                      )}
                     </div>
                     
                     <div className="flex flex-col space-y-2 ml-4">
@@ -322,16 +314,16 @@ const AdminDashboard = () => {
                         value={solicitacao.statusSolicitacao}
                         onChange={(e) => atualizarStatus(solicitacao.id, e.target.value as SolicitacaoOrcamento['statusSolicitacao'])}
                       >
-                        <option value="orcamento_recebido">Orçamento Recebido</option>
+                        <option value="solicitacao_recebida">Solicitação Recebida</option>
+                        <option value="aguardando_detalhamento">Aguardando Detalhamento</option>
                         <option value="aguardando_orcamento">Aguardando Orçamento</option>
                         <option value="orcamento_disponivel">Orçamento Disponível</option>
                         <option value="orcamento_enviado">Orçamento Enviado</option>
-                        <option value="aprovado">Aprovado</option>
-                        <option value="rejeitado">Rejeitado</option>
+                        <option value="finalizado">Finalizado</option>
                       </select>
                       
                       {/* Botões de ação baseados no status */}
-                      {(solicitacao.statusSolicitacao === 'orcamento_recebido' || solicitacao.statusSolicitacao === 'aguardando_orcamento') && (
+                      {(solicitacao.statusSolicitacao === 'aguardando_orcamento') && (
                         <button
                           onClick={() => abrirUploadModal(solicitacao)}
                           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm flex items-center space-x-1"

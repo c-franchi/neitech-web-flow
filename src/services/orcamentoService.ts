@@ -24,7 +24,7 @@ export class OrcamentoService {
       
       const solicitacao = {
         ...dados,
-        statusSolicitacao: 'orcamento_recebido' as const,
+        statusSolicitacao: 'solicitacao_recebida' as const,
         accessToken,
         dataCreacao: Timestamp.now(),
         dataUltimaAtualizacao: Timestamp.now()
@@ -42,13 +42,14 @@ export class OrcamentoService {
       // Registrar histórico
       await this.registrarHistorico({
         clienteId: dados.emailCliente,
+        solicitacaoId: docRef.id,
         tipoInteracao: 'solicitacao_criada',
         descricao: `Solicitação de orçamento criada para o serviço: ${dados.servicoInteresse}`,
         dataInteracao: new Date()
       });
 
-      // Enviar mensagem WhatsApp
-      await this.enviarMensagemWhatsApp(dados.whatsappCliente, dados.nomeCliente, dados.servicoInteresse, docRef.id);
+      // Enviar mensagem WhatsApp inicial
+      await this.enviarMensagemWhatsAppInicial(dados.whatsappCliente, dados.nomeCliente, dados.servicoInteresse, docRef.id);
 
       return docRef.id;
     } catch (error) {
@@ -83,7 +84,7 @@ export class OrcamentoService {
     try {
       const todasSolicitacoes = await this.buscarTodasSolicitacoes();
       return todasSolicitacoes.filter(solicitacao => 
-        solicitacao.statusSolicitacao === 'orcamento_recebido' || 
+        solicitacao.statusSolicitacao === 'solicitacao_recebida' || 
         solicitacao.statusSolicitacao === 'aguardando_orcamento'
       );
     } catch (error) {
@@ -99,6 +100,23 @@ export class OrcamentoService {
       await updateDoc(docRef, {
         statusSolicitacao: novoStatus,
         dataUltimaAtualizacao: Timestamp.now()
+      });
+
+      // Se mudou para "aguardando_detalhamento", enviar mensagem para formulário
+      if (novoStatus === 'aguardando_detalhamento') {
+        const solicitacao = await this.buscarSolicitacaoPorId(id);
+        if (solicitacao) {
+          await this.enviarMensagemFormularioDetalhado(solicitacao);
+        }
+      }
+
+      // Registrar histórico da mudança de status
+      await this.registrarHistorico({
+        clienteId: id,
+        solicitacaoId: id,
+        tipoInteracao: 'alteracao_status',
+        descricao: `Status alterado para: ${novoStatus}`,
+        dataInteracao: new Date()
       });
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
@@ -178,10 +196,17 @@ export class OrcamentoService {
 
       await this.registrarHistorico({
         clienteId: solicitacaoId,
+        solicitacaoId: solicitacaoId,
         tipoInteracao: 'orcamento_enviado',
         descricao: `Orçamento em PDF anexado: ${dados.nomeArquivoPdf}`,
         dataInteracao: new Date()
       });
+
+      // Enviar mensagem WhatsApp sobre orçamento pronto
+      const solicitacao = await this.buscarSolicitacaoPorId(solicitacaoId);
+      if (solicitacao) {
+        await this.notificarOrcamentoPronto(solicitacao);
+      }
     } catch (error) {
       console.error('Erro ao anexar orçamento:', error);
       throw error;
@@ -230,13 +255,14 @@ export class OrcamentoService {
         await updateDoc(docRef, {
           pdfUrl: null,
           nomeArquivoPdf: null,
-          statusSolicitacao: 'orcamento_recebido',
+          statusSolicitacao: 'solicitacao_recebida',
           dataUltimaAtualizacao: Timestamp.now()
         });
 
         // Registrar no histórico
         await this.registrarHistorico({
           clienteId: id,
+          solicitacaoId: id,
           tipoInteracao: 'orcamento_expirado',
           descricao: 'Orçamento removido automaticamente após 5 dias',
           dataInteracao: new Date()
@@ -285,9 +311,13 @@ export class OrcamentoService {
         dataPreenchimento: Timestamp.now()
       });
 
+      // Atualizar status da solicitação
+      await this.atualizarStatusSolicitacao(solicitacaoId, 'aguardando_orcamento');
+
       // Registrar histórico
       await this.registrarHistorico({
         clienteId: solicitacaoId,
+        solicitacaoId: solicitacaoId,
         tipoInteracao: 'formulario_detalhado',
         descricao: `Formulário detalhado preenchido para o serviço: ${tipoServico}`,
         dataInteracao: new Date()
@@ -322,35 +352,64 @@ export class OrcamentoService {
     }
   }
 
-  // Enviar mensagem WhatsApp (simulação - em produção usar API do WhatsApp)
-  private static async enviarMensagemWhatsApp(whatsapp: string, nome: string, servico: string, solicitacaoId: string): Promise<void> {
+  // Enviar mensagem WhatsApp inicial
+  private static async enviarMensagemWhatsAppInicial(whatsapp: string, nome: string, servico: string, solicitacaoId: string): Promise<void> {
     try {
-      console.log('Enviando mensagem WhatsApp para:', whatsapp);
+      console.log('Enviando mensagem WhatsApp inicial para:', whatsapp);
       
-      const mensagem = `Olá ${nome}! Recebemos sua solicitação para o serviço: ${servico}. 
+      const mensagem = `Olá ${nome}! Recebemos sua solicitação de orçamento para ${servico}. 
 
-Clique no link abaixo para preencher mais informações específicas e prepararmos seu orçamento personalizado:
+Em breve você poderá acompanhar e detalhar seu pedido.
 
-https://neitechweb.vercel.app/formulario/${solicitacaoId}
-
-Este link é válido por 7 dias. Caso tenha dúvidas, entre em contato conosco!
+Link para acompanhar: https://neitechweb.vercel.app/status/${solicitacaoId}
 
 Atenciosamente,
 Equipe NeiTech`;
 
       // Em produção, aqui seria feita a integração com a API do WhatsApp
-      // Para demonstração, vamos apenas logar a mensagem
-      console.log('Mensagem WhatsApp:', mensagem);
+      console.log('Mensagem WhatsApp inicial:', mensagem);
       
       // Registrar no histórico
       await this.registrarHistorico({
         clienteId: whatsapp,
+        solicitacaoId: solicitacaoId,
+        tipoInteracao: 'whatsapp_enviado',
+        descricao: `Mensagem WhatsApp inicial enviada`,
+        dataInteracao: new Date()
+      });
+    } catch (error) {
+      console.error('Erro ao enviar mensagem WhatsApp inicial:', error);
+      throw error;
+    }
+  }
+
+  // Enviar mensagem WhatsApp para formulário detalhado
+  private static async enviarMensagemFormularioDetalhado(solicitacao: SolicitacaoOrcamento): Promise<void> {
+    try {
+      console.log('Enviando mensagem WhatsApp formulário detalhado para:', solicitacao.whatsappCliente);
+      
+      const mensagem = `Olá ${solicitacao.nomeCliente}! Para podermos elaborar seu orçamento com precisão, acesse o link abaixo e preencha um formulário mais detalhado de acordo com o serviço escolhido:
+
+https://neitechweb.vercel.app/formulario/${solicitacao.id}
+
+Este link é válido por 7 dias.
+
+Atenciosamente,
+Equipe NeiTech`;
+
+      // Em produção, aqui seria feita a integração com a API do WhatsApp
+      console.log('Mensagem WhatsApp formulário:', mensagem);
+      
+      // Registrar no histórico
+      await this.registrarHistorico({
+        clienteId: solicitacao.whatsappCliente,
+        solicitacaoId: solicitacao.id,
         tipoInteracao: 'whatsapp_enviado',
         descricao: `Mensagem WhatsApp enviada com link do formulário detalhado`,
         dataInteracao: new Date()
       });
     } catch (error) {
-      console.error('Erro ao enviar mensagem WhatsApp:', error);
+      console.error('Erro ao enviar mensagem WhatsApp formulário:', error);
       throw error;
     }
   }
@@ -360,9 +419,7 @@ Equipe NeiTech`;
     try {
       const mensagem = `${solicitacao.nomeCliente}, seu orçamento está pronto! 
 
-Acesse o link abaixo para visualizar ou fazer o download:
-
-https://neitechweb.vercel.app/orcamento/${solicitacao.id}?token=${solicitacao.accessToken}
+Acesse agora: https://neitechweb.vercel.app/orcamento/${solicitacao.id}?token=${solicitacao.accessToken}
 
 ⚠️ *Importante:* Este orçamento ficará disponível por 5 dias corridos. Após este período será automaticamente removido do sistema.
 
@@ -374,6 +431,7 @@ Equipe NeiTech`;
       // Registrar no histórico
       await this.registrarHistorico({
         clienteId: solicitacao.emailCliente,
+        solicitacaoId: solicitacao.id,
         tipoInteracao: 'orcamento_enviado',
         descricao: `Notificação de orçamento pronto enviada via WhatsApp`,
         dataInteracao: new Date()

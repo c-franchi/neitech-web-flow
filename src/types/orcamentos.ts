@@ -6,14 +6,14 @@ export interface SolicitacaoOrcamento {
   whatsappCliente: string;
   servicoInteresse: string;
   mensagem: string;
-  detalhesNecessidade: string;
-  statusSolicitacao: 'orcamento_recebido' | 'aguardando_orcamento' | 'orcamento_disponivel' | 'orcamento_enviado' | 'aprovado' | 'rejeitado';
+  statusSolicitacao: 'solicitacao_recebida' | 'aguardando_detalhamento' | 'aguardando_orcamento' | 'orcamento_disponivel' | 'orcamento_enviado' | 'finalizado';
   dataCreacao: Date;
   dataUltimaAtualizacao: Date;
   clienteId?: string;
   pdfUrl?: string;
   nomeArquivoPdf?: string;
   accessToken?: string;
+  dataExpiracao?: Date;
 }
 
 export interface DetalhesFormulario {
@@ -36,60 +36,69 @@ export interface FormularioDesenvolvimentoWeb {
     email: boolean;
     outros: string;
   };
+  dominioHospedagem: boolean;
   exemplosSites: string;
+  prazoDesejado: string;
   observacoes?: string;
 }
 
 export interface FormularioAppMobile {
   plataforma: 'android' | 'ios' | 'ambos';
   funcaoPrincipal: string;
+  loginUsuario: boolean;
   integracaoBanco: boolean;
   integracaoApi: boolean;
-  loginNecessario: boolean;
   funcionamentoOffline: boolean;
+  quantidadeTelas: string;
   exemploApp: string;
+  prazoEsperado: string;
   observacoes?: string;
 }
 
 export interface FormularioDesignDigital {
-  tipoDesign: 'logo' | 'banner' | 'redes-sociais' | 'identidade-visual' | 'outro';
-  coresPreferidas: string;
-  textosIdeias: string;
-  estiloReferencia: string;
+  tipoDesign: 'logo' | 'redes-sociais' | 'identidade-visual' | 'banners' | 'outro';
+  paletaCores: string;
+  referenciaVisual: string;
+  frasesSlogan: string;
+  estiloDesejado: 'moderno' | 'classico' | 'elegante' | 'minimalista' | 'colorido';
+  arquivoReferenciaUrl?: string;
   observacoes?: string;
 }
 
 export interface FormularioCartaoDigital {
   nome: string;
   cargo: string;
-  empresa: string;
   whatsapp: string;
   email: string;
-  endereco: string;
   redesSociais: {
     instagram: string;
     linkedin: string;
     facebook: string;
     outros: string;
   };
+  localizacao: string;
+  mapaRota: boolean;
+  estiloVisual: 'moderno' | 'elegante' | 'informal' | 'criativo';
+  linkPagamento: boolean;
   logoUrl?: string;
-  estiloDesejado: string;
+  qrCodeCompartilhar: boolean;
   observacoes?: string;
 }
 
 export interface FormularioVideoCorporativo {
-  duracao: '30s' | '1min' | '2min' | '3min' | '5min' | 'mais';
-  objetivo: 'institucional' | 'produto' | 'servico' | 'treinamento' | 'outro';
+  objetivo: 'institucional' | 'produto' | 'equipe' | 'evento' | 'outro';
+  duracao: string;
   possuiRoteiro: boolean;
   possuiGravacoes: boolean;
-  descricaoObjetivo: string;
+  narracaoLocucao: boolean;
+  estiloVideo: 'dinamico' | 'corporativo' | 'emocional' | 'divertido';
   observacoes?: string;
 }
 
 export interface FormularioOutros {
   descricaoDetalhada: string;
   arquivoReferenciaUrl?: string;
-  prazoDesejado: string;
+  sugestoesExpectativas: string;
   observacoes?: string;
 }
 
@@ -131,8 +140,9 @@ export interface UsuarioCliente {
 export interface HistoricoInteracao {
   id: string;
   clienteId: string;
+  solicitacaoId?: string;
   orcamentoId?: string;
-  tipoInteracao: 'solicitacao_criada' | 'orcamento_enviado' | 'orcamento_visualizado' | 'orcamento_aprovado' | 'orcamento_rejeitado' | 'alteracao_solicitada' | 'orcamento_expirado' | 'formulario_detalhado' | 'whatsapp_enviado';
+  tipoInteracao: 'solicitacao_criada' | 'orcamento_enviado' | 'orcamento_visualizado' | 'orcamento_aprovado' | 'orcamento_rejeitado' | 'alteracao_solicitada' | 'orcamento_expirado' | 'formulario_detalhado' | 'whatsapp_enviado' | 'alteracao_status';
   descricao: string;
   dataInteracao: Date;
   dadosAdicionais?: any;
