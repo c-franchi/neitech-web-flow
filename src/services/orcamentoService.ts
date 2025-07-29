@@ -548,4 +548,71 @@ Equipe NeiTech`;
       return false;
     }
   }
+
+  // Excluir solicitação completamente
+  static async excluirSolicitacao(id: string): Promise<void> {
+    try {
+      console.log(`Iniciando exclusão da solicitação ${id}`);
+      
+      // Buscar dados da solicitação
+      const solicitacao = await this.buscarSolicitacaoPorId(id);
+      
+      if (!solicitacao) {
+        throw new Error('Solicitação não encontrada');
+      }
+
+      // 1. Excluir arquivo PDF do Storage (se existir)
+      if (solicitacao.pdfUrl && solicitacao.nomeArquivoPdf) {
+        try {
+          const storageRef = ref(storage, `orcamentos/${id}/${solicitacao.nomeArquivoPdf}`);
+          await deleteObject(storageRef);
+          console.log('Arquivo PDF excluído do Storage');
+        } catch (storageError) {
+          console.error('Erro ao excluir arquivo do Storage:', storageError);
+        }
+      }
+
+      // 2. Excluir detalhes do formulário
+      try {
+        const qFormulario = query(
+          collection(db, 'detalhes_formulario'),
+          where('solicitacaoId', '==', id)
+        );
+        const formularioSnapshot = await getDocs(qFormulario);
+        
+        for (const docFormulario of formularioSnapshot.docs) {
+          await deleteDoc(docFormulario.ref);
+        }
+        console.log('Detalhes do formulário excluídos');
+      } catch (formularioError) {
+        console.error('Erro ao excluir detalhes do formulário:', formularioError);
+      }
+
+      // 3. Excluir histórico de interações
+      try {
+        const qHistorico = query(
+          collection(db, 'historico_interacoes'),
+          where('solicitacaoId', '==', id)
+        );
+        const historicoSnapshot = await getDocs(qHistorico);
+        
+        for (const docHistorico of historicoSnapshot.docs) {
+          await deleteDoc(docHistorico.ref);
+        }
+        console.log('Histórico de interações excluído');
+      } catch (historicoError) {
+        console.error('Erro ao excluir histórico:', historicoError);
+      }
+
+      // 4. Excluir a solicitação principal
+      const docRef = doc(db, 'solicitacoes_orcamento', id);
+      await deleteDoc(docRef);
+      console.log('Solicitação principal excluída');
+
+      console.log(`✅ Solicitação ${id} excluída completamente`);
+    } catch (error) {
+      console.error('Erro ao excluir solicitação:', error);
+      throw error;
+    }
+  }
 }

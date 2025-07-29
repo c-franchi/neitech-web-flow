@@ -1,11 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
-import { Clock, CheckCircle, XCircle, Eye, Plus, Search, Upload, FileText, ExternalLink, MessageCircle } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, Eye, Plus, Search, Upload, FileText, ExternalLink, MessageCircle, Trash2, Info } from 'lucide-react';
 import { OrcamentoService } from '@/services/orcamentoService';
 import { SolicitacaoOrcamento } from '@/types/orcamentos';
 import { useToast } from '@/hooks/use-toast';
 import UploadOrcamento from './UploadOrcamento';
 import VisualizarOrcamento from './VisualizarOrcamento';
+import VisualizarDetalhes from './VisualizarDetalhes';
+import ConfirmarExclusao from './ConfirmarExclusao';
 
 const AdminDashboard = () => {
   const [solicitacoes, setSolicitacoes] = useState<SolicitacaoOrcamento[]>([]);
@@ -14,6 +15,8 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [visualizarModalOpen, setVisualizarModalOpen] = useState(false);
+  const [detalhesModalOpen, setDetalhesModalOpen] = useState(false);
+  const [exclusaoModalOpen, setExclusaoModalOpen] = useState(false);
   const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState<SolicitacaoOrcamento | null>(null);
   const { toast } = useToast();
 
@@ -91,6 +94,39 @@ const AdminDashboard = () => {
   const abrirVisualizarModal = (solicitacao: SolicitacaoOrcamento) => {
     setSolicitacaoSelecionada(solicitacao);
     setVisualizarModalOpen(true);
+  };
+
+  const abrirDetalhesModal = (solicitacao: SolicitacaoOrcamento) => {
+    setSolicitacaoSelecionada(solicitacao);
+    setDetalhesModalOpen(true);
+  };
+
+  const abrirExclusaoModal = (solicitacao: SolicitacaoOrcamento) => {
+    setSolicitacaoSelecionada(solicitacao);
+    setExclusaoModalOpen(true);
+  };
+
+  const confirmarExclusao = async () => {
+    if (!solicitacaoSelecionada) return;
+
+    try {
+      await OrcamentoService.excluirSolicitacao(solicitacaoSelecionada.id);
+      await carregarSolicitacoes();
+      setExclusaoModalOpen(false);
+      setSolicitacaoSelecionada(null);
+      
+      toast({
+        title: "Solicitação excluída",
+        description: "A solicitação foi excluída permanentemente do sistema."
+      });
+    } catch (error) {
+      console.error('Erro ao excluir solicitação:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir a solicitação.",
+        variant: "destructive"
+      });
+    }
   };
 
   const gerarLinkWhatsApp = (solicitacao: SolicitacaoOrcamento) => {
@@ -368,6 +404,26 @@ const AdminDashboard = () => {
                         <option value="finalizado">Finalizado</option>
                       </select>
                       
+                      <div className="flex space-x-2">
+                        {/* Botão Ver Detalhes */}
+                        <button
+                          onClick={() => abrirDetalhesModal(solicitacao)}
+                          className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm flex items-center space-x-1"
+                        >
+                          <Info size={14} />
+                          <span>Detalhes</span>
+                        </button>
+                        
+                        {/* Botão Excluir */}
+                        <button
+                          onClick={() => abrirExclusaoModal(solicitacao)}
+                          className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm flex items-center space-x-1"
+                        >
+                          <Trash2 size={14} />
+                          <span>Excluir</span>
+                        </button>
+                      </div>
+                      
                       {/* Botão Reenviar WhatsApp */}
                       <button
                         onClick={() => reenviarWhatsApp(solicitacao)}
@@ -436,6 +492,27 @@ const AdminDashboard = () => {
           solicitacao={solicitacaoSelecionada}
           onClose={() => {
             setVisualizarModalOpen(false);
+            setSolicitacaoSelecionada(null);
+          }}
+        />
+      )}
+
+      {detalhesModalOpen && solicitacaoSelecionada && (
+        <VisualizarDetalhes
+          solicitacao={solicitacaoSelecionada}
+          onClose={() => {
+            setDetalhesModalOpen(false);
+            setSolicitacaoSelecionada(null);
+          }}
+        />
+      )}
+
+      {exclusaoModalOpen && solicitacaoSelecionada && (
+        <ConfirmarExclusao
+          solicitacao={solicitacaoSelecionada}
+          onConfirm={confirmarExclusao}
+          onCancel={() => {
+            setExclusaoModalOpen(false);
             setSolicitacaoSelecionada(null);
           }}
         />
