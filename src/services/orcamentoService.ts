@@ -1,3 +1,4 @@
+
 import { 
   collection, 
   addDoc, 
@@ -17,11 +18,14 @@ import { SolicitacaoOrcamento, Orcamento, UsuarioCliente, HistoricoInteracao } f
 
 export class OrcamentoService {
   // Criar solicitação de orçamento
-  static async criarSolicitacao(dados: Omit<SolicitacaoOrcamento, 'id' | 'dataCreacao' | 'dataUltimaAtualizacao' | 'statusSolicitacao'>): Promise<string> {
+  static async criarSolicitacao(dados: Omit<SolicitacaoOrcamento, 'id' | 'dataCreacao' | 'dataUltimaAtualizacao' | 'statusSolicitacao' | 'accessToken'>): Promise<string> {
     try {
+      const accessToken = this.gerarAccessToken();
+      
       const solicitacao = {
         ...dados,
-        statusSolicitacao: 'pendente' as const,
+        statusSolicitacao: 'orcamento_recebido' as const,
+        accessToken,
         dataCreacao: Timestamp.now(),
         dataUltimaAtualizacao: Timestamp.now()
       };
@@ -42,6 +46,9 @@ export class OrcamentoService {
         descricao: `Solicitação de orçamento criada para o serviço: ${dados.servicoInteresse}`,
         dataInteracao: new Date()
       });
+
+      // Enviar mensagem WhatsApp
+      await this.enviarMensagemWhatsApp(dados.whatsappCliente, dados.nomeCliente, dados.servicoInteresse, docRef.id);
 
       return docRef.id;
     } catch (error) {
@@ -71,13 +78,16 @@ export class OrcamentoService {
     }
   }
 
-  // Buscar solicitações pendentes
-  static async buscarSolicitacoesPendentes(): Promise<SolicitacaoOrcamento[]> {
+  // Buscar solicitações aguardando orçamento
+  static async buscarSolicitacoesAguardando(): Promise<SolicitacaoOrcamento[]> {
     try {
       const todasSolicitacoes = await this.buscarTodasSolicitacoes();
-      return todasSolicitacoes.filter(solicitacao => solicitacao.statusSolicitacao === 'pendente');
+      return todasSolicitacoes.filter(solicitacao => 
+        solicitacao.statusSolicitacao === 'orcamento_recebido' || 
+        solicitacao.statusSolicitacao === 'aguardando_orcamento'
+      );
     } catch (error) {
-      console.error('Erro ao buscar solicitações pendentes:', error);
+      console.error('Erro ao buscar solicitações aguardando:', error);
       throw error;
     }
   }
@@ -220,7 +230,7 @@ export class OrcamentoService {
         await updateDoc(docRef, {
           pdfUrl: null,
           nomeArquivoPdf: null,
-          statusSolicitacao: 'pendente',
+          statusSolicitacao: 'orcamento_recebido',
           dataUltimaAtualizacao: Timestamp.now()
         });
 
@@ -263,46 +273,6 @@ export class OrcamentoService {
   // Gerar token de acesso seguro
   static gerarAccessToken(): string {
     return Math.random().toString(36).substr(2, 16) + Date.now().toString(36);
-  }
-
-  // Criar solicitação de orçamento com novo campo
-  static async criarSolicitacao(dados: Omit<SolicitacaoOrcamento, 'id' | 'dataCreacao' | 'dataUltimaAtualizacao' | 'statusSolicitacao' | 'accessToken'>): Promise<string> {
-    try {
-      const accessToken = this.gerarAccessToken();
-      
-      const solicitacao = {
-        ...dados,
-        statusSolicitacao: 'orcamento_recebido' as const,
-        accessToken,
-        dataCreacao: Timestamp.now(),
-        dataUltimaAtualizacao: Timestamp.now()
-      };
-
-      const docRef = await addDoc(collection(db, 'solicitacoes_orcamento'), solicitacao);
-      
-      // Criar ou atualizar usuário cliente
-      await this.criarOuAtualizarCliente({
-        nome: dados.nomeCliente,
-        email: dados.emailCliente,
-        whatsapp: dados.whatsappCliente
-      });
-
-      // Registrar histórico
-      await this.registrarHistorico({
-        clienteId: dados.emailCliente,
-        tipoInteracao: 'solicitacao_criada',
-        descricao: `Solicitação de orçamento criada para o serviço: ${dados.servicoInteresse}`,
-        dataInteracao: new Date()
-      });
-
-      // Enviar mensagem WhatsApp
-      await this.enviarMensagemWhatsApp(dados.whatsappCliente, dados.nomeCliente, dados.servicoInteresse, docRef.id);
-
-      return docRef.id;
-    } catch (error) {
-      console.error('Erro ao criar solicitação:', error);
-      throw error;
-    }
   }
 
   // Salvar detalhes do formulário específico
