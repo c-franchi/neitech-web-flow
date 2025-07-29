@@ -17,15 +17,15 @@ const ContactSection = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -52,7 +52,6 @@ const ContactSection = () => {
       setIsSubmitting(false);
       return;
     }
-
     try {
       // Salvar solicitação no Firebase
       const solicitacaoId = await OrcamentoService.criarSolicitacao({
@@ -62,7 +61,6 @@ const ContactSection = () => {
         servicoInteresse: formData.service,
         mensagem: formData.message
       });
-
       console.log('Solicitação criada com ID:', solicitacaoId);
 
       // Enviar mensagem para WhatsApp (comportamento existente)
@@ -75,7 +73,6 @@ const ContactSection = () => {
 *Mensagem:* ${formData.message}
 
 *Código da Solicitação:* ${solicitacaoId}`;
-
       const whatsappUrl = `https://wa.me/5516997813038?text=${encodeURIComponent(whatsappMessage)}`;
 
       // Aguarda um pouco para simular processamento
@@ -85,7 +82,6 @@ const ContactSection = () => {
       window.open(whatsappUrl, '_blank');
       setIsSubmitting(false);
       setIsSubmitted(true);
-      
       toast({
         title: "Solicitação enviada com sucesso!",
         description: "Sua solicitação foi registrada e você será redirecionado para o WhatsApp. Guarde o código da solicitação para acompanhamento."
@@ -102,7 +98,6 @@ const ContactSection = () => {
           message: ''
         });
       }, 3000);
-
     } catch (error) {
       console.error('Erro ao enviar solicitação:', error);
       setIsSubmitting(false);
@@ -122,7 +117,6 @@ const ContactSection = () => {
     }
     return value;
   };
-
   const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatWhatsApp(e.target.value);
     setFormData({
@@ -130,33 +124,26 @@ const ContactSection = () => {
       whatsapp: formatted
     });
   };
-
-  const contactInfo = [
-    {
-      icon: Mail,
-      title: 'Email',
-      value: 'neifranchi@gmail.com',
-      href: 'mailto:neifranchi@gmail.com',
-      description: 'Resposta em até 24h'
-    },
-    {
-      icon: Phone,
-      title: 'WhatsApp',
-      value: '(16) 99781-3038',
-      href: 'https://wa.me/5516997813038',
-      description: 'Atendimento imediato'
-    },
-    {
-      icon: MapPin,
-      title: 'Localização',
-      value: 'Araraquara, SP',
-      href: null,
-      description: 'Atendimento presencial'
-    }
-  ];
-
-  return (
-    <section id="contact" className="bg-white py-[49px]">
+  const contactInfo = [{
+    icon: Mail,
+    title: 'Email',
+    value: 'neifranchi@gmail.com',
+    href: 'mailto:neifranchi@gmail.com',
+    description: 'Resposta em até 24h'
+  }, {
+    icon: Phone,
+    title: 'WhatsApp',
+    value: '(16) 99781-3038',
+    href: 'https://wa.me/5516997813038',
+    description: 'Atendimento imediato'
+  }, {
+    icon: MapPin,
+    title: 'Localização',
+    value: 'Araraquara, SP',
+    href: null,
+    description: 'Atendimento presencial'
+  }];
+  return <section id="contact" className="bg-white py-[49px]">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16 space-y-4">
@@ -183,15 +170,7 @@ const ContactSection = () => {
 
             {/* Cards de contato */}
             <div className="space-y-4">
-              {contactInfo.map((info) => (
-                info.href ? (
-                  <a
-                    key={info.title}
-                    href={info.href}
-                    target={info.href.startsWith('http') ? '_blank' : '_self'}
-                    rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl hover:from-blue-100 hover:to-cyan-100 transition-all duration-300 group"
-                  >
+              {contactInfo.map(info => info.href ? <a key={info.title} href={info.href} target={info.href.startsWith('http') ? '_blank' : '_self'} rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined} className="flex items-center space-x-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl hover:from-blue-100 hover:to-cyan-100 transition-all duration-300 group">
                     <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
                       <info.icon size={24} className="text-white" />
                     </div>
@@ -200,12 +179,7 @@ const ContactSection = () => {
                       <p className="text-slate-600">{info.value}</p>
                       <p className="text-sm text-slate-500">{info.description}</p>
                     </div>
-                  </a>
-                ) : (
-                  <div
-                    key={info.title}
-                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl"
-                  >
+                  </a> : <div key={info.title} className="flex items-center space-x-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl">
                     <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
                       <info.icon size={24} className="text-white" />
                     </div>
@@ -214,31 +188,19 @@ const ContactSection = () => {
                       <p className="text-slate-600">{info.value}</p>
                       <p className="text-sm text-slate-500">{info.description}</p>
                     </div>
-                  </div>
-                )
-              ))}
+                  </div>)}
             </div>
           </div>
 
           {/* Formulário */}
           <div className="bg-gradient-to-br from-slate-50 to-blue-50 p-8 rounded-2xl shadow-lg py-[20px] px-[5px]">
-            {!isSubmitted ? (
-              <form onSubmit={handleSubmit} className="space-y-6">
+            {!isSubmitted ? <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Nome */}
                 <div>
                   <label htmlFor="name" className="block text-sm font-semibold text-slate-700 mb-2">
                     Nome Completo *
                   </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Seu nome completo"
-                  />
+                  <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" placeholder="Seu nome completo" />
                 </div>
 
                 {/* Email */}
@@ -246,16 +208,7 @@ const ContactSection = () => {
                   <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
                     Email *
                   </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="seu@email.com"
-                  />
+                  <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" placeholder="seu@email.com" />
                 </div>
 
                 {/* WhatsApp */}
@@ -263,17 +216,7 @@ const ContactSection = () => {
                   <label htmlFor="whatsapp" className="block text-sm font-semibold text-slate-700 mb-2">
                     WhatsApp *
                   </label>
-                  <input
-                    type="text"
-                    id="whatsapp"
-                    name="whatsapp"
-                    value={formData.whatsapp}
-                    onChange={handleWhatsAppChange}
-                    required
-                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="(XX) XXXXX-XXXX"
-                    maxLength={15}
-                  />
+                  <input type="text" id="whatsapp" name="whatsapp" value={formData.whatsapp} onChange={handleWhatsAppChange} required className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" placeholder="(XX) XXXXX-XXXX" maxLength={15} />
                 </div>
 
                 {/* Serviço */}
@@ -281,14 +224,7 @@ const ContactSection = () => {
                   <label htmlFor="service" className="block text-sm font-semibold text-slate-700 mb-2">
                     Serviço de Interesse *
                   </label>
-                  <select
-                    id="service"
-                    name="service"
-                    value={formData.service}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  >
+                  <select id="service" name="service" value={formData.service} onChange={handleChange} required className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
                     <option value="">Selecione um serviço</option>
                     <option value="Desenvolvimento Web">Desenvolvimento Web</option>
                     <option value="App Mobile">App Mobile</option>
@@ -304,40 +240,21 @@ const ContactSection = () => {
                   <label htmlFor="message" className="block text-sm font-semibold text-slate-700 mb-2">
                     Mensagem *
                   </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={4}
-                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-                    placeholder="Conte-nos sobre seu projeto..."
-                  />
+                  <textarea id="message" name="message" value={formData.message} onChange={handleChange} required rows={4} className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none" placeholder="Conte-nos sobre seu projeto..." />
                 </div>
 
                 {/* Botão Submit */}
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:from-blue-400 disabled:to-cyan-400 text-white py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center space-x-2 transform hover:scale-105 hover:shadow-lg disabled:transform-none disabled:shadow-none"
-                >
-                  {isSubmitting ? (
-                    <>
+                <button type="submit" disabled={isSubmitting} className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:from-blue-400 disabled:to-cyan-400 text-white py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center space-x-2 transform hover:scale-105 hover:shadow-lg disabled:transform-none disabled:shadow-none">
+                  {isSubmitting ? <>
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       <span>Enviando...</span>
-                    </>
-                  ) : (
-                    <>
+                    </> : <>
                       <Send size={20} />
-                      <span>Enviar Solicitação</span>
-                    </>
-                  )}
+                      <span>Enviar Solicitação via whatsapp</span>
+                    </>}
                 </button>
-              </form>
-            ) : (
-              /* Mensagem de sucesso */
-              <div className="text-center py-8 space-y-4">
+              </form> : (/* Mensagem de sucesso */
+          <div className="text-center py-8 space-y-4">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto animate-bounce">
                   <Check size={32} className="text-green-600" />
                 </div>
@@ -345,13 +262,10 @@ const ContactSection = () => {
                 <p className="text-slate-600">
                   Sua solicitação foi registrada com sucesso. Você será redirecionado para o WhatsApp e receberá um código para acompanhar o andamento do seu orçamento.
                 </p>
-              </div>
-            )}
+              </div>)}
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default ContactSection;
