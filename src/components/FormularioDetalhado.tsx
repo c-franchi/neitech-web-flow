@@ -7,6 +7,14 @@ import { SolicitacaoOrcamento } from '@/types/orcamentos';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Importar os componentes de formulário específicos
+import DesenvolvimentoWebForm from './formularios/DesenvolvimentoWebForm';
+import AppMobileForm from './formularios/AppMobileForm';
+import DesignDigitalForm from './formularios/DesignDigitalForm';
+import CartaoDigitalForm from './formularios/CartaoDigitalForm';
+import VideoCorporativoForm from './formularios/VideoCorporativoForm';
+import OutrosServicosForm from './formularios/OutrosServicosForm';
+
 const FormularioDetalhado = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -91,162 +99,47 @@ const FormularioDetalhado = () => {
     }
   };
 
+  const determinarTipoFormulario = (servicoInteresse: string): string => {
+    const servico = servicoInteresse.toLowerCase();
+    
+    if (servico.includes('desenvolvimento') || servico.includes('website') || servico.includes('site')) {
+      return 'desenvolvimento-web';
+    }
+    if (servico.includes('app') || servico.includes('mobile') || servico.includes('aplicativo')) {
+      return 'app-mobile';
+    }
+    if (servico.includes('design') || servico.includes('logo') || servico.includes('identidade')) {
+      return 'design-digital';
+    }
+    if (servico.includes('cartão') || servico.includes('cartao')) {
+      return 'cartao-digital';
+    }
+    if (servico.includes('vídeo') || servico.includes('video') || servico.includes('corporativo')) {
+      return 'video-corporativo';
+    }
+    
+    return 'outros';
+  };
+
   const renderFormularioEspecifico = () => {
     if (!solicitacao) return null;
 
-    const tipoServico = solicitacao.servicoInteresse.toLowerCase();
+    const tipoFormulario = determinarTipoFormulario(solicitacao.servicoInteresse);
 
-    // Desenvolvimento Web
-    if (tipoServico.includes('desenvolvimento') || tipoServico.includes('website') || tipoServico.includes('site')) {
-      return (
-        <div className="space-y-6">
-          <h3 className="text-lg font-semibold">Detalhes do Desenvolvimento Web</h3>
-          
-          <div>
-            <label className="block text-sm font-medium mb-2">Tipo do site</label>
-            <select 
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              value={respostas.tipoSite || ''}
-              onChange={(e) => setRespostas({...respostas, tipoSite: e.target.value})}
-              required
-            >
-              <option value="">Selecione o tipo</option>
-              <option value="institucional">Institucional</option>
-              <option value="loja">Loja Virtual</option>
-              <option value="landing-page">Landing Page</option>
-              <option value="blog">Blog</option>
-              <option value="outro">Outro</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Quantidade estimada de páginas</label>
-            <input
-              type="text"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Ex: 5-10 páginas"
-              value={respostas.quantidadePaginas || ''}
-              onChange={(e) => setRespostas({...respostas, quantidadePaginas: e.target.value})}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Precisa de painel administrativo?</label>
-            <div className="flex space-x-4">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="painelAdmin"
-                  value="true"
-                  checked={respostas.painelAdministrativo === true}
-                  onChange={() => setRespostas({...respostas, painelAdministrativo: true})}
-                  className="mr-2"
-                />
-                Sim
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="painelAdmin"
-                  value="false"
-                  checked={respostas.painelAdministrativo === false}
-                  onChange={() => setRespostas({...respostas, painelAdministrativo: false})}
-                  className="mr-2"
-                />
-                Não
-              </label>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Integrações necessárias</label>
-            <div className="space-y-2">
-              {['WhatsApp', 'Pagamento online', 'Email marketing', 'Outras'].map((integracao) => (
-                <label key={integracao} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={respostas.integracoes?.[integracao] || false}
-                    onChange={(e) => setRespostas({
-                      ...respostas,
-                      integracoes: {
-                        ...respostas.integracoes,
-                        [integracao]: e.target.checked
-                      }
-                    })}
-                    className="mr-2"
-                  />
-                  {integracao}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Exemplos de sites de referência</label>
-            <textarea
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Cole aqui links de sites que você gosta do design/funcionalidade"
-              value={respostas.exemplosSites || ''}
-              onChange={(e) => setRespostas({...respostas, exemplosSites: e.target.value})}
-              rows={3}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Prazo desejado</label>
-            <input
-              type="text"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Ex: 30 dias, 2 meses"
-              value={respostas.prazoDesejado || ''}
-              onChange={(e) => setRespostas({...respostas, prazoDesejado: e.target.value})}
-            />
-          </div>
-        </div>
-      );
+    switch (tipoFormulario) {
+      case 'desenvolvimento-web':
+        return <DesenvolvimentoWebForm respostas={respostas} setRespostas={setRespostas} />;
+      case 'app-mobile':
+        return <AppMobileForm respostas={respostas} setRespostas={setRespostas} />;
+      case 'design-digital':
+        return <DesignDigitalForm respostas={respostas} setRespostas={setRespostas} />;
+      case 'cartao-digital':
+        return <CartaoDigitalForm respostas={respostas} setRespostas={setRespostas} />;
+      case 'video-corporativo':
+        return <VideoCorporativoForm respostas={respostas} setRespostas={setRespostas} />;
+      default:
+        return <OutrosServicosForm respostas={respostas} setRespostas={setRespostas} />;
     }
-
-    // Formulário genérico para outros serviços
-    return (
-      <div className="space-y-6">
-        <h3 className="text-lg font-semibold">Detalhes do Serviço: {solicitacao.servicoInteresse}</h3>
-        
-        <div>
-          <label className="block text-sm font-medium mb-2">Descreva detalhadamente sua necessidade</label>
-          <textarea
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            placeholder="Explique com detalhes o que você precisa, suas expectativas, referências, etc."
-            value={respostas.descricaoDetalhada || ''}
-            onChange={(e) => setRespostas({...respostas, descricaoDetalhada: e.target.value})}
-            rows={6}
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Prazo desejado</label>
-          <input
-            type="text"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            placeholder="Ex: 15 dias, 1 mês"
-            value={respostas.prazoDesejado || ''}
-            onChange={(e) => setRespostas({...respostas, prazoDesejado: e.target.value})}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Observações adicionais</label>
-          <textarea
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            placeholder="Alguma informação adicional importante"
-            value={respostas.observacoes || ''}
-            onChange={(e) => setRespostas({...respostas, observacoes: e.target.value})}
-            rows={3}
-          />
-        </div>
-      </div>
-    );
   };
 
   if (loading) {
@@ -343,24 +236,35 @@ const FormularioDetalhado = () => {
           <form onSubmit={handleSubmit}>
             {renderFormularioEspecifico()}
 
-            <div className="mt-8 flex justify-end">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 size={16} className="mr-2 animate-spin" />
-                    Enviando...
-                  </>
-                ) : (
-                  <>
-                    <Send size={16} className="mr-2" />
-                    Enviar Detalhes
-                  </>
-                )}
-              </button>
+            <div className="mt-12 pt-6 border-t border-gray-200">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+                <h4 className="font-semibold text-amber-800 mb-2">📋 Antes de enviar:</h4>
+                <ul className="text-sm text-amber-700 space-y-1">
+                  <li>• Verifique se preencheu todos os campos obrigatórios (*)</li>
+                  <li>• Suas respostas nos ajudam a criar um orçamento mais preciso</li>
+                  <li>• Você será notificado via WhatsApp quando o orçamento estiver pronto</li>
+                </ul>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="inline-flex items-center px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold text-lg"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 size={20} className="mr-3 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <Send size={20} className="mr-3" />
+                      Enviar Detalhes
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </form>
         </div>

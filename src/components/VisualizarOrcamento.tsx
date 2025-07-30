@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Download, Eye, X, ExternalLink, Clock } from 'lucide-react';
 import { SolicitacaoOrcamento } from '@/types/orcamentos';
+import { OrcamentoService } from '@/services/orcamentoService';
 
 interface VisualizarOrcamentoProps {
   solicitacao: SolicitacaoOrcamento;
@@ -20,25 +22,13 @@ const VisualizarOrcamento: React.FC<VisualizarOrcamentoProps> = ({ solicitacao, 
       updateTimeLeft();
     }, 1000);
 
+    updateTimeLeft(); // Executar imediatamente
     return () => clearInterval(timer);
   }, [solicitacao]);
 
   const updateTimeLeft = () => {
-    const dataExpiracao = new Date(solicitacao.dataUltimaAtualizacao);
-    dataExpiracao.setDate(dataExpiracao.getDate() + 5);
-    
-    const agora = new Date();
-    const diferenca = dataExpiracao.getTime() - agora.getTime();
-    
-    if (diferenca > 0) {
-      const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
-      const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
-      
-      setTimeLeft(`${dias}d ${horas}h ${minutos}m`);
-    } else {
-      setTimeLeft('Expirado');
-    }
+    const tempoRestante = OrcamentoService.calcularTempoRestante(solicitacao);
+    setTimeLeft(tempoRestante);
   };
 
   const handleDownload = () => {
@@ -57,13 +47,15 @@ const VisualizarOrcamento: React.FC<VisualizarOrcamentoProps> = ({ solicitacao, 
     const linkOrcamento = `${getSiteUrl()}/orcamento/${solicitacao.id}`;
     const mensagem = `Olá ${solicitacao.nomeCliente}! Seu orçamento já está disponível: ${linkOrcamento}
 
-⏰ *Importante:* Este orçamento ficará disponível por 5 dias corridos. Após este período será automaticamente removido do sistema.
+⏰ *Importante:* Este orçamento ficará disponível por 5 dias corridos após o primeiro acesso. O prazo conta a partir do momento em que você visualizar o orçamento pela primeira vez.
 
 Acesse o link para visualizar e fazer o download do seu orçamento.`;
     
     const whatsappUrl = `https://wa.me/55${solicitacao.whatsappCliente.replace(/\D/g, '')}?text=${encodeURIComponent(mensagem)}`;
     window.open(whatsappUrl, '_blank');
   };
+
+  const isExpired = OrcamentoService.verificarOrcamentoExpirado(solicitacao);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -76,11 +68,19 @@ Acesse o link para visualizar e fazer o download do seu orçamento.`;
             </h3>
             <p className="text-sm text-gray-600">{solicitacao.servicoInteresse}</p>
             <div className="flex items-center gap-2 mt-1">
-              <Clock size={14} className="text-amber-500" />
-              <span className="text-xs text-amber-600">
-                Expira em {timeLeft}
+              <Clock size={14} className={isExpired ? "text-red-500" : "text-amber-500"} />
+              <span className={`text-xs ${isExpired ? "text-red-600" : "text-amber-600"}`}>
+                {isExpired ? "⚠️ Orçamento Expirado" : `Expira em ${timeLeft}`}
               </span>
             </div>
+            {!solicitacao.primeiroAcessoCliente && solicitacao.pdfUrl && (
+              <div className="flex items-center gap-2 mt-1">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="text-xs text-blue-600">
+                  Prazo inicia no primeiro acesso do cliente
+                </span>
+              </div>
+            )}
           </div>
           <button
             onClick={onClose}
@@ -136,8 +136,14 @@ Acesse o link para visualizar e fazer o download do seu orçamento.`;
             <div>
               <strong>Link:</strong> {getSiteUrl()}/orcamento/{solicitacao.id}
             </div>
-            <div className="text-amber-600">
-              <strong>⚠️ Aviso:</strong> Este orçamento expira automaticamente em 5 dias corridos
+            <div className={isExpired ? "text-red-600" : "text-amber-600"}>
+              <strong>⚠️ Sistema de Validade:</strong> {
+                isExpired 
+                  ? "Este orçamento expirou e foi removido automaticamente"
+                  : solicitacao.primeiroAcessoCliente 
+                    ? `Expira 5 dias após primeiro acesso (${new Date(solicitacao.primeiroAcessoCliente).toLocaleDateString('pt-BR')})`
+                    : "Prazo de 5 dias inicia no primeiro acesso do cliente"
+              }
             </div>
           </div>
         </div>

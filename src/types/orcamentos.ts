@@ -1,4 +1,3 @@
-
 export interface SolicitacaoOrcamento {
   id: string;
   nomeCliente: string;
@@ -14,6 +13,7 @@ export interface SolicitacaoOrcamento {
   nomeArquivoPdf?: string;
   accessToken?: string;
   dataExpiracao?: Date;
+  primeiroAcessoCliente?: Date; // Novo campo para controle de validade
 }
 
 export interface DetalhesFormulario {

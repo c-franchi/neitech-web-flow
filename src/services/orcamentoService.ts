@@ -234,8 +234,8 @@ export class OrcamentoService {
     }
   }
 
-  // Buscar solicitação por ID
-  static async buscarSolicitacaoPorId(id: string): Promise<SolicitacaoOrcamento | null> {
+  // Buscar solicitação por ID com registro de primeiro acesso
+  static async buscarSolicitacaoPorId(id: string, registrarPrimeiroAcesso: boolean = false): Promise<SolicitacaoOrcamento | null> {
     try {
       // Validar se o ID é válido
       if (!id || id.trim() === '') {
@@ -248,12 +248,36 @@ export class OrcamentoService {
       
       if (docSnap.exists()) {
         const data = docSnap.data();
-        return {
+        const solicitacao = {
           id: docSnap.id,
           ...data,
           dataCreacao: data.dataCreacao.toDate(),
-          dataUltimaAtualizacao: data.dataUltimaAtualizacao.toDate()
+          dataUltimaAtualizacao: data.dataUltimaAtualizacao.toDate(),
+          primeiroAcessoCliente: data.primeiroAcessoCliente ? data.primeiroAcessoCliente.toDate() : null
         } as SolicitacaoOrcamento;
+
+        // Se deve registrar primeiro acesso e ainda não foi registrado
+        if (registrarPrimeiroAcesso && !data.primeiroAcessoCliente && data.pdfUrl) {
+          console.log('Registrando primeiro acesso do cliente ao orçamento');
+          
+          await updateDoc(docRef, {
+            primeiroAcessoCliente: Timestamp.now()
+          });
+
+          // Atualizar o objeto retornado com o timestamp do primeiro acesso
+          solicitacao.primeiroAcessoCliente = new Date();
+
+          // Registrar no histórico
+          await this.registrarHistorico({
+            clienteId: solicitacao.emailCliente,
+            solicitacaoId: id,
+            tipoInteracao: 'orcamento_visualizado',
+            descricao: 'Cliente acessou o orçamento pela primeira vez - prazo de validade iniciado',
+            dataInteracao: new Date()
+          });
+        }
+
+        return solicitacao;
       }
       
       console.log(`Documento não encontrado para ID: ${id}`);
@@ -262,6 +286,42 @@ export class OrcamentoService {
       console.error('Erro ao buscar solicitação por ID:', error);
       return null;
     }
+  }
+
+  // Verificar se orçamento está expirado
+  static verificarOrcamentoExpirado(solicitacao: SolicitacaoOrcamento): boolean {
+    if (!solicitacao.pdfUrl || !solicitacao.primeiroAcessoCliente) {
+      return false; // Não está expirado se não foi acessado ainda
+    }
+
+    const agora = new Date();
+    const dataExpiracao = new Date(solicitacao.primeiroAcessoCliente);
+    dataExpiracao.setDate(dataExpiracao.getDate() + 5); // 5 dias após primeiro acesso
+    
+    return agora > dataExpiracao;
+  }
+
+  // Calcular tempo restante para expiração
+  static calcularTempoRestante(solicitacao: SolicitacaoOrcamento): string {
+    if (!solicitacao.pdfUrl || !solicitacao.primeiroAcessoCliente) {
+      return 'Aguardando primeiro acesso';
+    }
+
+    const agora = new Date();
+    const dataExpiracao = new Date(solicitacao.primeiroAcessoCliente);
+    dataExpiracao.setDate(dataExpiracao.getDate() + 5);
+    
+    const diferenca = dataExpiracao.getTime() - agora.getTime();
+    
+    if (diferenca <= 0) {
+      return 'Expirado';
+    }
+
+    const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+    const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+    
+    return `${dias}d ${horas}h ${minutos}m`;
   }
 
   // Deletar orçamento expirado
@@ -302,15 +362,15 @@ export class OrcamentoService {
     }
   }
 
-  // Limpar orçamentos expirados - método para execução periódica
+  // Limpar orçamentos expirados - método atualizado
   static async limparOrcamentosExpirados(): Promise<void> {
     try {
       const todasSolicitacoes = await this.buscarTodasSolicitacoes();
       const agora = new Date();
       
       for (const solicitacao of todasSolicitacoes) {
-        if (solicitacao.pdfUrl) {
-          const dataExpiracao = new Date(solicitacao.dataUltimaAtualizacao);
+        if (solicitacao.pdfUrl && solicitacao.primeiroAcessoCliente) {
+          const dataExpiracao = new Date(solicitacao.primeiroAcessoCliente);
           dataExpiracao.setDate(dataExpiracao.getDate() + 5);
           
           if (agora > dataExpiracao) {
