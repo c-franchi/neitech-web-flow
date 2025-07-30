@@ -444,15 +444,71 @@ export class OrcamentoService {
     }
   }
 
-  // Limpar número de telefone (remover caracteres especiais)
-  private static limparNumeroTelefone(numero: string): string {
-    return numero.replace(/\D/g, '');
+  // Limpar e formatar número de telefone para WhatsApp (suporte internacional)
+  private static formatarNumeroWhatsApp(numero: string): string {
+    // Remove todos os caracteres não numéricos
+    const numeroLimpo = numero.replace(/\D/g, '');
+    
+    // Se o número já tem 13+ dígitos (código país + número), usar como está
+    if (numeroLimpo.length >= 13) {
+      return numeroLimpo;
+    }
+    
+    // Se tem 12 dígitos e começa com 55, é brasileiro com DDD
+    if (numeroLimpo.length === 12 && numeroLimpo.startsWith('55')) {
+      return numeroLimpo;
+    }
+    
+    // Se tem 11 dígitos, assumir que é brasileiro sem código do país
+    if (numeroLimpo.length === 11) {
+      return `55${numeroLimpo}`;
+    }
+    
+    // Se tem 10 dígitos, assumir que é brasileiro antigo sem código do país
+    if (numeroLimpo.length === 10) {
+      return `55${numeroLimpo}`;
+    }
+    
+    // Para outros casos, tentar detectar o padrão
+    // Se começa com códigos comuns de outros países, manter como está
+    const codigosPaises = ['1', '44', '49', '33', '39', '34', '351', '52', '54', '56', '57', '58'];
+    
+    for (const codigo of codigosPaises) {
+      if (numeroLimpo.startsWith(codigo) && numeroLimpo.length >= 10) {
+        return numeroLimpo;
+      }
+    }
+    
+    // Se não conseguiu identificar, assumir brasileiro
+    return `55${numeroLimpo}`;
+  }
+
+  // Validar se o número formatado é válido para WhatsApp
+  private static validarNumeroWhatsApp(numeroFormatado: string): boolean {
+    // Número deve ter pelo menos 10 dígitos e no máximo 15
+    if (numeroFormatado.length < 10 || numeroFormatado.length > 15) {
+      return false;
+    }
+    
+    // Deve conter apenas números
+    if (!/^\d+$/.test(numeroFormatado)) {
+      return false;
+    }
+    
+    return true;
   }
 
   // Enviar mensagem WhatsApp inicial com abertura automática
   private static async enviarMensagemWhatsAppInicial(whatsapp: string, nome: string, servico: string, solicitacaoId: string): Promise<void> {
     try {
-      const numeroLimpo = this.limparNumeroTelefone(whatsapp);
+      const numeroFormatado = this.formatarNumeroWhatsApp(whatsapp);
+      
+      // Validar número antes de tentar enviar
+      if (!this.validarNumeroWhatsApp(numeroFormatado)) {
+        console.error('❌ Número de WhatsApp inválido:', whatsapp, 'formatado:', numeroFormatado);
+        throw new Error(`Número de WhatsApp inválido: ${whatsapp}`);
+      }
+      
       const linkStatus = `${this.getSiteUrl()}/status/${solicitacaoId}`;
       
       const mensagem = `Olá ${nome}! 
@@ -464,8 +520,10 @@ Link para acompanhar: ${linkStatus}
 Atenciosamente,
 Equipe NeiTech`;
 
-      // Gerar link do WhatsApp
-      const whatsappLink = `https://wa.me/55${numeroLimpo}?text=${encodeURIComponent(mensagem)}`;
+      // Gerar link do WhatsApp sem forçar prefixo 55
+      const whatsappLink = `https://wa.me/${numeroFormatado}?text=${encodeURIComponent(mensagem)}`;
+      
+      console.log('📱 Link WhatsApp gerado:', whatsappLink);
       
       // Abrir janela do WhatsApp automaticamente
       if (typeof window !== 'undefined') {
@@ -477,7 +535,7 @@ Equipe NeiTech`;
         clienteId: whatsapp,
         solicitacaoId: solicitacaoId,
         tipoInteracao: 'whatsapp_enviado',
-        descricao: `Mensagem WhatsApp inicial enviada com link de acompanhamento`,
+        descricao: `Mensagem WhatsApp inicial enviada com link de acompanhamento para ${numeroFormatado}`,
         dataInteracao: new Date()
       });
 
@@ -491,7 +549,14 @@ Equipe NeiTech`;
   // Enviar mensagem WhatsApp para formulário detalhado
   private static async enviarMensagemFormularioDetalhado(solicitacao: SolicitacaoOrcamento): Promise<void> {
     try {
-      const numeroLimpo = this.limparNumeroTelefone(solicitacao.whatsappCliente);
+      const numeroFormatado = this.formatarNumeroWhatsApp(solicitacao.whatsappCliente);
+      
+      // Validar número antes de tentar enviar
+      if (!this.validarNumeroWhatsApp(numeroFormatado)) {
+        console.error('❌ Número de WhatsApp inválido:', solicitacao.whatsappCliente, 'formatado:', numeroFormatado);
+        throw new Error(`Número de WhatsApp inválido: ${solicitacao.whatsappCliente}`);
+      }
+      
       const linkFormulario = `${this.getSiteUrl()}/formulario/${solicitacao.id}`;
       
       const mensagem = `Olá ${solicitacao.nomeCliente}! 
@@ -505,8 +570,10 @@ Este link é válido por 7 dias.
 Atenciosamente,
 Equipe NeiTech`;
 
-      // Gerar link do WhatsApp
-      const whatsappLink = `https://wa.me/55${numeroLimpo}?text=${encodeURIComponent(mensagem)}`;
+      // Gerar link do WhatsApp sem forçar prefixo 55
+      const whatsappLink = `https://wa.me/${numeroFormatado}?text=${encodeURIComponent(mensagem)}`;
+      
+      console.log('📱 Link WhatsApp formulário gerado:', whatsappLink);
       
       // Abrir janela do WhatsApp automaticamente
       if (typeof window !== 'undefined') {
@@ -518,7 +585,7 @@ Equipe NeiTech`;
         clienteId: solicitacao.whatsappCliente,
         solicitacaoId: solicitacao.id,
         tipoInteracao: 'whatsapp_enviado',
-        descricao: `Mensagem WhatsApp enviada com link do formulário detalhado`,
+        descricao: `Mensagem WhatsApp enviada com link do formulário detalhado para ${numeroFormatado}`,
         dataInteracao: new Date()
       });
 
@@ -532,7 +599,14 @@ Equipe NeiTech`;
   // Notificar cliente sobre orçamento pronto
   static async notificarOrcamentoPronto(solicitacao: SolicitacaoOrcamento): Promise<void> {
     try {
-      const numeroLimpo = this.limparNumeroTelefone(solicitacao.whatsappCliente);
+      const numeroFormatado = this.formatarNumeroWhatsApp(solicitacao.whatsappCliente);
+      
+      // Validar número antes de tentar enviar
+      if (!this.validarNumeroWhatsApp(numeroFormatado)) {
+        console.error('❌ Número de WhatsApp inválido:', solicitacao.whatsappCliente, 'formatado:', numeroFormatado);
+        throw new Error(`Número de WhatsApp inválido: ${solicitacao.whatsappCliente}`);
+      }
+      
       const linkOrcamento = `${this.getSiteUrl()}/orcamento/${solicitacao.id}?token=${solicitacao.accessToken}`;
       
       const mensagem = `${solicitacao.nomeCliente}, seu orçamento está pronto! 
@@ -544,8 +618,10 @@ Acesse agora: ${linkOrcamento}
 Atenciosamente,
 Equipe NeiTech`;
 
-      // Gerar link do WhatsApp
-      const whatsappLink = `https://wa.me/55${numeroLimpo}?text=${encodeURIComponent(mensagem)}`;
+      // Gerar link do WhatsApp sem forçar prefixo 55
+      const whatsappLink = `https://wa.me/${numeroFormatado}?text=${encodeURIComponent(mensagem)}`;
+      
+      console.log('📱 Link WhatsApp orçamento gerado:', whatsappLink);
       
       // Abrir janela do WhatsApp automaticamente
       if (typeof window !== 'undefined') {
@@ -557,7 +633,7 @@ Equipe NeiTech`;
         clienteId: solicitacao.emailCliente,
         solicitacaoId: solicitacao.id,
         tipoInteracao: 'orcamento_enviado',
-        descricao: `Notificação de orçamento pronto enviada via WhatsApp`,
+        descricao: `Notificação de orçamento pronto enviada via WhatsApp para ${numeroFormatado}`,
         dataInteracao: new Date()
       });
 
