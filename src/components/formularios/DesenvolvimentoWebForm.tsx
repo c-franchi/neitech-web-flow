@@ -23,25 +23,49 @@ const DesenvolvimentoWebForm: React.FC<DesenvolvimentoWebFormProps> = ({ respost
         <p className="text-blue-700">Vamos detalhar seu projeto de site para criar um orçamento preciso</p>
       </div>
 
-      {/* Objetivo do Site */}
+      {/* Tipo do Site */}
       <div className="space-y-3">
         <label className="block text-sm font-semibold text-gray-800">
-          Qual é o objetivo principal do seu site? *
+          Qual é o tipo de site que você deseja? *
         </label>
         <select 
           className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          value={respostas.objetivoSite || ''}
-          onChange={(e) => handleChange('objetivoSite', e.target.value)}
+          value={respostas.tipoSite || ''}
+          onChange={(e) => handleChange('tipoSite', e.target.value)}
           required
         >
-          <option value="">Selecione o objetivo</option>
+          <option value="">Selecione o tipo de site</option>
           <option value="institucional">Site Institucional - Apresentar empresa/profissional</option>
-          <option value="loja">Loja Virtual - Vender produtos online</option>
+          <option value="loja">Loja Virtual - E-commerce completo</option>
           <option value="landing-page">Landing Page - Capturar leads/conversões</option>
           <option value="blog">Blog/Portal de Conteúdo</option>
           <option value="portfolio">Portfólio Profissional</option>
           <option value="catalogo">Catálogo de Produtos/Serviços</option>
-          <option value="outro">Outro objetivo</option>
+          <option value="evento">Site de Evento</option>
+          <option value="educacional">Plataforma Educacional</option>
+          <option value="outro">Outro tipo</option>
+        </select>
+      </div>
+
+      {/* Quantidade de Páginas */}
+      <div className="space-y-3">
+        <label className="block text-sm font-semibold text-gray-800">
+          Quantas páginas aproximadamente o site terá? *
+        </label>
+        <select 
+          className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          value={respostas.quantidadePaginas || ''}
+          onChange={(e) => handleChange('quantidadePaginas', e.target.value)}
+          required
+        >
+          <option value="">Selecione a quantidade</option>
+          <option value="1">1 página</option>
+          <option value="2-3">2 a 3 páginas</option>
+          <option value="4-5">4 a 5 páginas</option>
+          <option value="6-10">6 a 10 páginas</option>
+          <option value="11-15">11 a 15 páginas</option>
+          <option value="16-20">16 a 20 páginas</option>
+          <option value="20+">Mais de 20 páginas</option>
         </select>
       </div>
 
@@ -97,24 +121,29 @@ const DesenvolvimentoWebForm: React.FC<DesenvolvimentoWebFormProps> = ({ respost
         </div>
       </div>
 
-      {/* Quantidade de Páginas */}
+      {/* Precisa de Painel Administrativo */}
       <div className="space-y-3">
         <label className="block text-sm font-semibold text-gray-800">
-          Quantas páginas aproximadamente o site terá? *
+          Precisa de painel administrativo? *
         </label>
-        <select 
-          className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          value={respostas.quantidadePaginas || ''}
-          onChange={(e) => handleChange('quantidadePaginas', e.target.value)}
-          required
-        >
-          <option value="">Selecione a quantidade</option>
-          <option value="1-3">1 a 3 páginas</option>
-          <option value="4-7">4 a 7 páginas</option>
-          <option value="8-15">8 a 15 páginas</option>
-          <option value="16-30">16 a 30 páginas</option>
-          <option value="30+">Mais de 30 páginas</option>
-        </select>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            { value: 'sim', label: 'Sim, preciso gerenciar conteúdo' },
+            { value: 'nao', label: 'Não, site estático' }
+          ].map((opcao) => (
+            <label key={opcao.value} className="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 transition-colors">
+              <input
+                type="radio"
+                name="painelAdministrativo"
+                value={opcao.value}
+                checked={respostas.painelAdministrativo === opcao.value}
+                onChange={(e) => handleChange('painelAdministrativo', e.target.value)}
+                className="mr-3 text-blue-600"
+              />
+              <span className="text-sm font-medium">{opcao.label}</span>
+            </label>
+          ))}
+        </div>
       </div>
 
       {/* Funcionalidades */}
@@ -125,17 +154,21 @@ const DesenvolvimentoWebForm: React.FC<DesenvolvimentoWebFormProps> = ({ respost
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[
             'Formulário de contato',
-            'Galeria de fotos',
+            'Galeria de fotos/vídeos',
             'Sistema de pagamento',
-            'Painel administrativo',
-            'Blog/Notícias',
-            'Chat online',
-            'Área do cliente',
+            'Blog/Sistema de notícias',
+            'Chat online/WhatsApp',
+            'Área do cliente/login',
             'Sistema de agendamento',
-            'Integração WhatsApp',
+            'Integração com redes sociais',
             'Google Analytics',
             'SEO otimizado',
-            'Múltiplos idiomas'
+            'Múltiplos idiomas',
+            'Newsletter/Email marketing',
+            'Mapa de localização',
+            'Carrinho de compras',
+            'Sistema de avaliações',
+            'Busca avançada'
           ].map((funcionalidade) => (
             <label key={funcionalidade} className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
               <input
@@ -150,21 +183,33 @@ const DesenvolvimentoWebForm: React.FC<DesenvolvimentoWebFormProps> = ({ respost
         </div>
       </div>
 
-      {/* Sites de Referência */}
-      <div className="space-y-3">
+      {/* Integrações Necessárias */}
+      <div className="space-y-4">
         <label className="block text-sm font-semibold text-gray-800">
-          Sites de referência (que você gosta do design/funcionalidade)
+          Precisa de integrações específicas?
         </label>
-        <textarea
-          className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          placeholder="Cole aqui links de sites que você admira o design ou funcionalidades
-Exemplo:
-- https://exemplo1.com.br (gosto do layout)
-- https://exemplo2.com (funcionalidades interessantes)"
-          value={respostas.sitesReferencia || ''}
-          onChange={(e) => handleChange('sitesReferencia', e.target.value)}
-          rows={4}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            'WhatsApp Business API',
+            'Pagamento online (cartão/Pix)',
+            'Email marketing (Mailchimp, etc)',
+            'CRM (Pipedrive, HubSpot)',
+            'ERP existente',
+            'Google Ads/Facebook Ads',
+            'Sistema de estoque',
+            'Transportadoras (correios, etc)'
+          ].map((integracao) => (
+            <label key={integracao} className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+              <input
+                type="checkbox"
+                checked={respostas.integracoes?.[integracao] || false}
+                onChange={(e) => handleCheckboxChange('integracoes', integracao, e.target.checked)}
+                className="mr-3 text-blue-600"
+              />
+              <span className="text-sm">{integracao}</span>
+            </label>
+          ))}
+        </div>
       </div>
 
       {/* Identidade Visual */}
@@ -174,7 +219,7 @@ Exemplo:
         </label>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[
-            { value: 'sim', label: 'Sim, já tenho tudo' },
+            { value: 'completa', label: 'Sim, tenho logo, cores e fontes' },
             { value: 'parcial', label: 'Tenho logo, mas falta o resto' },
             { value: 'nao', label: 'Não tenho, preciso contratar' }
           ].map((opcao) => (
@@ -193,6 +238,25 @@ Exemplo:
         </div>
       </div>
 
+      {/* Sites de Referência */}
+      <div className="space-y-3">
+        <label className="block text-sm font-semibold text-gray-800">
+          Sites de referência que você admira
+        </label>
+        <textarea
+          className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          placeholder="Cole aqui links de sites que você gosta do design ou funcionalidades:
+
+Exemplo:
+- https://exemplo1.com.br (gosto do layout clean)
+- https://exemplo2.com (funcionalidades interessantes)
+- https://exemplo3.com (cores e estilo)"
+          value={respostas.sitesReferencia || ''}
+          onChange={(e) => handleChange('sitesReferencia', e.target.value)}
+          rows={4}
+        />
+      </div>
+
       {/* Prazo */}
       <div className="space-y-3">
         <label className="block text-sm font-semibold text-gray-800">
@@ -205,12 +269,32 @@ Exemplo:
           required
         >
           <option value="">Selecione o prazo</option>
-          <option value="7-dias">7 dias (urgente)</option>
+          <option value="7-dias">7 dias (urgente - taxa adicional)</option>
           <option value="15-dias">15 dias</option>
           <option value="30-dias">30 dias</option>
+          <option value="45-dias">45 dias</option>
           <option value="60-dias">60 dias</option>
           <option value="90-dias">90 dias ou mais</option>
           <option value="flexivel">Flexível, sem pressa</option>
+        </select>
+      </div>
+
+      {/* Orçamento Estimado */}
+      <div className="space-y-3">
+        <label className="block text-sm font-semibold text-gray-800">
+          Qual é seu orçamento estimado para o projeto?
+        </label>
+        <select 
+          className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          value={respostas.orcamentoEstimado || ''}
+          onChange={(e) => handleChange('orcamentoEstimado', e.target.value)}
+        >
+          <option value="">Prefiro não informar</option>
+          <option value="ate-2000">Até R$ 2.000</option>
+          <option value="2000-5000">R$ 2.000 - R$ 5.000</option>
+          <option value="5000-10000">R$ 5.000 - R$ 10.000</option>
+          <option value="10000-20000">R$ 10.000 - R$ 20.000</option>
+          <option value="acima-20000">Acima de R$ 20.000</option>
         </select>
       </div>
 
@@ -221,10 +305,16 @@ Exemplo:
         </label>
         <textarea
           className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          placeholder="Compartilhe qualquer detalhe adicional sobre seu projeto, expectativas especiais, ou dúvidas que gostaria de esclarecer..."
+          placeholder="Compartilhe qualquer detalhe adicional sobre seu projeto:
+
+• Funcionalidades específicas que não foram mencionadas
+• Expectativas especiais de design
+• Integração com sistemas existentes
+• Dúvidas que gostaria de esclarecer
+• Deadline específico ou evento importante"
           value={respostas.observacoes || ''}
           onChange={(e) => handleChange('observacoes', e.target.value)}
-          rows={4}
+          rows={5}
         />
       </div>
     </div>
