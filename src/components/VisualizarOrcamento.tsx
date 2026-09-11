@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Download, Eye, X, ExternalLink, Clock } from 'lucide-react';
 import { SolicitacaoOrcamento } from '@/types/orcamentos';
@@ -12,9 +11,33 @@ interface VisualizarOrcamentoProps {
 const VisualizarOrcamento: React.FC<VisualizarOrcamentoProps> = ({ solicitacao, onClose }) => {
   const [timeLeft, setTimeLeft] = useState<string>('');
 
-  // Obter URL base do site
+  // Usa o domínio pelo qual o painel está sendo acessado, com fallback para a marca nova.
   const getSiteUrl = () => {
-    return 'https://nyv8digital.com.br';
+    if (typeof window !== 'undefined' && window.location?.origin) {
+      return window.location.origin.replace(/\/$/, '');
+    }
+    return 'https://fllifranchi.com';
+  };
+
+  const getOrcamentoUrl = () => {
+    const token = solicitacao.accessToken ? `?token=${encodeURIComponent(solicitacao.accessToken)}` : '';
+    return `${getSiteUrl()}/orcamento/${solicitacao.id}${token}`;
+  };
+
+  const formatarNumeroWhatsApp = (numeroOriginal: string) => {
+    const numero = numeroOriginal.replace(/\D/g, '');
+    if (!numero) return numero;
+
+    // Números informados com + já carregam o código do país.
+    if (numeroOriginal.trim().startsWith('+')) return numero;
+
+    // Códigos internacionais mais comuns atendidos pelo site, inclusive Itália (39).
+    const codigosPaises = ['55', '39', '1', '44', '49', '33', '34', '351', '52', '54', '56', '57', '58'];
+    if (codigosPaises.some((codigo) => numero.startsWith(codigo)) && numero.length >= 10) {
+      return numero;
+    }
+
+    return `55${numero}`;
   };
 
   useEffect(() => {
@@ -44,14 +67,10 @@ const VisualizarOrcamento: React.FC<VisualizarOrcamentoProps> = ({ solicitacao, 
   };
 
   const gerarLinkWhatsApp = () => {
-    const linkOrcamento = `${getSiteUrl()}/orcamento/${solicitacao.id}`;
-    const mensagem = `Olá ${solicitacao.nomeCliente}! Seu orçamento já está disponível: ${linkOrcamento}
-
-⏰ *Importante:* Este orçamento ficará disponível por 5 dias corridos após o primeiro acesso. O prazo conta a partir do momento em que você visualizar o orçamento pela primeira vez.
-
-Acesse o link para visualizar e fazer o download do seu orçamento.`;
-    
-    const whatsappUrl = `https://wa.me/55${solicitacao.whatsappCliente.replace(/\D/g, '')}?text=${encodeURIComponent(mensagem)}`;
+    const linkOrcamento = getOrcamentoUrl();
+    const mensagem = `Olá ${solicitacao.nomeCliente}! Seu orçamento já está disponível: ${linkOrcamento}\n\n⏰ *Importante:* Este orçamento ficará disponível por 5 dias corridos após o primeiro acesso. O prazo conta a partir do momento em que você visualizar o orçamento pela primeira vez.\n\nAcesse o link para visualizar e fazer o download do seu orçamento.`;
+    const numeroWhatsApp = formatarNumeroWhatsApp(solicitacao.whatsappCliente);
+    const whatsappUrl = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -134,7 +153,7 @@ Acesse o link para visualizar e fazer o download do seu orçamento.`;
 
           <div className="text-sm text-gray-500 flex flex-col gap-1">
             <div>
-              <strong>Link:</strong> {getSiteUrl()}/orcamento/{solicitacao.id}
+              <strong>Link:</strong> {getOrcamentoUrl()}
             </div>
             <div className={isExpired ? "text-red-600" : "text-amber-600"}>
               <strong>⚠️ Sistema de Validade:</strong> {
