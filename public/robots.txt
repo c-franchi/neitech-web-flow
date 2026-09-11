@@ -1,4 +1,13 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin-site
+Disallow: /setup-sections
+Disallow: /import-content
+Disallow: /orcamento/
+Disallow: /status/
+Disallow: /formulario/
+Disallow: /confirmacao/
+Disallow: /legacy
 
 Sitemap: https://fllifranchi.com/sitemap.xml

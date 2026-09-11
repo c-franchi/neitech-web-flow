@@ -2,21 +2,29 @@ import { useEffect } from 'react';
 import { ArrowUpRight, Globe2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const setMeta = (name: string, content: string) => {
-  let tag = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement | null;
+const setMeta = (selector: string, attributes: Record<string, string>, content?: string) => {
+  let tag = document.head.querySelector(selector) as HTMLElement | null;
   if (!tag) {
-    tag = document.createElement('meta');
-    tag.name = name;
+    tag = document.createElement(selector.startsWith('link') ? 'link' : 'meta');
     document.head.appendChild(tag);
   }
-  tag.content = content;
+  Object.entries(attributes).forEach(([key, value]) => tag?.setAttribute(key, value));
+  if (content !== undefined) tag.setAttribute('content', content);
 };
 
 const LanguageGateway = () => {
   useEffect(() => {
+    const title = 'F.LLI FRANCHI | Brasil & Italia';
+    const description = 'F.LLI FRANCHI cria sites, aplicações, experiências digitais e soluções tecnológicas para negócios no Brasil e na Itália.';
+    const canonical = 'https://fllifranchi.com/';
+
     document.documentElement.lang = 'pt-BR';
-    document.title = 'F.LLI FRANCHI | Brasil & Italia';
-    setMeta('description', 'F.LLI FRANCHI cria sites, aplicações, experiências digitais e soluções tecnológicas para negócios no Brasil e na Itália.');
+    document.title = title;
+    setMeta('meta[name="description"]', { name: 'description' }, description);
+    setMeta('meta[property="og:title"]', { property: 'og:title' }, title);
+    setMeta('meta[property="og:description"]', { property: 'og:description' }, description);
+    setMeta('meta[property="og:url"]', { property: 'og:url' }, canonical);
+    setMeta('link[rel="canonical"]', { rel: 'canonical', href: canonical });
   }, []);
 
   return (
@@ -50,10 +58,7 @@ const LanguageGateway = () => {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <Link
-              to="/br"
-              className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#e9e5d8] p-7 text-[#171713] transition duration-500 hover:-translate-y-1 hover:border-[#a9ad8d] md:p-10"
-            >
+            <Link to="/br" className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#e9e5d8] p-7 text-[#171713] transition duration-500 hover:-translate-y-1 hover:border-[#a9ad8d] md:p-10">
               <div className="absolute right-0 top-0 h-1 w-full bg-gradient-to-r from-[#168b46] via-[#f3f0e6] to-[#d8a42b]" />
               <div className="flex min-h-56 flex-col justify-between">
                 <div className="flex items-center justify-between">
@@ -67,10 +72,7 @@ const LanguageGateway = () => {
               </div>
             </Link>
 
-            <Link
-              to="/it"
-              className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#74795a] p-7 text-white transition duration-500 hover:-translate-y-1 hover:border-white/30 md:p-10"
-            >
+            <Link to="/it" className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#74795a] p-7 text-white transition duration-500 hover:-translate-y-1 hover:border-white/30 md:p-10">
               <div className="absolute right-0 top-0 h-1 w-full bg-gradient-to-r from-[#168b46] via-white to-[#cc3c3c]" />
               <div className="flex min-h-56 flex-col justify-between">
                 <div className="flex items-center justify-between">
