@@ -17,22 +17,21 @@ const DesenvolvimentoWebForm: React.FC<DesenvolvimentoWebFormProps> = ({ respost
   };
 
   return (
-    <div className="space-y-8">
+    <form className="space-y-8" aria-label="Formulário de desenvolvimento web" autoComplete="on">
       <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-lg border border-blue-200">
-        <h3 className="text-xl font-bold text-blue-900 mb-2">Desenvolvimento Web</h3>
+        <h3 className="text-xl font-bold text-blue-900 mb-2" id="form-title">Desenvolvimento Web</h3>
         <p className="text-blue-700">Vamos detalhar seu projeto de site para criar um orçamento preciso</p>
       </div>
 
       {/* Tipo do Site */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
-          Qual é o tipo de site que você deseja? *
-        </label>
+      <fieldset className="space-y-3" aria-labelledby="tipo-site-label">
+        <legend id="tipo-site-label" className="block text-sm font-semibold text-gray-800 mb-1">Qual é o tipo de site que você deseja? *</legend>
         <select 
           className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
           value={respostas.tipoSite || ''}
           onChange={(e) => handleChange('tipoSite', e.target.value)}
           required
+          aria-required="true"
         >
           <option value="">Selecione o tipo de site</option>
           <option value="institucional">Site Institucional - Apresentar empresa/profissional</option>
@@ -45,18 +44,17 @@ const DesenvolvimentoWebForm: React.FC<DesenvolvimentoWebFormProps> = ({ respost
           <option value="educacional">Plataforma Educacional</option>
           <option value="outro">Outro tipo</option>
         </select>
-      </div>
+      </fieldset>
 
       {/* Quantidade de Páginas */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
-          Quantas páginas aproximadamente o site terá? *
-        </label>
+      <fieldset className="space-y-3" aria-labelledby="quantidade-paginas-label">
+        <legend id="quantidade-paginas-label" className="block text-sm font-semibold text-gray-800 mb-1">Quantas páginas aproximadamente o site terá? *</legend>
         <select 
           className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
           value={respostas.quantidadePaginas || ''}
           onChange={(e) => handleChange('quantidadePaginas', e.target.value)}
           required
+          aria-required="true"
         >
           <option value="">Selecione a quantidade</option>
           <option value="1">1 página</option>
@@ -67,13 +65,11 @@ const DesenvolvimentoWebForm: React.FC<DesenvolvimentoWebFormProps> = ({ respost
           <option value="16-20">16 a 20 páginas</option>
           <option value="20+">Mais de 20 páginas</option>
         </select>
-      </div>
+      </fieldset>
 
       {/* Domínio */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
-          Você já possui domínio (www.seusite.com.br)? *
-        </label>
+      <fieldset className="space-y-3" aria-labelledby="dominio-label">
+        <legend id="dominio-label" className="block text-sm font-semibold text-gray-800 mb-1">Você já possui domínio (www.seusite.com.br)? *</legend>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[
             { value: 'sim', label: 'Sim, já tenho' },
@@ -88,18 +84,19 @@ const DesenvolvimentoWebForm: React.FC<DesenvolvimentoWebFormProps> = ({ respost
                 checked={respostas.possuiDominio === opcao.value}
                 onChange={(e) => handleChange('possuiDominio', e.target.value)}
                 className="mr-3 text-blue-600"
+                aria-checked={respostas.possuiDominio === opcao.value}
+                aria-labelledby={`dominio-label dominio-${opcao.value}`}
+                required
               />
-              <span className="text-sm font-medium">{opcao.label}</span>
+              <span id={`dominio-${opcao.value}`} className="text-sm font-medium">{opcao.label}</span>
             </label>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {/* Hospedagem */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
-          Você já possui hospedagem? *
-        </label>
+      <fieldset className="space-y-3" aria-labelledby="hospedagem-label">
+        <legend id="hospedagem-label" className="block text-sm font-semibold text-gray-800 mb-1">Você já possui hospedagem? *</legend>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[
             { value: 'sim', label: 'Sim, já tenho' },
@@ -114,12 +111,15 @@ const DesenvolvimentoWebForm: React.FC<DesenvolvimentoWebFormProps> = ({ respost
                 checked={respostas.possuiHospedagem === opcao.value}
                 onChange={(e) => handleChange('possuiHospedagem', e.target.value)}
                 className="mr-3 text-blue-600"
+                aria-checked={respostas.possuiHospedagem === opcao.value}
+                aria-labelledby={`hospedagem-label hospedagem-${opcao.value}`}
+                required
               />
-              <span className="text-sm font-medium">{opcao.label}</span>
+              <span id={`hospedagem-${opcao.value}`} className="text-sm font-medium">{opcao.label}</span>
             </label>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {/* Precisa de Painel Administrativo */}
       <div className="space-y-3">
@@ -317,7 +317,7 @@ Exemplo:
           rows={5}
         />
       </div>
-    </div>
+    </form>
   );
 };
 

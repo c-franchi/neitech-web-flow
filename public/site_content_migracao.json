@@ -1,0 +1,177 @@
+{
+  "hero": {
+    "id": "hero",
+    "name": "hero",
+    "label": "Hero/Banner Principal",
+    "content": {
+      "titulo": "Bem-vindo à NYV8 Digital",
+      "subtitulo": "Soluções criativas para seu negócio",
+      "imagem": "",
+      "cta": "Solicite um orçamento",
+      "ctaLink": "/contato"
+    }
+  },
+  "menu": {
+    "id": "menu",
+    "name": "menu",
+    "label": "Menu Principal",
+    "content": {
+      "itens": [
+        { "label": "Início", "href": "#home", "id": "home" },
+        { "label": "Serviços", "href": "#services", "id": "services" },
+        { "label": "Portfolio", "href": "#portfolio", "id": "portfolio" },
+        { "label": "Contato", "href": "#contact", "id": "contact" }
+      ]
+    }
+  },
+  "services": {
+    "id": "services",
+    "name": "services",
+    "label": "Serviços",
+    "content": {
+      "titulo": "Nossos Serviços",
+      "subtitulo": "Oferecemos soluções digitais completas para impulsionar seu negócio no mundo online",
+      "servicos": [
+        {
+          "title": "Desenvolvimento Web",
+          "description": "Desenvolvimento de sites modernos, responsivos e otimizados para SEO. Soluções sob medida para destacar sua marca e gerar resultados.",
+          "features": ["Responsivo", "SEO Otimizado", "Performance", "Segurança"],
+          "icon": "Globe"
+        },
+        {
+          "title": "Aplicativos Mobile",
+          "description": "Aplicativos nativos e híbridos para iOS e Android, com foco em usabilidade, performance e integração com seu negócio.",
+          "features": ["iOS & Android", "UX/UI", "Performance", "Publicação"],
+          "icon": "Smartphone"
+        },
+        {
+          "title": "Design Digital",
+          "description": "Design de marcas, criação de identidade visual, logos, cartões digitais interativos e materiais gráficos para fortalecer sua presença digital.",
+          "features": ["Logos", "Cartões Digitais", "Banners", "Identidade Visual"],
+          "icon": "Palette"
+        },
+        {
+          "title": "Cartão Digital",
+          "description": "Cartão de visita digital interativo, responsivo e com compartilhamento via QR Code.",
+          "features": ["Interativo", "QR Code", "Responsivo", "Compartilhamento"],
+          "icon": "MousePointer"
+        },
+        {
+          "title": "Vídeos Corporativos",
+          "description": "Produção de vídeos institucionais, animações, vídeos para redes sociais e campanhas publicitárias.",
+          "features": ["Institucional", "Animação", "Redes Sociais", "Campanhas"],
+          "icon": "Video"
+        },
+        {
+          "title": "Marketing Digital",
+          "description": "Gestão de tráfego, campanhas de anúncios, SEO, social media e estratégias para alavancar sua presença online.",
+          "features": ["Tráfego Pago", "SEO", "Social Media", "Anúncios"],
+          "icon": "Megaphone"
+        }
+      ],
+      "cta": "Solicitar Orçamento"
+    }
+  },
+  "portfolio": {
+    "id": "portfolio",
+    "name": "portfolio",
+    "label": "Portfólio",
+    "content": {
+      "titulo": "Nosso Portfólio",
+      "subtitulo": "Conheça alguns dos projetos que desenvolvemos com excelência e inovação",
+      "projetos": [
+        {
+          "id": 1,
+          "title": "E-commerce Moderno",
+          "category": "web",
+          "image": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80",
+          "description": "Plataforma de e-commerce com design moderno, checkout seguro e painel administrativo personalizado.",
+          "technologies": ["React", "Node.js", "MongoDB"],
+          "link": "https://exemplo-ecommerce.com",
+          "github": "https://github.com/exemplo/ecommerce"
+        },
+        {
+          "id": 2,
+          "title": "Landing Page Startup",
+          "category": "web",
+          "image": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+          "description": "Landing page para captação de leads, integração com CRM e automação de marketing.",
+          "technologies": ["Next.js", "Vercel", "SendGrid"],
+          "link": "",
+          "github": ""
+        },
+        {
+          "id": 3,
+          "title": "Blog de Viagens",
+          "category": "web",
+          "image": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80",
+          "description": "Blog responsivo com sistema de comentários, busca e painel de administração.",
+          "technologies": ["Gatsby", "GraphQL", "Netlify"],
+          "link": "",
+          "github": ""
+        },
+        {
+          "id": 4,
+          "title": "Sistema de Gestão",
+          "category": "web",
+          "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
+          "description": "Dashboard administrativo com analytics em tempo real, controle de permissões e relatórios customizados.",
+          "technologies": ["Vue.js", "Python", "PostgreSQL"],
+          "link": "",
+          "github": "https://github.com/exemplo/sistema-gestao"
+        },
+        {
+          "id": 5,
+          "title": "Cartão Digital",
+          "category": "design",
+          "image": "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?auto=format&fit=crop&w=800&q=80",
+          "description": "Cartão de visita digital interativo, responsivo e com compartilhamento via QR Code.",
+          "technologies": ["HTML5", "CSS3", "JavaScript"],
+          "link": "",
+          "github": ""
+        },
+        {
+          "id": 6,
+          "title": "App Fitness",
+          "category": "mobile",
+          "image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80",
+          "description": "Aplicativo para acompanhamento de exercícios, dieta e integração com dispositivos de saúde.",
+          "technologies": ["Flutter", "Dart", "HealthKit"],
+          "link": "",
+          "github": ""
+        }
+      ],
+      "cta": "Ver Todos os Projetos"
+    }
+  },
+  "footer": {
+    "id": "footer",
+    "name": "footer",
+    "label": "Rodapé",
+    "content": {
+      "anoAtual": 2026,
+      "empresa": "NYV8 Digital",
+      "links": {
+        "services": [
+          { "label": "Desenvolvimento Web", "href": "#services" },
+          { "label": "Aplicativos Mobile", "href": "#services" },
+          { "label": "Design Digital", "href": "#services" },
+          { "label": "Cartão Digital", "href": "#services" },
+          { "label": "Vídeos Corporativos", "href": "#services" }
+        ],
+        "company": [
+          { "label": "Sobre Nós", "href": "#about" },
+          { "label": "Portfolio", "href": "#portfolio" },
+          { "label": "Contato", "href": "#contact" },
+          { "label": "Orçamento", "href": "#contact" }
+        ]
+      },
+      "contato": {
+        "email": "contato@nyv8digital.com.br",
+        "telefone": "(16) 99781-3038",
+        "whatsapp": "https://wa.me/5516997813038",
+        "endereco": "Araraquara, SP"
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Clock, CheckCircle, XCircle, Eye, Plus, Search, Upload, FileText, ExternalLink, MessageCircle, Trash2, Info } from 'lucide-react';
 import { OrcamentoService } from '@/services/orcamentoService';
 import { SolicitacaoOrcamento } from '@/types/orcamentos';
@@ -9,6 +10,7 @@ import VisualizarDetalhes from './VisualizarDetalhes';
 import ConfirmarExclusao from './ConfirmarExclusao';
 
 const AdminDashboard = () => {
+  const navigate = typeof window !== 'undefined' ? (window.location ? (path) => window.location.href = path : () => {}) : () => {};
   const [solicitacoes, setSolicitacoes] = useState<SolicitacaoOrcamento[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtroStatus, setFiltroStatus] = useState<string>('todas');
@@ -202,200 +204,165 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Painel Administrativo
-          </h1>
-          <p className="text-gray-600">
-            Gerencie as solicitações de orçamento e acompanhe o status de cada cliente
-          </p>
-        </div>
-
-        {/* Estatísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total</p>
-                <p className="text-2xl font-bold text-gray-800">{solicitacoes.length}</p>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Eye className="h-6 w-6 text-blue-600" />
-              </div>
+    <>
+      <div className="flex justify-end mt-4 mr-4">
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow font-semibold"
+          onClick={() => navigate('/')}
+        >
+          Voltar para o site
+        </button>
+      </div>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          {/* Header */}
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                Painel Administrativo
+              </h1>
+              <p className="text-gray-600">
+                Gerencie as solicitações de orçamento e acompanhe o status de cada cliente
+              </p>
             </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Recebidas</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {solicitacoes.filter(s => s.statusSolicitacao === 'solicitacao_recebida').length}
-                </p>
-              </div>
-              <div className="p-3 bg-yellow-100 rounded-full">
-                <Clock className="h-6 w-6 text-yellow-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Aguard. Detalhe</p>
-                <p className="text-2xl font-bold text-blue-600">
-                  {solicitacoes.filter(s => s.statusSolicitacao === 'aguardando_detalhamento').length}
-                </p>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Eye className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Aguard. Orçamento</p>
-                <p className="text-2xl font-bold text-purple-600">
-                  {solicitacoes.filter(s => s.statusSolicitacao === 'aguardando_orcamento').length}
-                </p>
-              </div>
-              <div className="p-3 bg-purple-100 rounded-full">
-                <Clock className="h-6 w-6 text-purple-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Disponíveis</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {solicitacoes.filter(s => s.statusSolicitacao === 'orcamento_disponivel').length}
-                </p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-full">
-                <FileText className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Finalizados</p>
-                <p className="text-2xl font-bold text-gray-600">
-                  {solicitacoes.filter(s => s.statusSolicitacao === 'finalizado').length}
-                </p>
-              </div>
-              <div className="p-3 bg-gray-100 rounded-full">
-                <CheckCircle className="h-6 w-6 text-gray-600" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Filtros */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Pesquisar
-              </label>
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Pesquisar por nome, email ou serviço..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="w-full md:w-64">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Status
-              </label>
-              <select
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={filtroStatus}
-                onChange={(e) => setFiltroStatus(e.target.value)}
+            <div className="w-full sm:w-auto flex justify-center sm:justify-end mt-4 sm:mt-0">
+              <a
+                href="/admin/editor"
+                className="inline-flex items-center px-5 py-3 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-lg shadow transition-colors duration-200 w-full sm:w-auto justify-center"
+                title="Editar conteúdo do site"
+                style={{ minWidth: 160 }}
               >
-                <option value="todas">Todas</option>
-                <option value="solicitacao_recebida">Solicitação Recebida</option>
-                <option value="aguardando_detalhamento">Aguardando Detalhamento</option>
-                <option value="aguardando_orcamento">Aguardando Orçamento</option>
-                <option value="orcamento_disponivel">Orçamento Disponível</option>
-                <option value="orcamento_enviado">Orçamento Enviado</option>
-                <option value="finalizado">Finalizado</option>
-              </select>
+                <FileText className="mr-2" size={18} />
+                Editar Site
+              </a>
             </div>
           </div>
-        </div>
-
-        {/* Lista de Solicitações */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800">
-              Solicitações de Orçamento ({solicitacoesFiltradas.length})
-            </h2>
+          {/* Estatísticas */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white rounded-xl shadow-sm p-4 text-center">
+              <p className="text-2xl font-bold text-gray-800">{solicitacoes.length}</p>
+              <p className="text-sm text-gray-500">Total</p>
+            </div>
+            <div className="bg-yellow-50 rounded-xl shadow-sm p-4 text-center">
+              <p className="text-2xl font-bold text-yellow-700">
+                {solicitacoes.filter(s => s.statusSolicitacao === 'solicitacao_recebida' || s.statusSolicitacao === '').length}
+              </p>
+              <p className="text-sm text-yellow-600">Pendentes</p>
+            </div>
+            <div className="bg-blue-50 rounded-xl shadow-sm p-4 text-center">
+              <p className="text-2xl font-bold text-blue-700">
+                {solicitacoes.filter(s => s.statusSolicitacao === 'aguardando_detalhamento' || s.statusSolicitacao === 'aguardando_orcamento').length}
+              </p>
+              <p className="text-sm text-blue-600">Em andamento</p>
+            </div>
+            <div className="bg-green-50 rounded-xl shadow-sm p-4 text-center">
+              <p className="text-2xl font-bold text-green-700">
+                {solicitacoes.filter(s => s.statusSolicitacao === 'orcamento_enviado' || s.statusSolicitacao === 'finalizado').length}
+              </p>
+              <p className="text-sm text-green-600">Concluídos</p>
+            </div>
           </div>
 
+          {/* Filtros e Busca */}
+          <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+              <input
+                type="text"
+                placeholder="Buscar por nome, email ou serviço..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <select
+              value={filtroStatus}
+              onChange={(e) => setFiltroStatus(e.target.value)}
+              className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="todas">Todos os status</option>
+              <option value="solicitacao_recebida">Solicitação Recebida</option>
+              <option value="aguardando_detalhamento">Aguardando Detalhamento</option>
+              <option value="aguardando_orcamento">Aguardando Orçamento</option>
+              <option value="orcamento_disponivel">Orçamento Disponível</option>
+              <option value="orcamento_enviado">Orçamento Enviado</option>
+              <option value="finalizado">Finalizado</option>
+            </select>
+          </div>
+
+          {/* Lista de Solicitações */}
           {solicitacoesFiltradas.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
-              Nenhuma solicitação encontrada com os filtros aplicados.
+            <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+              <Info size={48} className="mx-auto text-gray-300 mb-4" />
+              <p className="text-gray-500 text-lg">Nenhuma solicitação encontrada.</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className="space-y-4">
               {solicitacoesFiltradas.map((solicitacao) => (
-                <div key={solicitacao.id} className="p-6 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-start justify-between">
+                <div key={solicitacao.id} className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-3">
-                        <h3 className="text-lg font-semibold text-gray-800">
-                          {solicitacao.nomeCliente}
-                        </h3>
-                        <span className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(solicitacao.statusSolicitacao)}`}>
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-800">{solicitacao.nomeCliente}</h3>
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(solicitacao.statusSolicitacao)}`}>
                           {getStatusIcon(solicitacao.statusSolicitacao)}
-                          <span>{getStatusLabel(solicitacao.statusSolicitacao)}</span>
+                          {getStatusLabel(solicitacao.statusSolicitacao)}
                         </span>
                       </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-                        <div>
-                          <strong>Email:</strong> {solicitacao.emailCliente}
-                        </div>
-                        <div>
-                          <strong>WhatsApp:</strong> {solicitacao.whatsappCliente}
-                        </div>
-                        <div>
-                          <strong>Serviço:</strong> {solicitacao.servicoInteresse}
-                        </div>
-                        <div>
-                          <strong>Data:</strong> {formatarData(solicitacao.dataCreacao)}
-                        </div>
+                      <div className="text-sm text-gray-500 space-y-1">
+                        <p><strong>Serviço:</strong> {solicitacao.servicoInteresse}</p>
+                        <p><strong>Email:</strong> {solicitacao.emailCliente}</p>
+                        <p><strong>WhatsApp:</strong> {solicitacao.whatsappCliente}</p>
+                        {solicitacao.dataCriacao && (
+                          <p><strong>Data:</strong> {formatarData(solicitacao.dataCriacao instanceof Date ? solicitacao.dataCriacao : new Date(solicitacao.dataCriacao))}</p>
+                        )}
                       </div>
-                      
-                      {solicitacao.mensagem && (
-                        <div className="mt-3">
-                          <strong className="text-sm text-gray-700">Mensagem:</strong>
-                          <p className="text-sm text-gray-600 mt-1">{solicitacao.mensagem}</p>
-                        </div>
-                      )}
                     </div>
-                    
-                    <div className="flex flex-col space-y-2 ml-4">
+
+                    {/* Ações */}
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => abrirDetalhesModal(solicitacao)}
+                        className="inline-flex items-center gap-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm transition-colors"
+                        title="Ver detalhes"
+                      >
+                        <Eye size={16} /> Detalhes
+                      </button>
+
+                      {(solicitacao.statusSolicitacao === 'aguardando_orcamento' || solicitacao.statusSolicitacao === 'solicitacao_recebida') && (
+                        <button
+                          onClick={() => abrirUploadModal(solicitacao)}
+                          className="inline-flex items-center gap-1 px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm transition-colors"
+                          title="Enviar orçamento"
+                        >
+                          <Upload size={16} /> Enviar Orçamento
+                        </button>
+                      )}
+
+                      {(solicitacao.statusSolicitacao === 'orcamento_disponivel' || solicitacao.statusSolicitacao === 'orcamento_enviado') && (
+                        <button
+                          onClick={() => abrirVisualizarModal(solicitacao)}
+                          className="inline-flex items-center gap-1 px-3 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-colors"
+                          title="Ver orçamento"
+                        >
+                          <FileText size={16} /> Ver Orçamento
+                        </button>
+                      )}
+
+                      <button
+                        onClick={() => gerarLinkWhatsApp(solicitacao)}
+                        className="inline-flex items-center gap-1 px-3 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg text-sm transition-colors"
+                        title="Enviar WhatsApp"
+                      >
+                        <MessageCircle size={16} /> WhatsApp
+                      </button>
+
+                      {/* Seletor de Status */}
                       <select
-                        className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         value={solicitacao.statusSolicitacao}
                         onChange={(e) => atualizarStatus(solicitacao.id, e.target.value as SolicitacaoOrcamento['statusSolicitacao'])}
+                        className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
                       >
-                        <option value="">Aguardando</option>
                         <option value="solicitacao_recebida">Solicitação Recebida</option>
                         <option value="aguardando_detalhamento">Aguardando Detalhamento</option>
                         <option value="aguardando_orcamento">Aguardando Orçamento</option>
@@ -403,65 +370,14 @@ const AdminDashboard = () => {
                         <option value="orcamento_enviado">Orçamento Enviado</option>
                         <option value="finalizado">Finalizado</option>
                       </select>
-                      
-                      <div className="flex space-x-2">
-                        {/* Botão Ver Detalhes */}
-                        <button
-                          onClick={() => abrirDetalhesModal(solicitacao)}
-                          className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm flex items-center space-x-1"
-                        >
-                          <Info size={14} />
-                          <span>Detalhes</span>
-                        </button>
-                        
-                        {/* Botão Excluir */}
-                        <button
-                          onClick={() => abrirExclusaoModal(solicitacao)}
-                          className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm flex items-center space-x-1"
-                        >
-                          <Trash2 size={14} />
-                          <span>Excluir</span>
-                        </button>
-                      </div>
-                      
-                      {/* Botão Reenviar WhatsApp */}
+
                       <button
-                        onClick={() => reenviarWhatsApp(solicitacao)}
-                        className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center space-x-1"
+                        onClick={() => abrirExclusaoModal(solicitacao)}
+                        className="inline-flex items-center gap-1 px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm transition-colors"
+                        title="Excluir solicitação"
                       >
-                        <MessageCircle size={14} />
-                        <span>Reenviar WhatsApp</span>
+                        <Trash2 size={16} />
                       </button>
-                      
-                      {/* Botões de ação baseados no status */}
-                      {(solicitacao.statusSolicitacao === 'aguardando_orcamento') && (
-                        <button
-                          onClick={() => abrirUploadModal(solicitacao)}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm flex items-center space-x-1"
-                        >
-                          <Upload size={14} />
-                          <span>Anexar Orçamento</span>
-                        </button>
-                      )}
-                      
-                      {solicitacao.pdfUrl && (
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => abrirVisualizarModal(solicitacao)}
-                            className="px-3 py-1 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm flex items-center space-x-1"
-                          >
-                            <Eye size={14} />
-                            <span>Ver PDF</span>
-                          </button>
-                          <button
-                            onClick={() => gerarLinkWhatsApp(solicitacao)}
-                            className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center space-x-1"
-                          >
-                            <ExternalLink size={14} />
-                            <span>WhatsApp</span>
-                          </button>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -470,7 +386,6 @@ const AdminDashboard = () => {
           )}
         </div>
       </div>
-
       {/* Modais */}
       {uploadModalOpen && solicitacaoSelecionada && (
         <UploadOrcamento
@@ -486,7 +401,6 @@ const AdminDashboard = () => {
           }}
         />
       )}
-
       {visualizarModalOpen && solicitacaoSelecionada && (
         <VisualizarOrcamento
           solicitacao={solicitacaoSelecionada}
@@ -496,7 +410,6 @@ const AdminDashboard = () => {
           }}
         />
       )}
-
       {detalhesModalOpen && solicitacaoSelecionada && (
         <VisualizarDetalhes
           solicitacao={solicitacaoSelecionada}
@@ -506,7 +419,6 @@ const AdminDashboard = () => {
           }}
         />
       )}
-
       {exclusaoModalOpen && solicitacaoSelecionada && (
         <ConfirmarExclusao
           solicitacao={solicitacaoSelecionada}
@@ -517,7 +429,7 @@ const AdminDashboard = () => {
           }}
         />
       )}
-    </div>
+    </>
   );
 };
 

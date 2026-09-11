@@ -14,7 +14,7 @@ const VisualizarOrcamento: React.FC<VisualizarOrcamentoProps> = ({ solicitacao, 
 
   // Obter URL base do site
   const getSiteUrl = () => {
-    return import.meta.env.VITE_PUBLIC_SITE_URL || 'https://neitechweb.web.app';
+    return 'https://nyv8digital.com.br';
   };
 
   useEffect(() => {

@@ -1,16 +1,21 @@
-
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import Index from './pages/Index';
-import Admin from './pages/Admin';
-import OrcamentoPublico from './pages/OrcamentoPublico';
-import StatusSolicitacao from './pages/StatusSolicitacao';
-import FormularioDetalhado from './components/FormularioDetalhado';
-import ConfirmacaoOrcamento from './pages/ConfirmacaoOrcamento';
-import NotFound from './pages/NotFound';
 import ScrollToTop from './components/ScrollToTop';
-import { Toaster } from '@/components/ui/toaster';
-import './App.css';
+import { Toaster } from './components/ui/toaster';
+
+const Admin = lazy(() => import('./pages/Admin'));
+const AdminSite = lazy(() => import('./pages/AdminSite'));
+const AdminEditorInline = lazy(() => import('./pages/AdminEditorInline'));
+const OrcamentoPublico = lazy(() => import('./pages/OrcamentoPublico'));
+const StatusSolicitacao = lazy(() => import('./pages/StatusSolicitacao'));
+const FormularioDetalhado = lazy(() => import('./components/FormularioDetalhado'));
+const ConfirmacaoOrcamento = lazy(() => import('./pages/ConfirmacaoOrcamento'));
+const PoliticaPrivacidade = lazy(() => import('./pages/PoliticaPrivacidade'));
+const SetupSections = lazy(() => import('./pages/SetupSections'));
+const ImportContent = lazy(() => import('./pages/ImportContent'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 /**
  * App - Componente principal da aplicação
@@ -20,15 +25,22 @@ function App() {
   return (
     <Router>
       <div className="w-full min-h-screen">
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/orcamento/:id" element={<OrcamentoPublico />} />
-          <Route path="/status/:id" element={<StatusSolicitacao />} />
-          <Route path="/formulario/:id" element={<FormularioDetalhado />} />
-          <Route path="/confirmacao/:id" element={<ConfirmacaoOrcamento />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-white text-slate-500">Carregando...</div>}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin-site" element={<AdminSite />} />
+            <Route path="/admin/editor" element={<AdminEditorInline />} />
+            <Route path="/orcamento/:id" element={<OrcamentoPublico />} />
+            <Route path="/status/:id" element={<StatusSolicitacao />} />
+            <Route path="/formulario/:id" element={<FormularioDetalhado />} />
+            <Route path="/confirmacao/:id" element={<ConfirmacaoOrcamento />} />
+            <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+            <Route path="/setup-sections" element={<SetupSections />} />
+            <Route path="/import-content" element={<ImportContent />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
         <ScrollToTop />
         <Toaster />
       </div>

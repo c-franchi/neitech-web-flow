@@ -17,17 +17,15 @@ const DesignDigitalForm: React.FC<DesignDigitalFormProps> = ({ respostas, setRes
   };
 
   return (
-    <div className="space-y-8">
+    <form className="space-y-8" aria-label="Formulário de design digital" autoComplete="on">
       <div className="bg-gradient-to-r from-pink-50 to-rose-50 p-6 rounded-lg border border-pink-200">
-        <h3 className="text-xl font-bold text-pink-900 mb-2">Design Digital</h3>
+        <h3 className="text-xl font-bold text-pink-900 mb-2" id="form-title">Design Digital</h3>
         <p className="text-pink-700">Vamos criar materiais visuais incríveis para sua marca</p>
       </div>
 
       {/* Tipo de Material */}
-      <div className="space-y-4">
-        <label className="block text-sm font-semibold text-gray-800">
-          Que tipo de material de design você precisa? * (marque todos que se aplicam)
-        </label>
+      <fieldset className="space-y-4" aria-labelledby="tipo-material-label">
+        <legend id="tipo-material-label" className="block text-sm font-semibold text-gray-800 mb-1">Que tipo de material de design você precisa? * (marque todos que se aplicam)</legend>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[
             'Logo/Logotipo',
@@ -47,26 +45,42 @@ const DesignDigitalForm: React.FC<DesignDigitalFormProps> = ({ respostas, setRes
                 checked={respostas.tipoMaterial?.[tipo] || false}
                 onChange={(e) => handleCheckboxChange('tipoMaterial', tipo, e.target.checked)}
                 className="mr-3 text-pink-600"
+                aria-checked={respostas.tipoMaterial?.[tipo] || false}
+                aria-labelledby={`tipo-material-label tipo-material-${tipo}`}
               />
-              <span className="text-sm font-medium">{tipo}</span>
+              <span className="text-sm text-gray-800" id={`tipo-material-${tipo}`}>{tipo}</span>
             </label>
           ))}
         </div>
+      </fieldset>
+
+      {/* Cores Preferidas */}
+
+      <div className="space-y-3">
+        <label htmlFor="coresPreferidas" className="block text-sm font-semibold text-gray-800">
+          Você tem cores preferidas ou já possui uma marca/identidade?
+        </label>
+        <textarea
+          id="coresPreferidas"
+          className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+          placeholder={"Exemplo:\n- Cores: azul e branco (como Facebook)\n- Já tenho logo, só preciso adaptar\n- Sem preferência, deixo com vocês\n- Cores que NÃO gosto: rosa, roxo"}
+          value={respostas.coresPreferidas || ''}
+          onChange={(e) => handleChange('coresPreferidas', e.target.value)}
+          rows={4}
+        />
       </div>
 
-      {/* Formato de Entrega */}
-      <div className="space-y-4">
-        <label className="block text-sm font-semibold text-gray-800">
-          Em que formato você precisa receber os arquivos? * (marque todos que se aplicam)
-        </label>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* Formatos de Entrega */}
+      <fieldset className="space-y-3" aria-labelledby="formato-entrega-label">
+        <legend id="formato-entrega-label" className="block text-sm font-semibold text-gray-800 mb-1">Quais formatos de entrega você precisa? *</legend>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {[
-            'PNG (para web)',
-            'JPG (para impressão)',
-            'PDF (vetorial)',
-            'SVG (sites)',
-            'AI/PSD (editável)',
-            'Tamanhos redes sociais'
+            'PNG',
+            'JPG',
+            'PDF',
+            'SVG',
+            'Arquivo editável (AI, PSD, etc.)',
+            'Outros'
           ].map((formato) => (
             <label key={formato} className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
               <input
@@ -74,18 +88,19 @@ const DesignDigitalForm: React.FC<DesignDigitalFormProps> = ({ respostas, setRes
                 checked={respostas.formatoEntrega?.[formato] || false}
                 onChange={(e) => handleCheckboxChange('formatoEntrega', formato, e.target.checked)}
                 className="mr-3 text-pink-600"
+                aria-checked={respostas.formatoEntrega?.[formato] || false}
+                aria-labelledby={`formato-entrega-label formato-entrega-${formato}`}
+                required
               />
-              <span className="text-xs">{formato}</span>
+              <span id={`formato-entrega-${formato}`} className="text-xs">{formato}</span>
             </label>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {/* Estilo Visual */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
-          Que estilo visual você prefere? *
-        </label>
+      <fieldset className="space-y-3" aria-labelledby="estilo-visual-label">
+        <legend id="estilo-visual-label" className="block text-sm font-semibold text-gray-800 mb-1">Que estilo visual você prefere? *</legend>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {[
             { value: 'moderno', label: 'Moderno e clean' },
@@ -103,25 +118,26 @@ const DesignDigitalForm: React.FC<DesignDigitalFormProps> = ({ respostas, setRes
                 checked={respostas.estiloVisual === opcao.value}
                 onChange={(e) => handleChange('estiloVisual', e.target.value)}
                 className="mr-3 text-pink-600"
+                aria-checked={respostas.estiloVisual === opcao.value}
+                aria-labelledby={`estilo-visual-label estilo-visual-${opcao.value}`}
+                required
               />
-              <span className="text-sm font-medium">{opcao.label}</span>
+              <span id={`estilo-visual-${opcao.value}`} className="text-sm font-medium">{opcao.label}</span>
             </label>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {/* Cores Preferidas */}
+
       <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
+        <label htmlFor="coresPreferidas" className="block text-sm font-semibold text-gray-800">
           Você tem cores preferidas ou já possui uma marca/identidade?
         </label>
         <textarea
+          id="coresPreferidas"
           className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
-          placeholder="Exemplo:
-- Cores: azul e branco (como Facebook)
-- Já tenho logo, só preciso adaptar
-- Sem preferência, deixo com vocês
-- Cores que NÃO gosto: rosa, roxo"
+          placeholder={"Exemplo:\n- Cores: azul e branco (como Facebook)\n- Já tenho logo, só preciso adaptar\n- Sem preferência, deixo com vocês\n- Cores que NÃO gosto: rosa, roxo"}
           value={respostas.coresPreferidas || ''}
           onChange={(e) => handleChange('coresPreferidas', e.target.value)}
           rows={4}
@@ -199,7 +215,7 @@ Exemplo: 'Gosto do estilo do logo da Nike, simples mas marcante'"
           rows={3}
         />
       </div>
-    </div>
+    </form>
   );
 };
 

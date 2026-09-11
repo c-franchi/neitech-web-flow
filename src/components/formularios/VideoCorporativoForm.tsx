@@ -17,144 +17,25 @@ const VideoCorporativoForm: React.FC<VideoCorporativoFormProps> = ({ respostas, 
   };
 
   return (
-    <div className="space-y-8">
-      <div className="bg-gradient-to-r from-red-50 to-orange-50 p-6 rounded-lg border border-red-200">
-        <h3 className="text-xl font-bold text-red-900 mb-2">Vídeo Corporativo</h3>
-        <p className="text-red-700">Vamos criar um vídeo profissional que represente sua marca</p>
+    <form className="space-y-8" aria-label="Formulário de vídeo corporativo" autoComplete="on">
+      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-lg border border-indigo-200">
+        <h3 className="text-xl font-bold text-indigo-900 mb-2" id="form-title">Vídeo Corporativo</h3>
+        <p className="text-indigo-700">Conte-nos mais sobre o vídeo que deseja produzir</p>
       </div>
-
       {/* Objetivo do Vídeo */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
-          Qual é o objetivo principal do vídeo? *
-        </label>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {[
-            { value: 'institucional', label: 'Institucional - Apresentar a empresa' },
-            { value: 'produto', label: 'Apresentação de produto/serviço' },
-            { value: 'equipe', label: 'Apresentação da equipe' },
-            { value: 'evento', label: 'Cobertura de evento' },
-            { value: 'depoimento', label: 'Depoimentos de clientes' },
-            { value: 'outro', label: 'Outro objetivo' }
-          ].map((opcao) => (
-            <label key={opcao.value} className="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-red-300 transition-colors">
-              <input
-                type="radio"
-                name="objetivoVideo"
-                value={opcao.value}
-                checked={respostas.objetivoVideo === opcao.value}
-                onChange={(e) => handleChange('objetivoVideo', e.target.value)}
-                className="mr-3 text-red-600"
-              />
-              <span className="text-sm font-medium">{opcao.label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Duração */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
-          Qual duração você imagina para o vídeo? *
-        </label>
-        <select 
-          className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-          value={respostas.duracaoEstimada || ''}
-          onChange={(e) => handleChange('duracaoEstimada', e.target.value)}
-          required
-        >
-          <option value="">Selecione a duração</option>
-          <option value="30-segundos">30 segundos</option>
-          <option value="1-minuto">1 minuto</option>
-          <option value="2-minutos">2 minutos</option>
-          <option value="3-5-minutos">3 a 5 minutos</option>
-          <option value="5-10-minutos">5 a 10 minutos</option>
-          <option value="10+-minutos">Mais de 10 minutos</option>
-        </select>
-      </div>
-
-      {/* Roteiro */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
-          Você já possui roteiro ou script? *
-        </label>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {[
-            { value: 'sim', label: 'Sim, já tenho pronto' },
-            { value: 'parcial', label: 'Tenho algumas ideias' },
-            { value: 'nao', label: 'Não tenho, preciso de ajuda' }
-          ].map((opcao) => (
-            <label key={opcao.value} className="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-red-300 transition-colors">
-              <input
-                type="radio"
-                name="possuiRoteiro"
-                value={opcao.value}
-                checked={respostas.possuiRoteiro === opcao.value}
-                onChange={(e) => handleChange('possuiRoteiro', e.target.value)}
-                className="mr-3 text-red-600"
-              />
-              <span className="text-sm font-medium">{opcao.label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Material Próprio */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
-          Você possui imagens, vídeos ou material próprio para usar? *
-        </label>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {[
-            { value: 'sim', label: 'Sim, vou fornecer' },
-            { value: 'parcial', label: 'Algumas coisas' },
-            { value: 'nao', label: 'Não tenho material' }
-          ].map((opcao) => (
-            <label key={opcao.value} className="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-red-300 transition-colors">
-              <input
-                type="radio"
-                name="possuiMaterial"
-                value={opcao.value}
-                checked={respostas.possuiMaterial === opcao.value}
-                onChange={(e) => handleChange('possuiMaterial', e.target.value)}
-                className="mr-3 text-red-600"
-              />
-              <span className="text-sm font-medium">{opcao.label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Serviços Necessários */}
-      <div className="space-y-4">
-        <label className="block text-sm font-semibold text-gray-800">
-          Que serviços você precisa? (marque todos que se aplicam)
-        </label>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {[
-            'Criação do roteiro',
-            'Filmagem/Gravação',
-            'Narração/Locução',
-            'Edição de vídeo',
-            'Animações/Motion',
-            'Trilha sonora',
-            'Legendas',
-            'Correção de cor',
-            'Efeitos visuais',
-            'Compressão/Otimização'
-          ].map((servico) => (
-            <label key={servico} className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-              <input
-                type="checkbox"
-                checked={respostas.servicosNecessarios?.[servico] || false}
-                onChange={(e) => handleCheckboxChange('servicosNecessarios', servico, e.target.checked)}
-                className="mr-3 text-red-600"
-              />
-              <span className="text-sm">{servico}</span>
-            </label>
-          ))}
-        </div>
-      </div>
+      <fieldset className="space-y-3" aria-labelledby="objetivo-label">
+        <legend id="objetivo-label" className="block text-sm font-semibold text-gray-800 mb-1">Qual é o objetivo principal do vídeo? *</legend>
+        <textarea
+          id="objetivo"
+          className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          placeholder="Exemplo: Apresentar a empresa, divulgar um produto, treinamento interno, institucional, etc."
+          value={respostas.objetivo || ''}
+          onChange={(e) => handleChange('objetivo', e.target.value)}
+          rows={3}
+        />
+      </fieldset>
+    </form>
+  );
 
       {/* Estilo do Vídeo */}
       <div className="space-y-3">
@@ -220,21 +101,59 @@ Exemplo:
         </select>
       </div>
 
-      {/* Observações */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
-          Observações adicionais ou detalhes específicos
-        </label>
-        <textarea
-          className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-          placeholder="Qualquer informação adicional sobre o vídeo, mensagem que quer transmitir, público-alvo, ou detalhes específicos..."
-          value={respostas.observacoes || ''}
-          onChange={(e) => handleChange('observacoes', e.target.value)}
-          rows={4}
-        />
-      </div>
-    </div>
-  );
-};
+      return (
+        <form className="space-y-8" aria-label="Formulário de vídeo corporativo" autoComplete="on">
+          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-lg border border-indigo-200">
+            <h3 className="text-xl font-bold text-indigo-900 mb-2" id="form-title">Vídeo Corporativo</h3>
+            <p className="text-indigo-700">Conte-nos mais sobre o vídeo que deseja produzir</p>
+          </div>
+          {/* Objetivo do Vídeo */}
+          <fieldset className="space-y-3" aria-labelledby="objetivo-label">
+            <legend id="objetivo-label" className="block text-sm font-semibold text-gray-800 mb-1">Qual é o objetivo principal do vídeo? *</legend>
+            <textarea
+              id="objetivo"
+              className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+              placeholder="Exemplo: Apresentar a empresa, divulgar um produto, treinamento interno, institucional, etc."
+              value={respostas.objetivo || ''}
+              onChange={(e) => handleChange('objetivo', e.target.value)}
+              rows={3}
+              required
+              aria-required="true"
+            />
+          </fieldset>
+          {/* Público-alvo */}
+          <fieldset className="space-y-3" aria-labelledby="publico-alvo-label">
+            <legend id="publico-alvo-label" className="block text-sm font-semibold text-gray-800 mb-1">Quem é o público-alvo do vídeo? *</legend>
+            <input
+              id="publicoAlvo"
+              type="text"
+              className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+              placeholder="Exemplo: Clientes, colaboradores, investidores, etc."
+              value={respostas.publicoAlvo || ''}
+              onChange={(e) => handleChange('publicoAlvo', e.target.value)}
+              required
+              aria-required="true"
+            />
+          </fieldset>
+          {/* Duração Estimada */}
+          <fieldset className="space-y-3" aria-labelledby="duracao-estimada-label">
+            <legend id="duracao-estimada-label" className="block text-sm font-semibold text-gray-800 mb-1">Qual a duração estimada do vídeo?</legend>
+            <select
+              id="duracaoEstimada"
+              className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+              value={respostas.duracaoEstimada || ''}
+              onChange={(e) => handleChange('duracaoEstimada', e.target.value)}
+            >
+              <option value="">Selecione</option>
+              <option value="ate-1-min">Até 1 minuto</option>
+              <option value="1-3-min">1 a 3 minutos</option>
+              <option value="3-5-min">3 a 5 minutos</option>
+              <option value="5-10-min">5 a 10 minutos</option>
+              <option value="10-mais">Mais de 10 minutos</option>
+            </select>
+          </fieldset>
+        </form>
+      );
+    }
 
-export default VideoCorporativoForm;
+    export default VideoCorporativoForm;

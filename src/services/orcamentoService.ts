@@ -18,14 +18,13 @@ import { SolicitacaoOrcamento, UsuarioCliente, HistoricoInteracao } from '@/type
 export class OrcamentoService {
   // Obter URL base do site
   private static getSiteUrl(): string {
-    return import.meta.env.VITE_PUBLIC_SITE_URL || 'https://neitechweb.web.app';
+    return 'https://nyv8digital.com.br';
   }
 
   // Criar solicitação de orçamento
   static async criarSolicitacao(dados: Omit<SolicitacaoOrcamento, 'id' | 'dataCreacao' | 'dataUltimaAtualizacao' | 'statusSolicitacao' | 'accessToken'>): Promise<string> {
     try {
       const accessToken = this.gerarAccessToken();
-      
       const solicitacao = {
         ...dados,
         statusSolicitacao: 'solicitacao_recebida' as any,
@@ -37,7 +36,7 @@ export class OrcamentoService {
       console.log('Criando solicitação:', solicitacao);
 
       const docRef = await addDoc(collection(db, 'solicitacoes_orcamento'), solicitacao);
-      
+
       // Criar ou atualizar usuário cliente
       await this.criarOuAtualizarCliente({
         nome: dados.nomeCliente,
@@ -518,7 +517,7 @@ Recebemos sua solicitação de orçamento para ${servico}. Em breve você poder�
 Link para acompanhar: ${linkStatus}
 
 Atenciosamente,
-Equipe NeiTech`;
+Equipe NYV8 Digital`;
 
       // Gerar link do WhatsApp sem forçar prefixo 55
       const whatsappLink = `https://wa.me/${numeroFormatado}?text=${encodeURIComponent(mensagem)}`;
@@ -568,7 +567,7 @@ ${linkFormulario}
 Este link é válido por 7 dias.
 
 Atenciosamente,
-Equipe NeiTech`;
+Equipe NYV8 Digital`;
 
       // Gerar link do WhatsApp sem forçar prefixo 55
       const whatsappLink = `https://wa.me/${numeroFormatado}?text=${encodeURIComponent(mensagem)}`;
@@ -616,7 +615,7 @@ Acesse agora: ${linkOrcamento}
 ⚠️ *Importante:* Este orçamento ficará disponível por 5 dias corridos. Após este período será automaticamente removido do sistema.
 
 Atenciosamente,
-Equipe NeiTech`;
+Equipe NYV8 Digital`;
 
       // Gerar link do WhatsApp sem forçar prefixo 55
       const whatsappLink = `https://wa.me/${numeroFormatado}?text=${encodeURIComponent(mensagem)}`;

@@ -1,21 +1,29 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Lock, Eye, EyeOff } from 'lucide-react';
 import AdminDashboard from '@/components/AdminDashboard';
+import { auth } from '@/lib/firebase';
+import { signInAnonymously, signOut } from 'firebase/auth';
 
 /**
  * Admin - Página de administração com autenticação simples
  * Features: Login básico, acesso ao dashboard administrativo
  */
+
+const AUTH_KEY = 'nyv8_admin_auth';
+
 const Admin = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem(AUTH_KEY) === 'true';
+  });
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   // Senha temporária simples - em produção, usar autenticação mais robusta
-  const ADMIN_PASSWORD = 'neitech2024';
+  const ADMIN_PASSWORD = 'nyv8digital2024';
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,16 +34,48 @@ const Admin = () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (password === ADMIN_PASSWORD) {
+      // Autentica no Firebase para permitir uploads ao Storage
+      try {
+        await signInAnonymously(auth);
+      } catch (firebaseErr) {
+        console.warn('Firebase anonymous auth falhou:', firebaseErr);
+      }
       setIsAuthenticated(true);
+      localStorage.setItem(AUTH_KEY, 'true');
+      // Redireciona para home após login
+      window.location.href = '/';
     } else {
       setError('Senha incorreta. Tente novamente.');
     }
-    
     setLoading(false);
   };
 
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem(AUTH_KEY);
+    signOut(auth).catch(() => {});
+  };
+
+  // Garante sessão Firebase Auth ao carregar se já autenticado
+  useEffect(() => {
+    if (isAuthenticated && !auth.currentUser) {
+      signInAnonymously(auth).catch(() => {});
+    }
+  }, [isAuthenticated]);
+
+
   if (isAuthenticated) {
-    return <AdminDashboard />;
+    return <>
+      <AdminDashboard />
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={handleLogout}
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow font-semibold"
+        >
+          Sair
+        </button>
+      </div>
+    </>;
   }
 
   return (
@@ -104,7 +144,7 @@ const Admin = () => {
         </form>
 
         <div className="mt-6 text-center text-xs text-gray-500">
-          Sistema de gerenciamento NeiTech • Versão 1.0
+          Sistema de gerenciamento NYV8 Digital • Versão 1.0
         </div>
       </div>
     </div>

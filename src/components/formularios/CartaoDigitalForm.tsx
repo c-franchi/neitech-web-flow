@@ -17,87 +17,97 @@ const CartaoDigitalForm: React.FC<CartaoDigitalFormProps> = ({ respostas, setRes
   };
 
   return (
-    <div className="space-y-8">
+    <form className="space-y-8" aria-label="Formulário de cartão digital" autoComplete="on">
       <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-lg border border-green-200">
-        <h3 className="text-xl font-bold text-green-900 mb-2">Cartão Digital</h3>
+        <h3 className="text-xl font-bold text-green-900 mb-2" id="form-title">Cartão Digital</h3>
         <p className="text-green-700">Vamos criar seu cartão de visita digital moderno e interativo</p>
       </div>
 
       {/* Dados Básicos Obrigatórios */}
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h4 className="font-semibold text-blue-900 mb-4">Dados Básicos (obrigatórios)</h4>
-        
+
+      <fieldset className="bg-blue-50 p-4 rounded-lg border border-blue-200" aria-labelledby="dados-basicos-label">
+        <legend id="dados-basicos-label" className="font-semibold text-blue-900 mb-4">Dados Básicos (obrigatórios)</legend>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-800 mb-2">Nome completo *</label>
+            <label htmlFor="nome" className="block text-sm font-semibold text-gray-800 mb-2">Nome Completo *</label>
             <input
+              id="nome"
               type="text"
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
               placeholder="João Silva"
               value={respostas.nome || ''}
               onChange={(e) => handleChange('nome', e.target.value)}
               required
+              aria-required="true"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-800 mb-2">Cargo/Profissão *</label>
+            <label htmlFor="cargo" className="block text-sm font-semibold text-gray-800 mb-2">Cargo/Profissão *</label>
             <input
+              id="cargo"
               type="text"
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
               placeholder="Dentista / CEO / Designer"
               value={respostas.cargo || ''}
               onChange={(e) => handleChange('cargo', e.target.value)}
               required
+              aria-required="true"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-800 mb-2">WhatsApp *</label>
+            <label htmlFor="whatsapp" className="block text-sm font-semibold text-gray-800 mb-2">WhatsApp *</label>
             <input
+              id="whatsapp"
               type="tel"
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
               placeholder="(11) 99999-9999"
               value={respostas.whatsapp || ''}
               onChange={(e) => handleChange('whatsapp', e.target.value)}
               required
+              aria-required="true"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-800 mb-2">Email *</label>
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-800 mb-2">Email *</label>
             <input
+              id="email"
               type="email"
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
               placeholder="joao@email.com"
               value={respostas.email || ''}
               onChange={(e) => handleChange('email', e.target.value)}
               required
+              aria-required="true"
             />
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-semibold text-gray-800 mb-2">Localização *</label>
+            <label htmlFor="localizacao" className="block text-sm font-semibold text-gray-800 mb-2">Localização *</label>
             <input
+              id="localizacao"
               type="text"
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
               placeholder="São Paulo, SP / Rua das Flores, 123"
               value={respostas.localizacao || ''}
               onChange={(e) => handleChange('localizacao', e.target.value)}
               required
+              aria-required="true"
             />
-          </div>
+
         </div>
       </div>
 
       {/* Redes Sociais */}
-      <div className="space-y-4">
-        <h4 className="font-semibold text-gray-800">Redes Sociais (opcionais)</h4>
-        
+      <fieldset className="space-y-4" aria-labelledby="redes-sociais-label">
+        <legend id="redes-sociais-label" className="font-semibold text-gray-800">Redes Sociais (opcionais)</legend>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Instagram</label>
+            <label htmlFor="instagram" className="block text-sm font-medium text-gray-700 mb-2">Instagram</label>
             <input
+              id="instagram"
               type="text"
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
               placeholder="@seuusuario"
@@ -107,8 +117,9 @@ const CartaoDigitalForm: React.FC<CartaoDigitalFormProps> = ({ respostas, setRes
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">LinkedIn</label>
+            <label htmlFor="linkedin" className="block text-sm font-medium text-gray-700 mb-2">LinkedIn</label>
             <input
+              id="linkedin"
               type="text"
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
               placeholder="linkedin.com/in/seuusuario"
@@ -116,8 +127,7 @@ const CartaoDigitalForm: React.FC<CartaoDigitalFormProps> = ({ respostas, setRes
               onChange={(e) => handleChange('linkedin', e.target.value)}
             />
           </div>
-
-          <div>
+          {/* ...existing code for other social fields... */}
             <label className="block text-sm font-medium text-gray-700 mb-2">Facebook</label>
             <input
               type="text"
@@ -137,15 +147,12 @@ const CartaoDigitalForm: React.FC<CartaoDigitalFormProps> = ({ respostas, setRes
               value={respostas.outrasRedes || ''}
               onChange={(e) => handleChange('outrasRedes', e.target.value)}
             />
-          </div>
         </div>
-      </div>
+      </fieldset>
 
       {/* Funcionalidades Extras */}
-      <div className="space-y-4">
-        <label className="block text-sm font-semibold text-gray-800">
-          Funcionalidades extras que você gostaria de incluir:
-        </label>
+      <fieldset className="space-y-4" aria-labelledby="funcionalidades-extras-label">
+        <legend id="funcionalidades-extras-label" className="block text-sm font-semibold text-gray-800 mb-1">Funcionalidades extras que você gostaria de incluir:</legend>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[
             'Botão de localização/mapa',
@@ -164,11 +171,11 @@ const CartaoDigitalForm: React.FC<CartaoDigitalFormProps> = ({ respostas, setRes
                 onChange={(e) => handleCheckboxChange('funcionalidadesExtras', extra, e.target.checked)}
                 className="mr-3 text-green-600"
               />
-              <span className="text-sm">{extra}</span>
+              <span className="text-sm text-gray-800">{extra}</span>
             </label>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {/* Estilo Visual */}
       <div className="space-y-3">
@@ -191,7 +198,7 @@ const CartaoDigitalForm: React.FC<CartaoDigitalFormProps> = ({ respostas, setRes
                 onChange={(e) => handleChange('estiloVisual', e.target.value)}
                 className="mr-3 text-green-600"
               />
-              <span className="text-sm font-medium">{opcao.label}</span>
+              <span className="text-sm font-medium text-gray-800">{opcao.label}</span>
             </label>
           ))}
         </div>
@@ -217,7 +224,7 @@ const CartaoDigitalForm: React.FC<CartaoDigitalFormProps> = ({ respostas, setRes
                 onChange={(e) => handleChange('possuiLogo', e.target.value)}
                 className="mr-3 text-green-600"
               />
-              <span className="text-sm font-medium">{opcao.label}</span>
+              <span className="text-sm font-medium text-gray-800">{opcao.label}</span>
             </label>
           ))}
         </div>
@@ -236,7 +243,8 @@ const CartaoDigitalForm: React.FC<CartaoDigitalFormProps> = ({ respostas, setRes
           rows={4}
         />
       </div>
-    </div>
+    </fieldset>
+  </form>
   );
 };
 

@@ -99,11 +99,104 @@ All colors MUST be HSL.
   }
 }
 
-/* Estilizações customizadas para o site NeiTech */
+/* Estilizações customizadas para o site NYV8 Digital */
 @layer components {
   /* Smooth scroll para navegação por âncoras */
   html {
     scroll-behavior: smooth;
+  }
+
+  .interactive-button {
+    @apply transition-all duration-300 ease-out;
+    transform: translateY(0);
+  }
+
+  .interactive-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 32px -18px rgba(37, 99, 235, 0.6);
+  }
+
+  .interactive-link {
+    @apply transition-all duration-300 ease-out;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    background-image: linear-gradient(currentColor, currentColor);
+  }
+
+  .interactive-link:hover {
+    background-size: 100% 1px;
+  }
+
+  .premium-surface {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.76));
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    box-shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+  }
+
+  .service-shell {
+    isolation: isolate;
+  }
+
+  .service-shell::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0) 18%),
+      radial-gradient(circle at 18% 0%, rgba(59, 130, 246, 0.08), transparent 34%),
+      radial-gradient(circle at 82% 14%, rgba(14, 165, 233, 0.08), transparent 28%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .service-card-premium {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.94)),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
+    box-shadow: 0 24px 60px -28px rgba(15, 23, 42, 0.3);
+    transform-style: preserve-3d;
+  }
+
+  .service-card-premium::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: radial-gradient(circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(59, 130, 246, 0.18), rgba(14, 165, 233, 0.08) 18%, transparent 52%);
+    opacity: 0;
+    transition: opacity 220ms ease;
+    pointer-events: none;
+  }
+
+  .service-card-premium::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 42%);
+    mix-blend-mode: screen;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .service-card-premium:hover::before {
+    opacity: 1;
+  }
+
+  .service-card-surface {
+    transform: translateZ(24px);
+  }
+
+  .services-grid-depth > *:nth-child(2),
+  .services-grid-depth > *:nth-child(5) {
+    margin-top: 18px;
+  }
+
+  .services-grid-depth > *:nth-child(3),
+  .services-grid-depth > *:nth-child(6) {
+    margin-top: 34px;
   }
 
   /* Estilo para links com hover underline animado */
@@ -173,5 +266,34 @@ All colors MUST be HSL.
 
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .services-grid-depth > *:nth-child(2),
+  .services-grid-depth > *:nth-child(3),
+  .services-grid-depth > *:nth-child(5),
+  .services-grid-depth > *:nth-child(6) {
+    margin-top: 0 !important;
   }
 }

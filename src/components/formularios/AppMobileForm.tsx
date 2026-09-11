@@ -17,17 +17,15 @@ const AppMobileForm: React.FC<AppMobileFormProps> = ({ respostas, setRespostas }
   };
 
   return (
-    <div className="space-y-8">
+    <form className="space-y-8" aria-label="Formulário de orçamento para aplicativo mobile" autoComplete="on">
       <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg border border-purple-200">
-        <h3 className="text-xl font-bold text-purple-900 mb-2">Aplicativo Mobile</h3>
+        <h3 className="text-xl font-bold text-purple-900 mb-2" id="form-title">Aplicativo Mobile</h3>
         <p className="text-purple-700">Vamos planejar seu app para Android e/ou iOS</p>
       </div>
 
       {/* Plataforma */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
-          Para qual plataforma você quer o app? *
-        </label>
+      <fieldset className="space-y-3" aria-labelledby="plataforma-label">
+        <legend id="plataforma-label" className="block text-sm font-semibold text-gray-800 mb-1">Para qual plataforma você quer o app? *</legend>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[
             { value: 'android', label: 'Apenas Android' },
@@ -42,33 +40,38 @@ const AppMobileForm: React.FC<AppMobileFormProps> = ({ respostas, setRespostas }
                 checked={respostas.plataforma === opcao.value}
                 onChange={(e) => handleChange('plataforma', e.target.value)}
                 className="mr-3 text-purple-600"
+                aria-checked={respostas.plataforma === opcao.value}
+                aria-labelledby={`plataforma-label plataforma-${opcao.value}`}
+                required
               />
-              <span className="text-sm font-medium">{opcao.label}</span>
+              <span id={`plataforma-${opcao.value}`} className="text-sm font-medium">{opcao.label}</span>
             </label>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {/* Objetivo Principal */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
+        <label htmlFor="objetivoPrincipal" className="block text-sm font-semibold text-gray-800">
           Qual é o objetivo principal do seu app? *
         </label>
         <textarea
+          id="objetivoPrincipal"
           className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
           placeholder="Exemplo: App para delivery de comida, controle financeiro pessoal, agendamento de serviços, rede social para pets, etc."
           value={respostas.objetivoPrincipal || ''}
           onChange={(e) => handleChange('objetivoPrincipal', e.target.value)}
           rows={3}
           required
+          aria-required="true"
         />
       </div>
 
       {/* Funcionalidades */}
-      <div className="space-y-4">
-        <label className="block text-sm font-semibold text-gray-800">
+      <fieldset className="space-y-4" aria-labelledby="funcionalidades-label">
+        <legend id="funcionalidades-label" className="block text-sm font-semibold text-gray-800 mb-1">
           Quais funcionalidades o app precisa ter? (marque todas que se aplicam)
-        </label>
+        </legend>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[
             'Login de usuários',
@@ -90,18 +93,18 @@ const AppMobileForm: React.FC<AppMobileFormProps> = ({ respostas, setRespostas }
                 checked={respostas.funcionalidades?.[funcionalidade] || false}
                 onChange={(e) => handleCheckboxChange('funcionalidades', funcionalidade, e.target.checked)}
                 className="mr-3 text-purple-600"
+                aria-checked={respostas.funcionalidades?.[funcionalidade] || false}
+                aria-labelledby={`funcionalidade-${funcionalidade}`}
               />
-              <span className="text-sm">{funcionalidade}</span>
+              <span id={`funcionalidade-${funcionalidade}`} className="text-sm">{funcionalidade}</span>
             </label>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {/* Layout/Protótipo */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
-          Você já possui layout ou protótipo do app? *
-        </label>
+      <fieldset className="space-y-3" aria-labelledby="layout-label">
+        <legend id="layout-label" className="block text-sm font-semibold text-gray-800 mb-1">Você já possui layout ou protótipo do app? *</legend>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[
             { value: 'sim', label: 'Sim, tenho pronto' },
@@ -116,18 +119,19 @@ const AppMobileForm: React.FC<AppMobileFormProps> = ({ respostas, setRespostas }
                 checked={respostas.possuiLayout === opcao.value}
                 onChange={(e) => handleChange('possuiLayout', e.target.value)}
                 className="mr-3 text-purple-600"
+                aria-checked={respostas.possuiLayout === opcao.value}
+                aria-labelledby={`layout-label layout-${opcao.value}`}
+                required
               />
-              <span className="text-sm font-medium">{opcao.label}</span>
+              <span id={`layout-${opcao.value}`} className="text-sm font-medium">{opcao.label}</span>
             </label>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {/* Backend */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
-          Você já possui backend/servidor para o app? *
-        </label>
+      <fieldset className="space-y-3" aria-labelledby="backend-label">
+        <legend id="backend-label" className="block text-sm font-semibold text-gray-800 mb-1">Você já possui backend/servidor para o app? *</legend>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[
             { value: 'sim', label: 'Sim, já tenho' },
@@ -142,19 +146,23 @@ const AppMobileForm: React.FC<AppMobileFormProps> = ({ respostas, setRespostas }
                 checked={respostas.possuiBackend === opcao.value}
                 onChange={(e) => handleChange('possuiBackend', e.target.value)}
                 className="mr-3 text-purple-600"
+                aria-checked={respostas.possuiBackend === opcao.value}
+                aria-labelledby={`backend-label backend-${opcao.value}`}
+                required
               />
-              <span className="text-sm font-medium">{opcao.label}</span>
+              <span id={`backend-${opcao.value}`} className="text-sm font-medium">{opcao.label}</span>
             </label>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {/* App de Referência */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
+        <label htmlFor="appReferencia" className="block text-sm font-semibold text-gray-800">
           Existe algum app que você usa como referência?
         </label>
         <textarea
+          id="appReferencia"
           className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
           placeholder="Exemplo: 'Gostaria que fosse parecido com o Uber para a parte de localização' ou 'Similar ao Instagram para a galeria de fotos'"
           value={respostas.appReferencia || ''}
@@ -165,14 +173,16 @@ const AppMobileForm: React.FC<AppMobileFormProps> = ({ respostas, setRespostas }
 
       {/* Prazo */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
+        <label htmlFor="prazoEsperado" className="block text-sm font-semibold text-gray-800">
           Qual é o prazo ideal para entrega? *
         </label>
         <select 
+          id="prazoEsperado"
           className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
           value={respostas.prazoEsperado || ''}
           onChange={(e) => handleChange('prazoEsperado', e.target.value)}
           required
+          aria-required="true"
         >
           <option value="">Selecione o prazo</option>
           <option value="30-dias">30 dias</option>
@@ -185,10 +195,11 @@ const AppMobileForm: React.FC<AppMobileFormProps> = ({ respostas, setRespostas }
 
       {/* Observações */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-800">
+        <label htmlFor="observacoes" className="block text-sm font-semibold text-gray-800">
           Observações adicionais ou detalhes específicos
         </label>
         <textarea
+          id="observacoes"
           className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
           placeholder="Compartilhe qualquer detalhe adicional sobre seu app, funcionalidades especiais, ou dúvidas..."
           value={respostas.observacoes || ''}
@@ -196,7 +207,7 @@ const AppMobileForm: React.FC<AppMobileFormProps> = ({ respostas, setRespostas }
           rows={4}
         />
       </div>
-    </div>
+    </form>
   );
 };
 
