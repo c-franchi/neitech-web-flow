@@ -1,10 +1,12 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import Index from './pages/Index';
+import LanguageGateway from './pages/LanguageGateway';
+import FlliHome from './pages/FlliHome';
 import ScrollToTop from './components/ScrollToTop';
 import { Toaster } from './components/ui/toaster';
 
+const LegacyIndex = lazy(() => import('./pages/Index'));
 const Admin = lazy(() => import('./pages/Admin'));
 const AdminSite = lazy(() => import('./pages/AdminSite'));
 const AdminEditorInline = lazy(() => import('./pages/AdminEditorInline'));
@@ -17,17 +19,17 @@ const SetupSections = lazy(() => import('./pages/SetupSections'));
 const ImportContent = lazy(() => import('./pages/ImportContent'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
-/**
- * App - Componente principal da aplicação
- * Features: Roteamento, configuração de toasts, estrutura geral
- */
 function App() {
   return (
     <Router>
       <div className="w-full min-h-screen">
-        <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-white text-slate-500">Carregando...</div>}>
+        <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#11110f] text-[#e9e5d8]">Carregando...</div>}>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<LanguageGateway />} />
+            <Route path="/br" element={<FlliHome locale="br" />} />
+            <Route path="/it" element={<FlliHome locale="it" />} />
+            <Route path="/legacy" element={<LegacyIndex />} />
+
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin-site" element={<AdminSite />} />
             <Route path="/admin/editor" element={<AdminEditorInline />} />
