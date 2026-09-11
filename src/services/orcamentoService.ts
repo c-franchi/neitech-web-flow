@@ -16,9 +16,12 @@ import { db, storage } from '@/lib/firebase';
 import { SolicitacaoOrcamento, UsuarioCliente, HistoricoInteracao } from '@/types/orcamentos';
 
 export class OrcamentoService {
-  // Obter URL base do site
+  // Obter URL base do site respeitando o domínio atual (F.LLI FRANCHI ou legado)
   private static getSiteUrl(): string {
-    return 'https://nyv8digital.com.br';
+    if (typeof window !== 'undefined' && window.location?.origin) {
+      return window.location.origin.replace(/\/$/, '');
+    }
+    return 'https://fllifranchi.com';
   }
 
   // Criar solicitação de orçamento
@@ -517,7 +520,7 @@ Recebemos sua solicitação de orçamento para ${servico}. Em breve você poder�
 Link para acompanhar: ${linkStatus}
 
 Atenciosamente,
-Equipe NYV8 Digital`;
+Equipe F.LLI FRANCHI`;
 
       // Gerar link do WhatsApp sem forçar prefixo 55
       const whatsappLink = `https://wa.me/${numeroFormatado}?text=${encodeURIComponent(mensagem)}`;
@@ -567,7 +570,7 @@ ${linkFormulario}
 Este link é válido por 7 dias.
 
 Atenciosamente,
-Equipe NYV8 Digital`;
+Equipe F.LLI FRANCHI`;
 
       // Gerar link do WhatsApp sem forçar prefixo 55
       const whatsappLink = `https://wa.me/${numeroFormatado}?text=${encodeURIComponent(mensagem)}`;
@@ -615,7 +618,7 @@ Acesse agora: ${linkOrcamento}
 ⚠️ *Importante:* Este orçamento ficará disponível por 5 dias corridos. Após este período será automaticamente removido do sistema.
 
 Atenciosamente,
-Equipe NYV8 Digital`;
+Equipe F.LLI FRANCHI`;
 
       // Gerar link do WhatsApp sem forçar prefixo 55
       const whatsappLink = `https://wa.me/${numeroFormatado}?text=${encodeURIComponent(mensagem)}`;
@@ -734,7 +737,7 @@ Equipe NYV8 Digital`;
         for (const docHistorico of historicoSnapshot.docs) {
           await deleteDoc(docHistorico.ref);
         }
-        console.log('Histórico de interações excluído');
+        console.log('Histórico de interações excluídos');
       } catch (historicoError) {
         console.error('Erro ao excluir histórico:', historicoError);
       }
