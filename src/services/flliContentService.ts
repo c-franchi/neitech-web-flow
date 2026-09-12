@@ -30,14 +30,24 @@ export async function getFlliContent(locale: FlliLocale): Promise<FlliContent> {
   if (!snapshot.exists()) return cloneFlliContent(defaultFlliContent[locale]);
 
   const data = snapshot.data();
-  return mergeContent(locale, data.content as Partial<FlliContent> | undefined);
+  try {
+    if (typeof data.contentJson === 'string') {
+      return mergeContent(locale, JSON.parse(data.contentJson) as Partial<FlliContent>);
+    }
+  } catch (error) {
+    console.warn(`Conteúdo F.LLI ${locale} inválido no Firestore.`, error);
+  }
+
+  return cloneFlliContent(defaultFlliContent[locale]);
 }
 
 export async function saveFlliContent(locale: FlliLocale, content: FlliContent, updatedBy: string): Promise<void> {
+  // O Firestore não aceita arrays diretamente dentro de arrays. Como serviços,
+  // projetos e processo usam tuplas, persistimos o conteúdo como JSON versionável.
   await setDoc(
     doc(db, COLLECTION, locale),
     {
-      content,
+      contentJson: JSON.stringify(content),
       updatedAt: serverTimestamp(),
       updatedBy,
     },
