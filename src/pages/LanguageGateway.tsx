@@ -50,8 +50,8 @@ const LanguageGateway = () => {
 
         <section className="flex flex-1 flex-col justify-center py-14 lg:py-20">
           <div className="mb-10 max-w-4xl">
-            <p className="mb-5 text-xs font-semibold uppercase tracking-[0.3em] text-[#a9ad8d]">Tecnologia com identidade</p>
-            <h1 className="font-serif text-5xl leading-[0.95] tracking-[-0.04em] sm:text-6xl lg:text-8xl">
+            <p className="mb-5 text-[12px] font-semibold uppercase tracking-[0.22em] md:text-xs md:tracking-[0.3em] text-[#a9ad8d]">Tecnologia com identidade</p>
+            <h1 className="font-serif text-4xl leading-[0.95] tracking-[-0.04em] sm:text-5xl lg:text-6xl">
               Escolha sua experiência.
               <span className="mt-2 block text-white/45">Scegli la tua esperienza.</span>
             </h1>
@@ -60,13 +60,13 @@ const LanguageGateway = () => {
           <div className="grid gap-4 md:grid-cols-2">
             <Link to="/br" className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#e9e5d8] p-7 text-[#171713] transition duration-500 hover:-translate-y-1 hover:border-[#a9ad8d] md:p-10">
               <div className="absolute right-0 top-0 h-1 w-full bg-gradient-to-r from-[#168b46] via-[#f3f0e6] to-[#d8a42b]" />
-              <div className="flex min-h-56 flex-col justify-between">
+              <div className="flex md:min-h-56 flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-[0.28em] text-[#5d6249]">Brasil</span>
                   <ArrowUpRight className="h-6 w-6 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </div>
                 <div>
-                  <h2 className="font-serif text-4xl md:text-5xl">Português</h2>
+                  <h2 className="font-serif text-3xl md:text-4xl">Português</h2>
                   <p className="mt-3 max-w-md text-sm leading-6 text-black/55">Sites, aplicações, automações e experiências digitais construídas com estratégia, design e engenharia.</p>
                 </div>
               </div>
@@ -74,13 +74,13 @@ const LanguageGateway = () => {
 
             <Link to="/it" className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#74795a] p-7 text-white transition duration-500 hover:-translate-y-1 hover:border-white/30 md:p-10">
               <div className="absolute right-0 top-0 h-1 w-full bg-gradient-to-r from-[#168b46] via-white to-[#cc3c3c]" />
-              <div className="flex min-h-56 flex-col justify-between">
+              <div className="flex md:min-h-56 flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-[0.28em] text-white/65">Italia</span>
                   <ArrowUpRight className="h-6 w-6 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </div>
                 <div>
-                  <h2 className="font-serif text-4xl md:text-5xl">Italiano</h2>
+                  <h2 className="font-serif text-3xl md:text-4xl">Italiano</h2>
                   <p className="mt-3 max-w-md text-sm leading-6 text-white/65">Siti, applicazioni, automazioni ed esperienze digitali progettate con strategia, design e tecnologia.</p>
                 </div>
               </div>
