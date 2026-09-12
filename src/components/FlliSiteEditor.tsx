@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ExternalLink, Loader2, RotateCcw, Save } from 'lucide-react';
+import ImageUploader from '@/admin/ImageUploader';
 import { cloneFlliContent, defaultFlliContent, FlliContent, FlliLocale } from '@/content/flliContent';
 import { getFlliContent, resetFlliContent, saveFlliContent } from '@/services/flliContentService';
 import { useToast } from '@/hooks/use-toast';
@@ -52,6 +53,16 @@ const EditorSection: React.FC<{ title: string; subtitle?: string; children: Reac
   </details>
 );
 
+const MediaCard: React.FC<{ title: string; description: string; children: React.ReactNode }> = ({ title, description, children }) => (
+  <div className="rounded-2xl border border-black/10 bg-black/[0.025] p-4 sm:p-5">
+    <div className="mb-4">
+      <h3 className="text-sm font-bold">{title}</h3>
+      <p className="mt-1 text-xs leading-5 text-black/45">{description}</p>
+    </div>
+    {children}
+  </div>
+);
+
 const FlliSiteEditor: React.FC<Props> = ({ adminEmail }) => {
   const { toast } = useToast();
   const [locale, setLocale] = useState<FlliLocale>('br');
@@ -86,6 +97,21 @@ const FlliSiteEditor: React.FC<Props> = ({ adminEmail }) => {
   const update = <K extends keyof FlliContent>(key: K, value: FlliContent[K]) => {
     setContent((current) => ({ ...current, [key]: value }));
     setDirty(true);
+  };
+
+  const updateMedia = (key: keyof FlliContent['media'], value: string | string[]) => {
+    setContent((current) => ({
+      ...current,
+      media: { ...current.media, [key]: value },
+    }));
+    setDirty(true);
+  };
+
+  const updateProjectImage = (index: number, value: string) => {
+    const next = [...content.media.projectImages];
+    while (next.length < content.projects.length) next.push('');
+    next[index] = value;
+    updateMedia('projectImages', next);
   };
 
   const updateForm = (key: keyof FlliContent['form'], value: string | string[]) => {
@@ -223,7 +249,7 @@ const FlliSiteEditor: React.FC<Props> = ({ adminEmail }) => {
       <div className="mb-7">
         <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#686d4e]">Editor do site</p>
         <h1 className="mt-2 font-serif text-4xl tracking-[-0.035em]">Editar conteúdo {locale === 'br' ? 'Brasil' : 'Itália'}</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-black/50">Edite os textos que aparecem no site atual. As alterações são gravadas no Firebase e passam a aparecer na página sem precisar alterar o código.</p>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-black/50">Edite textos e imagens do site atual. Os arquivos são enviados ao Firebase Storage e as alterações passam a aparecer na página sem precisar alterar o código.</p>
       </div>
 
       <div className="space-y-4">
@@ -234,7 +260,41 @@ const FlliSiteEditor: React.FC<Props> = ({ adminEmail }) => {
           </div>
         </EditorSection>
 
-        <EditorSection title="Banner principal" subtitle="Primeira mensagem que o visitante vê." open>
+        <EditorSection title="Imagens do site" subtitle="Troque logo, banner, imagens dos projetos, contato e compartilhamento." open>
+          <div className="grid gap-4 md:grid-cols-2">
+            <MediaCard title="Logo / monograma" description="Usado no cabeçalho e rodapé. Preferência: PNG, SVG ou WebP com fundo transparente.">
+              <ImageUploader value={content.media.logoUrl} onChange={(url) => updateMedia('logoUrl', url || '/brand/flli-monogram.svg')} />
+            </MediaCard>
+
+            <MediaCard title="Imagem principal do banner" description="Se não houver imagem, o cartão gráfico original continuará aparecendo. Recomendado: horizontal ou quadrada, alta resolução.">
+              <ImageUploader value={content.media.heroImageUrl} onChange={(url) => updateMedia('heroImageUrl', url)} />
+            </MediaCard>
+
+            <MediaCard title="Imagem da seção de contato" description="Imagem opcional exibida ao lado do formulário. Se ficar vazia, a seção mantém o layout atual.">
+              <ImageUploader value={content.media.contactImageUrl} onChange={(url) => updateMedia('contactImageUrl', url)} />
+            </MediaCard>
+
+            <MediaCard title="Imagem para compartilhamento" description="Imagem usada como og:image ao compartilhar o link em WhatsApp e redes sociais. Recomendado: 1200 × 630 px.">
+              <ImageUploader value={content.media.socialImageUrl} onChange={(url) => updateMedia('socialImageUrl', url)} />
+            </MediaCard>
+          </div>
+
+          <div className="mt-6 border-t border-black/10 pt-5">
+            <p className="mb-1 text-xs font-bold uppercase tracking-[0.1em] text-black/50">Imagens dos projetos</p>
+            <p className="mb-4 text-xs leading-5 text-black/40">Cada imagem aparece dentro do respectivo card. Se não selecionar uma imagem, o card mantém o visual original.</p>
+            <div className="grid gap-4 md:grid-cols-3">
+              {content.projects.map((project, index) => (
+                <MediaCard key={index} title={`Projeto ${index + 1}`} description={project[1]}>
+                  <ImageUploader value={content.media.projectImages[index] || ''} onChange={(url) => updateProjectImage(index, url)} />
+                </MediaCard>
+              ))}
+            </div>
+          </div>
+
+          <p className="mt-5 rounded-xl bg-amber-50 px-4 py-3 text-xs leading-5 text-amber-800">As imagens são configuradas separadamente para Brasil e Itália. Se quiser usar as mesmas imagens nas duas versões, envie-as também na outra aba de idioma.</p>
+        </EditorSection>
+
+        <EditorSection title="Banner principal" subtitle="Primeira mensagem que o visitante vê.">
           <div className="grid gap-4 sm:grid-cols-2">
             <TextField label="Linha pequena" value={content.eyebrow} onChange={(value) => update('eyebrow', value)} />
             <div className="hidden sm:block" />

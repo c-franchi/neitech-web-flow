@@ -4,6 +4,14 @@ export type FlliServiceItem = [string, string, string];
 export type FlliProjectItem = [string, string, string, string];
 export type FlliProcessItem = [string, string, string];
 
+export interface FlliMedia {
+  logoUrl: string;
+  heroImageUrl: string;
+  projectImages: string[];
+  contactImageUrl: string;
+  socialImageUrl: string;
+}
+
 export interface FlliContent {
   lang: string;
   title: string;
@@ -32,6 +40,7 @@ export interface FlliContent {
   contactKicker: string;
   contactTitle: string;
   contactText: string;
+  media: FlliMedia;
   form: {
     name: string;
     email: string;
@@ -49,6 +58,14 @@ export interface FlliContent {
   };
   footer: string;
 }
+
+const defaultMedia = (): FlliMedia => ({
+  logoUrl: '/brand/flli-monogram.svg',
+  heroImageUrl: '',
+  projectImages: ['', '', ''],
+  contactImageUrl: '',
+  socialImageUrl: '',
+});
 
 export const defaultFlliContent: Record<FlliLocale, FlliContent> = {
   br: {
@@ -93,6 +110,7 @@ export const defaultFlliContent: Record<FlliLocale, FlliContent> = {
     contactKicker: 'Vamos construir',
     contactTitle: 'Conte sua ideia. Nós estruturamos o próximo passo.',
     contactText: 'Envie os dados básicos do projeto. A solicitação entra no mesmo fluxo de orçamento da nossa área administrativa.',
+    media: defaultMedia(),
     form: {
       name: 'Nome',
       email: 'E-mail',
@@ -152,6 +170,7 @@ export const defaultFlliContent: Record<FlliLocale, FlliContent> = {
     contactKicker: 'Costruiamo insieme',
     contactTitle: 'Raccontaci la tua idea. Noi strutturiamo il passo successivo.',
     contactText: 'Invia le informazioni principali del progetto. La richiesta entra direttamente nel nostro flusso amministrativo di preventivi.',
+    media: defaultMedia(),
     form: {
       name: 'Nome',
       email: 'E-mail',
