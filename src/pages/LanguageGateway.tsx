@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowUpRight, Globe2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getFlliContent } from '../services/flliContentService';
 
 const setMeta = (selector: string, attributes: Record<string, string>, content?: string) => {
   let tag = document.head.querySelector(selector) as HTMLElement | null;
@@ -13,6 +14,8 @@ const setMeta = (selector: string, attributes: Record<string, string>, content?:
 };
 
 const LanguageGateway = () => {
+  const [logoUrl, setLogoUrl] = useState('/brand/flli-monogram.svg');
+
   useEffect(() => {
     const title = 'F.LLI FRANCHI | Brasil & Italia';
     const description = 'F.LLI FRANCHI cria sites, aplicações, experiências digitais e soluções tecnológicas para negócios no Brasil e na Itália.';
@@ -25,6 +28,15 @@ const LanguageGateway = () => {
     setMeta('meta[property="og:description"]', { property: 'og:description' }, description);
     setMeta('meta[property="og:url"]', { property: 'og:url' }, canonical);
     setMeta('link[rel="canonical"]', { rel: 'canonical', href: canonical });
+
+    getFlliContent('br')
+      .then((content) => {
+        if (content.media.logoUrl) setLogoUrl(content.media.logoUrl);
+        if (content.media.socialImageUrl) {
+          setMeta('meta[property="og:image"]', { property: 'og:image' }, content.media.socialImageUrl);
+        }
+      })
+      .catch((error) => console.warn('F.LLI gateway: usando mídia padrão.', error));
   }, []);
 
   return (
@@ -37,7 +49,7 @@ const LanguageGateway = () => {
       <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-6 py-8 md:px-10 lg:px-14">
         <header className="flex items-center justify-between border-b border-white/10 pb-6">
           <div className="flex items-center gap-4">
-            <img src="/brand/flli-monogram.svg" alt="F.LLI FRANCHI" className="h-11 w-11" />
+            <img src={logoUrl} alt="F.LLI FRANCHI" className="h-11 w-11 object-contain" />
             <div>
               <p className="text-sm font-semibold tracking-[0.24em]">F.LLI FRANCHI</p>
               <p className="text-[10px] uppercase tracking-[0.28em] text-[#a9ad8d]">Digital studio</p>
@@ -50,7 +62,7 @@ const LanguageGateway = () => {
 
         <section className="flex flex-1 flex-col justify-center py-14 lg:py-20">
           <div className="mb-10 max-w-4xl">
-            <p className="mb-5 text-[12px] font-semibold uppercase tracking-[0.22em] md:text-xs md:tracking-[0.3em] text-[#a9ad8d]">Tecnologia com identidade</p>
+            <p className="mb-5 text-[12px] font-semibold uppercase tracking-[0.22em] text-[#a9ad8d] md:text-xs md:tracking-[0.3em]">Tecnologia com identidade</p>
             <h1 className="font-serif text-4xl leading-[0.95] tracking-[-0.04em] sm:text-5xl lg:text-6xl">
               Escolha sua experiência.
               <span className="mt-2 block text-white/45">Scegli la tua esperienza.</span>
@@ -60,7 +72,7 @@ const LanguageGateway = () => {
           <div className="grid gap-4 md:grid-cols-2">
             <Link to="/br" className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#e9e5d8] p-7 text-[#171713] transition duration-500 hover:-translate-y-1 hover:border-[#a9ad8d] md:p-10">
               <div className="absolute right-0 top-0 h-1 w-full bg-gradient-to-r from-[#168b46] via-[#f3f0e6] to-[#d8a42b]" />
-              <div className="flex md:min-h-56 flex-col justify-between">
+              <div className="flex flex-col justify-between md:min-h-56">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-[0.28em] text-[#5d6249]">Brasil</span>
                   <ArrowUpRight className="h-6 w-6 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
@@ -74,7 +86,7 @@ const LanguageGateway = () => {
 
             <Link to="/it" className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#74795a] p-7 text-white transition duration-500 hover:-translate-y-1 hover:border-white/30 md:p-10">
               <div className="absolute right-0 top-0 h-1 w-full bg-gradient-to-r from-[#168b46] via-white to-[#cc3c3c]" />
-              <div className="flex md:min-h-56 flex-col justify-between">
+              <div className="flex flex-col justify-between md:min-h-56">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-[0.28em] text-white/65">Italia</span>
                   <ArrowUpRight className="h-6 w-6 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
