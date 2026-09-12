@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { LogIn, LogOut, ShieldCheck } from 'lucide-react';
+import { ClipboardList, LogIn, LogOut, Pencil, ShieldCheck } from 'lucide-react';
 import { onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth';
 import FlliAdminDashboard from '@/components/FlliAdminDashboard';
+import FlliSiteEditor from '@/components/FlliSiteEditor';
 import { auth, googleProvider } from '@/lib/firebase';
 
 const ADMIN_EMAILS = ['neifranchi@gmail.com'];
+
+type AdminView = 'requests' | 'site';
 
 const isAllowedAdmin = (user: User | null) => {
   const email = user?.email?.toLowerCase();
@@ -16,6 +19,7 @@ const Admin: React.FC = () => {
   const [checking, setChecking] = useState(true);
   const [authenticating, setAuthenticating] = useState(false);
   const [error, setError] = useState('');
+  const [activeView, setActiveView] = useState<AdminView>('requests');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -76,14 +80,53 @@ const Admin: React.FC = () => {
 
   if (user && isAllowedAdmin(user)) {
     return (
-      <div className="relative">
-        <div className="fixed right-4 top-4 z-[100] flex items-center gap-2 rounded-full border border-black/10 bg-white/95 p-1.5 pl-3 shadow-lg backdrop-blur">
-          <span className="hidden text-xs font-medium text-black/55 sm:inline">{user.email}</span>
-          <button onClick={handleLogout} className="inline-flex items-center gap-1.5 rounded-full bg-[#171713] px-3 py-2 text-xs font-semibold text-white hover:bg-black">
-            <LogOut className="h-3.5 w-3.5" /> Sair
-          </button>
-        </div>
-        <FlliAdminDashboard />
+      <div className="min-h-screen bg-[#f0ede3] text-[#171713]">
+        <header className="sticky top-0 z-[90] border-b border-black/10 bg-[#f0ede3]/95 backdrop-blur-xl">
+          <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+            <div className="flex items-center justify-between gap-4">
+              <a href="/" className="flex items-center gap-3">
+                <img src="/brand/flli-monogram.svg" alt="F.LLI FRANCHI" className="h-9 w-9" />
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#686d4e]">F.LLI FRANCHI</p>
+                  <p className="font-serif text-lg leading-none">Administração</p>
+                </div>
+              </a>
+              <button onClick={handleLogout} className="inline-flex items-center gap-1.5 rounded-full bg-[#171713] px-3 py-2 text-xs font-semibold text-white lg:hidden">
+                <LogOut className="h-3.5 w-3.5" /> Sair
+              </button>
+            </div>
+
+            <nav className="flex gap-2 overflow-x-auto">
+              <button
+                onClick={() => setActiveView('requests')}
+                className={`inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] transition ${activeView === 'requests' ? 'bg-[#171713] text-white' : 'border border-black/10 bg-white/70 text-black/60 hover:bg-white'}`}
+              >
+                <ClipboardList className="h-3.5 w-3.5" /> Solicitações
+              </button>
+              <button
+                onClick={() => setActiveView('site')}
+                className={`inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] transition ${activeView === 'site' ? 'bg-[#74795a] text-white' : 'border border-black/10 bg-white/70 text-black/60 hover:bg-white'}`}
+              >
+                <Pencil className="h-3.5 w-3.5" /> Editar site
+              </button>
+            </nav>
+
+            <div className="hidden items-center gap-3 lg:flex">
+              <span className="text-xs text-black/45">{user.email}</span>
+              <button onClick={handleLogout} className="inline-flex items-center gap-1.5 rounded-full bg-[#171713] px-3 py-2 text-xs font-semibold text-white hover:bg-black">
+                <LogOut className="h-3.5 w-3.5" /> Sair
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {activeView === 'requests' ? (
+          <FlliAdminDashboard />
+        ) : (
+          <div className="px-4 py-8 sm:px-6 lg:px-10">
+            <FlliSiteEditor adminEmail={user.email || 'admin'} />
+          </div>
+        )}
       </div>
     );
   }
@@ -105,7 +148,7 @@ const Admin: React.FC = () => {
         </div>
 
         <p className="mb-7 text-sm leading-6 text-white/55">
-          Entre com a conta Google autorizada para gerenciar solicitações e orçamentos. O acesso antigo por senha local foi removido.
+          Entre com a conta Google autorizada para gerenciar solicitações, orçamentos e o conteúdo do site.
         </p>
 
         {error && (
