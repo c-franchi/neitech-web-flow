@@ -1,153 +1,130 @@
+import React, { useEffect, useState } from 'react';
+import { LogIn, LogOut, ShieldCheck } from 'lucide-react';
+import { onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth';
+import FlliAdminDashboard from '@/components/FlliAdminDashboard';
+import { auth, googleProvider } from '@/lib/firebase';
 
-import React, { useState, useEffect } from 'react';
-import { Lock, Eye, EyeOff } from 'lucide-react';
-import AdminDashboard from '@/components/AdminDashboard';
-import { auth } from '@/lib/firebase';
-import { signInAnonymously, signOut } from 'firebase/auth';
+const ADMIN_EMAILS = ['neifranchi@gmail.com'];
 
-/**
- * Admin - Página de administração com autenticação simples
- * Features: Login básico, acesso ao dashboard administrativo
- */
+const isAllowedAdmin = (user: User | null) => {
+  const email = user?.email?.toLowerCase();
+  return Boolean(email && ADMIN_EMAILS.includes(email));
+};
 
-const AUTH_KEY = 'nyv8_admin_auth';
-
-const Admin = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem(AUTH_KEY) === 'true';
-  });
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+const Admin: React.FC = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [checking, setChecking] = useState(true);
+  const [authenticating, setAuthenticating] = useState(false);
   const [error, setError] = useState('');
 
-  // Senha temporária simples - em produção, usar autenticação mais robusta
-  const ADMIN_PASSWORD = 'nyv8digital2024';
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser && !isAllowedAdmin(currentUser)) {
+        setError('Esta conta Google não possui acesso administrativo.');
+        await signOut(auth).catch(() => undefined);
+        setUser(null);
+        setChecking(false);
+        return;
+      }
 
+      setUser(currentUser);
+      setChecking(false);
+    });
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+    return unsubscribe;
+  }, []);
+
+  const handleLogin = async () => {
+    setAuthenticating(true);
     setError('');
 
-    // Simular delay de autenticação
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    if (password === ADMIN_PASSWORD) {
-      // Autentica no Firebase para permitir uploads ao Storage
-      try {
-        await signInAnonymously(auth);
-      } catch (firebaseErr) {
-        console.warn('Firebase anonymous auth falhou:', firebaseErr);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      if (!isAllowedAdmin(result.user)) {
+        await signOut(auth);
+        setError('Esta conta Google não possui acesso administrativo.');
+        return;
       }
-      setIsAuthenticated(true);
-      localStorage.setItem(AUTH_KEY, 'true');
-      // Redireciona para home após login
-      window.location.href = '/';
-    } else {
-      setError('Senha incorreta. Tente novamente.');
+      setUser(result.user);
+    } catch (loginError: any) {
+      console.error('F.LLI admin login error:', loginError);
+      const code = loginError?.code || '';
+      if (code === 'auth/popup-closed-by-user') {
+        setError('Login cancelado.');
+      } else if (code === 'auth/unauthorized-domain') {
+        setError('O domínio fllifranchi.com ainda precisa ser autorizado no Firebase Authentication.');
+      } else {
+        setError('Não foi possível entrar com o Google. Verifique a configuração do Firebase Authentication.');
+      }
+    } finally {
+      setAuthenticating(false);
     }
-    setLoading(false);
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem(AUTH_KEY);
-    signOut(auth).catch(() => {});
+  const handleLogout = async () => {
+    await signOut(auth);
+    setUser(null);
   };
 
-  // Garante sessão Firebase Auth ao carregar se já autenticado
-  useEffect(() => {
-    if (isAuthenticated && !auth.currentUser) {
-      signInAnonymously(auth).catch(() => {});
-    }
-  }, [isAuthenticated]);
-
-
-  if (isAuthenticated) {
-    return <>
-      <AdminDashboard />
-      <div className="fixed top-4 right-4 z-50">
-        <button
-          onClick={handleLogout}
-          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow font-semibold"
-        >
-          Sair
-        </button>
+  if (checking) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#11110f] text-[#e9e5d8]">
+        <span className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Validando acesso...</span>
       </div>
-    </>;
+    );
+  }
+
+  if (user && isAllowedAdmin(user)) {
+    return (
+      <div className="relative">
+        <div className="fixed right-4 top-4 z-[100] flex items-center gap-2 rounded-full border border-black/10 bg-white/95 p-1.5 pl-3 shadow-lg backdrop-blur">
+          <span className="hidden text-xs font-medium text-black/55 sm:inline">{user.email}</span>
+          <button onClick={handleLogout} className="inline-flex items-center gap-1.5 rounded-full bg-[#171713] px-3 py-2 text-xs font-semibold text-white hover:bg-black">
+            <LogOut className="h-3.5 w-3.5" /> Sair
+          </button>
+        </div>
+        <FlliAdminDashboard />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-cyan-900 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Lock size={32} className="text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            Painel Administrativo
-          </h1>
-          <p className="text-gray-600">
-            Acesse o sistema de gerenciamento de orçamentos
-          </p>
-        </div>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#11110f] px-5 py-12 text-[#f2eee2]">
+      <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-[#74795a]/25 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-12 h-96 w-96 rounded-full bg-[#958b6d]/15 blur-3xl" />
 
-        <form onSubmit={handleLogin} className="space-y-6">
+      <section className="relative w-full max-w-md rounded-[2rem] border border-white/10 bg-white/[0.055] p-7 shadow-2xl backdrop-blur-xl sm:p-9">
+        <div className="mb-8 flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#74795a] text-white">
+            <ShieldCheck className="h-6 w-6" />
+          </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
-              Senha de Acesso
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                placeholder="Digite sua senha"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#a9ad8d]">F.LLI FRANCHI</p>
+            <h1 className="mt-1 font-serif text-3xl tracking-[-0.035em]">Área administrativa</h1>
           </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:from-blue-400 disabled:to-cyan-400 text-white py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center space-x-2"
-          >
-            {loading ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Autenticando...</span>
-              </>
-            ) : (
-              <>
-                <Lock size={20} />
-                <span>Entrar</span>
-              </>
-            )}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center text-xs text-gray-500">
-          Sistema de gerenciamento NYV8 Digital • Versão 1.0
         </div>
-      </div>
-    </div>
+
+        <p className="mb-7 text-sm leading-6 text-white/55">
+          Entre com a conta Google autorizada para gerenciar solicitações e orçamentos. O acesso antigo por senha local foi removido.
+        </p>
+
+        {error && (
+          <div className="mb-5 rounded-xl border border-red-400/20 bg-red-400/10 p-3 text-sm leading-5 text-red-100">
+            {error}
+          </div>
+        )}
+
+        <button onClick={handleLogin} disabled={authenticating} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#e9e5d8] px-5 py-3.5 text-sm font-bold text-[#171713] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60">
+          <LogIn className="h-4 w-4" />
+          {authenticating ? 'Entrando...' : 'Entrar com Google'}
+        </button>
+
+        <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-5 text-[10px] uppercase tracking-[0.16em] text-white/30">
+          <a href="/" className="transition hover:text-white/60">Voltar ao site</a>
+          <span>Acesso restrito</span>
+        </div>
+      </section>
+    </main>
   );
 };
 
