@@ -17,6 +17,13 @@ const mergeContent = (locale: FlliLocale, stored?: Partial<FlliContent>): FlliCo
     services: Array.isArray(stored.services) ? stored.services.map((item) => [...item] as [string, string, string]) : base.services,
     projects: Array.isArray(stored.projects) ? stored.projects.map((item) => [...item] as [string, string, string, string]) : base.projects,
     process: Array.isArray(stored.process) ? stored.process.map((item) => [...item] as [string, string, string]) : base.process,
+    media: {
+      ...base.media,
+      ...(stored.media || {}),
+      projectImages: Array.isArray(stored.media?.projectImages)
+        ? [...stored.media.projectImages]
+        : base.media.projectImages,
+    },
     form: {
       ...base.form,
       ...(stored.form || {}),
