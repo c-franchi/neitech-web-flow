@@ -19,7 +19,7 @@ type TextFieldProps = {
 
 const TextField: React.FC<TextFieldProps> = ({ label, value, onChange, multiline, hint }) => (
   <label className="block">
-    <span className="mb-1.5 block text-xs font-bold uppercase tracking-[0.1em] text-black/50">{label}</span>
+    <span className="mb-1.5 block text-xs font-bold uppercase tracking-[0.1em] text-black/60">{label}</span>
     {multiline ? (
       <textarea
         rows={3}
@@ -34,7 +34,7 @@ const TextField: React.FC<TextFieldProps> = ({ label, value, onChange, multiline
         className="w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#74795a] focus:ring-2 focus:ring-[#74795a]/10"
       />
     )}
-    {hint && <span className="mt-1 block text-[11px] text-black/35">{hint}</span>}
+    {hint && <span className="mt-1 block text-[11px] text-black/50">{hint}</span>}
   </label>
 );
 
@@ -44,9 +44,9 @@ const EditorSection: React.FC<{ title: string; subtitle?: string; children: Reac
       <div className="flex items-center justify-between gap-4">
         <div>
           <h2 className="font-serif text-2xl tracking-[-0.025em]">{title}</h2>
-          {subtitle && <p className="mt-1 text-xs leading-5 text-black/45">{subtitle}</p>}
+          {subtitle && <p className="mt-1 text-xs leading-5 text-black/60">{subtitle}</p>}
         </div>
-        <span className="text-xl text-black/30 transition group-open:rotate-45">+</span>
+        <span className="text-xl text-black/40 transition group-open:rotate-45">+</span>
       </div>
     </summary>
     <div className="border-t border-black/10 p-5 sm:p-6">{children}</div>
@@ -57,7 +57,7 @@ const MediaCard: React.FC<{ title: string; description: string; children: React.
   <div className="rounded-2xl border border-black/10 bg-black/[0.025] p-4 sm:p-5">
     <div className="mb-4">
       <h3 className="text-sm font-bold">{title}</h3>
-      <p className="mt-1 text-xs leading-5 text-black/45">{description}</p>
+      <p className="mt-1 text-xs leading-5 text-black/60">{description}</p>
     </div>
     {children}
   </div>
@@ -288,7 +288,7 @@ const FlliSiteEditor: React.FC<Props> = ({ adminEmail }) => {
       <div className="mb-7">
         <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#686d4e]">Editor do site</p>
         <h1 className="mt-2 font-serif text-4xl tracking-[-0.035em]">Editar conteúdo {locale === 'br' ? 'Brasil' : 'Itália'}</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-black/50">Edite textos, imagens e projetos do site atual. As alterações são gravadas no Firebase e passam a aparecer sem precisar alterar o código.</p>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-black/60">Edite textos, imagens e projetos do site atual. As alterações são gravadas no Firebase e passam a aparecer sem precisar alterar o código.</p>
       </div>
 
       <div className="space-y-4">
@@ -299,14 +299,18 @@ const FlliSiteEditor: React.FC<Props> = ({ adminEmail }) => {
           </div>
         </EditorSection>
 
-        <EditorSection title="Imagens do site" subtitle="Troque logo, banner, contato e compartilhamento." open>
+        <EditorSection title="Imagens do site" subtitle="Troque logo, Hero desktop/mobile, contato e compartilhamento." open>
           <div className="grid gap-4 md:grid-cols-2">
             <MediaCard title="Logo / monograma" description="Usado no cabeçalho e rodapé. Preferência: PNG, SVG ou WebP com fundo transparente.">
               <ImageUploader value={content.media.logoUrl} onChange={(url) => updateMedia('logoUrl', url || '/brand/flli-monogram.svg')} />
             </MediaCard>
 
-            <MediaCard title="Imagem principal do banner" description="Se não houver imagem, o cartão gráfico original continuará aparecendo. Recomendado: horizontal ou quadrada, alta resolução.">
+            <MediaCard title="Hero — desktop" description="Imagem horizontal para telas maiores. Recomendado: 1600 × 900 px em WebP/JPG de boa qualidade.">
               <ImageUploader value={content.media.heroImageUrl} onChange={(url) => updateMedia('heroImageUrl', url)} />
+            </MediaCard>
+
+            <MediaCard title="Hero — mobile" description="Imagem vertical exclusiva para celulares. Recomendado: 900 × 1600 px. Se ficar vazia, o celular usa automaticamente a imagem desktop.">
+              <ImageUploader value={content.media.heroMobileImageUrl || ''} onChange={(url) => updateMedia('heroMobileImageUrl', url)} />
             </MediaCard>
 
             <MediaCard title="Imagem da seção de contato" description="Imagem opcional exibida ao lado do formulário. Se ficar vazia, a seção mantém o layout atual.">
@@ -332,7 +336,7 @@ const FlliSiteEditor: React.FC<Props> = ({ adminEmail }) => {
             <TextField label="Botão secundário" value={content.ctaSecondary} onChange={(value) => update('ctaSecondary', value)} />
           </div>
           <div className="mt-6 border-t border-black/10 pt-5">
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.1em] text-black/50">Destaques abaixo do banner</p>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.1em] text-black/60">Destaques abaixo do banner</p>
             <div className="grid gap-3 sm:grid-cols-2">
               {content.proof.map((item, index) => (
                 <TextField key={index} label={`Destaque ${index + 1}`} value={item} onChange={(value) => updateProof(index, value)} />
@@ -389,8 +393,8 @@ const FlliSiteEditor: React.FC<Props> = ({ adminEmail }) => {
                 </div>
 
                 <div className="mb-5 rounded-xl border border-black/10 bg-white p-4">
-                  <p className="mb-1 text-xs font-bold uppercase tracking-[0.1em] text-black/50">Imagem do projeto</p>
-                  <p className="mb-4 text-[11px] leading-5 text-black/35">A imagem será exibida no card do portfólio e permanece vinculada a este projeto.</p>
+                  <p className="mb-1 text-xs font-bold uppercase tracking-[0.1em] text-black/60">Imagem do projeto</p>
+                  <p className="mb-4 text-[11px] leading-5 text-black/50">A imagem será exibida no card do portfólio e permanece vinculada a este projeto.</p>
                   <ImageUploader value={content.media.projectImages[index] || ''} onChange={(url) => updateProjectImage(index, url)} />
                 </div>
 
@@ -456,7 +460,7 @@ const FlliSiteEditor: React.FC<Props> = ({ adminEmail }) => {
             <TextField label="Placeholder de serviço" value={content.form.servicePlaceholder} onChange={(value) => updateForm('servicePlaceholder', value)} />
           </div>
           <div className="mt-6">
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.1em] text-black/50">Opções de serviço do formulário</p>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.1em] text-black/60">Opções de serviço do formulário</p>
             <div className="grid gap-3 sm:grid-cols-2">
               {content.form.services.map((service, index) => (
                 <TextField key={index} label={`Opção ${index + 1}`} value={service} onChange={(value) => updateFormService(index, value)} />
