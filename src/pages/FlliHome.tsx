@@ -287,65 +287,6 @@ const FlliHome = ({ locale }: FlliHomeProps) => {
               );
             })}
           </div>
-              const projectImage = t.media.projectImages[index] || '';
-              const projectUrl = normalizeExternalUrl(url);
-              const darkCard = index % 3 === 1;
-              return (
-                <article key={`${kind}-${title}-${index}`} className={`group flex overflow-hidden rounded-[2rem] border border-black/10 transition duration-500 hover:-translate-y-1 ${darkCard ? 'bg-[#74795a] text-white' : index % 3 === 2 ? 'bg-[#d9d4c5]' : 'bg-[#e9e5d8]'}`}>
-                  <div className="flex w-full flex-col">
-                    {projectImage && (
-                      <div className="relative h-52 overflow-hidden border-b border-black/10 sm:h-60">
-                        <img src={projectImage} alt={title} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
-                        {darkCard && <div className="absolute inset-0 bg-black/10" />}
-                      </div>
-                    )}
-                    <div className="flex flex-1 flex-col justify-between p-7">
-                      <div className="flex items-center justify-between gap-4">
-                        <span className={`text-[12px] font-bold uppercase tracking-[0.25em] md:text-[10px] ${darkCard ? 'text-white/75' : 'text-black/60'}`}>{kind}</span>
-                        {projectUrl ? (
-                          <a
-                            href={projectUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={`${locale === 'it' ? 'Apri' : 'Abrir'} ${title}`}
-                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition ${darkCard ? 'border-white/30 hover:bg-white/10' : 'border-black/15 hover:bg-black/5'}`}
-                          >
-                            <ArrowUpRight className="h-4 w-4 transition group-hover:-translate-y-1 group-hover:translate-x-1" />
-                          </a>
-                        ) : (
-                          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${darkCard ? 'border-white/25' : 'border-black/15'}`}>
-                            <ArrowUpRight className="h-4 w-4 opacity-50" />
-                          </span>
-                        )}
-                      </div>
-
-                      <div className={projectImage ? 'mt-8' : 'mt-14'}>
-                        <h3 className="font-serif text-4xl leading-[1.02]">{title}</h3>
-                        <p className={`mt-5 text-[15px] font-medium leading-7 md:text-sm md:leading-6 ${darkCard ? 'text-white/75' : 'text-black/65'}`}>{text}</p>
-                        <p className={`mt-8 border-t pt-5 text-[12px] font-bold uppercase tracking-[0.18em] md:text-[10px] ${darkCard ? 'border-white/25 text-white/65' : 'border-black/10 text-black/55'}`}>{tags}</p>
-
-                        {projectUrl ? (
-                          <a
-                            href={projectUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`mt-5 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] transition ${darkCard ? 'text-white hover:text-white/75' : 'text-[#5d6249] hover:text-black'}`}
-                          >
-                            {locale === 'it' ? 'Visita il progetto' : 'Visitar projeto'}
-                            <ArrowUpRight className="h-3.5 w-3.5" />
-                          </a>
-                        ) : (
-                          <span className={`mt-5 inline-block text-[10px] font-bold uppercase tracking-[0.14em] ${darkCard ? 'text-white/55' : 'text-black/45'}`}>
-                            {locale === 'it' ? 'Progetto in sviluppo' : 'Projeto em desenvolvimento'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
         </div>
       </section>
 
