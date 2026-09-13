@@ -29,7 +29,6 @@ const normalizeExternalUrl = (value?: string) => {
 const FlliHome = ({ locale }: FlliHomeProps) => {
   const { toast } = useToast();
   const [t, setT] = useState<FlliContent>(() => cloneFlliContent(defaultFlliContent[locale]));
-  const [contentReady, setContentReady] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', whatsapp: '', service: '', message: '' });
@@ -44,7 +43,7 @@ const FlliHome = ({ locale }: FlliHomeProps) => {
   useEffect(() => {
     let active = true;
     const fallback = cloneFlliContent(defaultFlliContent[locale]);
-    setContentReady(false);
+    setT(fallback);
 
     getFlliContent(locale)
       .then((content) => {
@@ -53,9 +52,6 @@ const FlliHome = ({ locale }: FlliHomeProps) => {
       .catch((error) => {
         console.warn(`F.LLI content (${locale}) indisponível; usando conteúdo padrão.`, error);
         if (active) setT(fallback);
-      })
-      .finally(() => {
-        if (active) setContentReady(true);
       });
 
     return () => {
@@ -105,7 +101,7 @@ const FlliHome = ({ locale }: FlliHomeProps) => {
   };
 
   return (
-    <main className={`flli-site min-h-screen bg-[#f0ede3] text-[#171713] selection:bg-[#74795a] selection:text-white ${hasHeroMedia ? 'flli-site--hero-media' : ''} ${contentReady ? 'content-ready' : 'content-loading'}`}>
+    <main className={`flli-site min-h-screen bg-[#f0ede3] text-[#171713] selection:bg-[#74795a] selection:text-white ${hasHeroMedia ? 'flli-site--hero-media' : ''}`}>
       <header className="flli-header sticky top-0 z-50 border-b border-black/10 bg-[#f0ede3]/90 backdrop-blur-xl">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-10">
           <Link to="/" className="flex items-center gap-3" aria-label="F.LLI FRANCHI">
@@ -157,12 +153,7 @@ const FlliHome = ({ locale }: FlliHomeProps) => {
           <div className="flli-hero-bg" aria-hidden="true">
             <picture>
               {mobileHeroImage && <source media="(max-width: 767px)" srcSet={mobileHeroImage} />}
-              <img
-                className="hero-bg-img"
-                src={desktopHeroImage || mobileHeroImage}
-                alt=""
-                onLoad={(e) => e.currentTarget.classList.add('loaded')}
-              />
+              <img src={desktopHeroImage || mobileHeroImage} alt="" />
             </picture>
           </div>
         )}
