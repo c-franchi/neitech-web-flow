@@ -1,7 +1,7 @@
 export type FlliLocale = 'br' | 'it';
 
 export type FlliServiceItem = [string, string, string];
-export type FlliProjectItem = [string, string, string, string];
+export type FlliProjectItem = [string, string, string, string, string];
 export type FlliProcessItem = [string, string, string];
 
 export interface FlliMedia {
@@ -93,11 +93,29 @@ export const defaultFlliContent: Record<FlliLocale, FlliContent> = {
       ['04', 'Design & Conteúdo Digital', 'Identidade visual, interfaces, banners, peças digitais e sistemas de comunicação coerentes com a marca.'],
     ],
     projectsKicker: 'Projetos selecionados',
-    projectsTitle: 'Soluções para negócios reais.',
+    projectsTitle: 'Soluções construídas para uso real.',
     projects: [
-      ['Commerce', 'Venda, pagamento e logística', 'Experiências de e-commerce com catálogo, checkout, pagamentos, retirada, frete e administração.', 'E-commerce · Checkout · Admin'],
-      ['Operations', 'Presença e gestão de eventos', 'Sistemas rápidos para cadastro, busca, confirmação, relatórios e rotinas administrativas.', 'Web app · Dados · Relatórios'],
-      ['Learning', 'Conteúdo e comunidade', 'Plataformas de assinatura para organizar aulas, conteúdo exclusivo, membros e relacionamento.', 'Membership · Conteúdo · UX'],
+      [
+        'E-commerce',
+        'Quarteto Kids',
+        'Loja infantil online com catálogo e variações, checkout, PIX e cartão, cálculo de frete, retirada em loja, cupons e painel administrativo.',
+        'E-commerce · PWA · Stripe · Mercado Pago',
+        'https://quartetokids.com.br',
+      ],
+      [
+        'Web app',
+        'Reuniões CCB',
+        'Sistema para ensaios e reuniões com busca rápida de músicos, confirmação de presença, justificativas, relatórios em PDF e gestão administrativa.',
+        'Web app · Firebase · Relatórios · Busca',
+        'https://reunioesccb.app.br',
+      ],
+      [
+        'Plataforma',
+        'Clube da Tia Mary',
+        'Plataforma de assinatura para aulas de crochê, vídeos, conteúdos exclusivos, comunidade e gestão de membros.',
+        'Membership · Conteúdo · Vídeo · UX',
+        '',
+      ],
     ],
     processKicker: 'Como trabalhamos',
     processTitle: 'Clareza antes de código.',
@@ -153,11 +171,29 @@ export const defaultFlliContent: Record<FlliLocale, FlliContent> = {
       ['04', 'Design & Contenuti Digitali', 'Identità visiva, interfacce, banner, materiali digitali e sistemi di comunicazione coerenti con il brand.'],
     ],
     projectsKicker: 'Progetti selezionati',
-    projectsTitle: 'Soluzioni per attività reali.',
+    projectsTitle: 'Soluzioni create per un utilizzo reale.',
     projects: [
-      ['Commerce', 'Vendita, pagamento e logistica', 'Esperienze e-commerce con catalogo, checkout, pagamenti, ritiro, spedizione e amministrazione.', 'E-commerce · Checkout · Admin'],
-      ['Operations', 'Presenze e gestione eventi', 'Sistemi veloci per registrazione, ricerca, conferma, report e attività amministrative.', 'Web app · Dati · Report'],
-      ['Learning', 'Contenuti e community', 'Piattaforme in abbonamento per organizzare lezioni, contenuti esclusivi, membri e relazioni.', 'Membership · Contenuti · UX'],
+      [
+        'E-commerce',
+        'Quarteto Kids',
+        'Negozio online per bambini con catalogo e varianti, checkout, PIX e carta, spedizione, ritiro in negozio, coupon e pannello amministrativo.',
+        'E-commerce · PWA · Stripe · Mercado Pago',
+        'https://quartetokids.com.br',
+      ],
+      [
+        'Web app',
+        'Reuniões CCB',
+        'Sistema per prove e riunioni con ricerca rapida dei musicisti, conferma delle presenze, giustificazioni, report PDF e gestione amministrativa.',
+        'Web app · Firebase · Report · Ricerca',
+        'https://reunioesccb.app.br',
+      ],
+      [
+        'Piattaforma',
+        'Clube da Tia Mary',
+        'Piattaforma in abbonamento per lezioni di uncinetto, video, contenuti esclusivi, community e gestione dei membri.',
+        'Membership · Contenuti · Video · UX',
+        '',
+      ],
     ],
     processKicker: 'Come lavoriamo',
     processTitle: 'Chiarezza prima del codice.',
