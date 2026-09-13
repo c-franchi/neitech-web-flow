@@ -128,6 +128,21 @@
   padding-bottom: clamp(2rem, 4.3vh, 3.7rem);
 }
 
+/* Esconder o conteúdo do hero até que o Firestore carregue o conteúdo real. */
+.content-loading .flli-hero-copy,
+.content-loading .flli-hero-actions,
+.content-loading .flli-hero-description {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+.content-ready .flli-hero-copy,
+.content-ready .flli-hero-actions,
+.content-ready .flli-hero-description {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .flli-hero--media .flli-hero-copy {
   width: min(100%, 47rem);
 }
