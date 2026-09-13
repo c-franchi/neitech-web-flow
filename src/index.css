@@ -297,3 +297,247 @@ All colors MUST be HSL.
     margin-top: 0 !important;
   }
 }
+
+/* F.LLI FRANCHI — Hero cinematográfico PT-BR
+   O layout entra em ação somente quando existe uma imagem de Hero configurada
+   no painel administrativo, preservando o fallback atual quando o campo está vazio. */
+html[lang="pt-BR"] main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) {
+  background: rgba(10, 11, 10, 0.90) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  color: #f4efe4 !important;
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.12);
+}
+
+html[lang="pt-BR"] main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) a,
+html[lang="pt-BR"] main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) button {
+  color: #f4efe4 !important;
+}
+
+html[lang="pt-BR"] main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) nav a {
+  color: rgba(244, 239, 228, 0.62) !important;
+}
+
+html[lang="pt-BR"] main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) nav a:hover {
+  color: #ffffff !important;
+}
+
+html[lang="pt-BR"] main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) > div > div:last-child > a,
+html[lang="pt-BR"] main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) > div > div:last-child > button {
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+}
+
+html[lang="pt-BR"] main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) > nav {
+  background: rgba(10, 11, 10, 0.98) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) {
+  position: relative;
+  isolation: isolate;
+  min-height: calc(100svh - 5rem);
+  overflow: hidden;
+  background: #0b0c0b !important;
+  color: #f4efe4 !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg,
+      rgba(8, 9, 8, 0.98) 0%,
+      rgba(8, 9, 8, 0.94) 30%,
+      rgba(8, 9, 8, 0.78) 47%,
+      rgba(8, 9, 8, 0.42) 68%,
+      rgba(8, 9, 8, 0.12) 100%),
+    linear-gradient(0deg, rgba(6, 7, 6, 0.35), rgba(6, 7, 6, 0.02) 55%);
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > .pointer-events-none {
+  display: none !important;
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) {
+  position: relative;
+  display: flex !important;
+  align-items: center;
+  min-height: calc(100svh - 5rem);
+  width: 100%;
+  padding-top: clamp(5.5rem, 10vh, 8.5rem) !important;
+  padding-bottom: clamp(6.5rem, 11vh, 9rem) !important;
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child {
+  position: relative;
+  z-index: 3;
+  width: min(100%, 47rem);
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child > p:first-child {
+  color: #c6a46a !important;
+  text-shadow: 0 1px 20px rgba(0, 0, 0, 0.35);
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child h1 {
+  max-width: 47rem !important;
+  color: #f5f0e5 !important;
+  font-size: clamp(3.2rem, 6.6vw, 6.35rem) !important;
+  line-height: 0.91 !important;
+  letter-spacing: -0.058em !important;
+  text-wrap: balance;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child h1 span {
+  color: #c6a46a !important;
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child h1 + p {
+  max-width: 41rem !important;
+  color: rgba(244, 239, 228, 0.67) !important;
+  font-size: clamp(1rem, 1.3vw, 1.16rem) !important;
+  line-height: 1.75 !important;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.28);
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child > div:last-child a:first-child {
+  background: linear-gradient(135deg, #d3b073, #a78248) !important;
+  color: #12120f !important;
+  border: 1px solid rgba(232, 205, 153, 0.55) !important;
+  box-shadow: 0 14px 40px rgba(118, 84, 37, 0.24);
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child > div:last-child a:first-child:hover {
+  background: linear-gradient(135deg, #e0c28b, #b38b50) !important;
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child > div:last-child a:nth-child(2) {
+  color: #f5f0e5 !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
+  background: rgba(13, 14, 13, 0.24) !important;
+  backdrop-filter: blur(10px);
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child > div:last-child a:nth-child(2):hover {
+  border-color: rgba(255, 255, 255, 0.58) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Transforma a imagem cadastrada no painel em fundo real do hero. */
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  min-height: 0 !important;
+  pointer-events: none;
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) > div:first-child {
+  display: none !important;
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) > div:nth-child(2) {
+  position: absolute !important;
+  inset: 0 !important;
+  overflow: hidden !important;
+  transform: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #0b0c0b !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) > div:nth-child(2) > img.absolute.inset-0.h-full.w-full.object-cover {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: 70% center !important;
+  filter: saturate(0.82) contrast(1.04) brightness(0.90);
+}
+
+/* O background gerado já é limpo; remove logo/legendas sobre a fotografia para o texto HTML ser o protagonista. */
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) > div:nth-child(2) > div,
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) > div:nth-child(2) > img:not(:first-child) {
+  display: none !important;
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(4) {
+  position: relative;
+  z-index: 3;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  background: rgba(8, 9, 8, 0.84) !important;
+  backdrop-filter: blur(12px);
+}
+
+html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(4) > div {
+  color: rgba(244, 239, 228, 0.48) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+@media (max-width: 767px) {
+  html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) {
+    min-height: calc(100svh - 5rem);
+  }
+
+  html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover)::before {
+    background:
+      linear-gradient(180deg,
+        rgba(8, 9, 8, 0.28) 0%,
+        rgba(8, 9, 8, 0.42) 28%,
+        rgba(8, 9, 8, 0.78) 57%,
+        rgba(8, 9, 8, 0.97) 88%,
+        rgba(8, 9, 8, 1) 100%),
+      linear-gradient(90deg, rgba(8, 9, 8, 0.72), rgba(8, 9, 8, 0.08) 78%);
+  }
+
+  html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) {
+    align-items: flex-end;
+    min-height: calc(100svh - 5rem);
+    padding: 6rem 1.25rem 4.25rem !important;
+  }
+
+  html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child {
+    width: 100%;
+  }
+
+  html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child h1 {
+    max-width: 22rem !important;
+    font-size: clamp(2.75rem, 13vw, 4.2rem) !important;
+    line-height: 0.94 !important;
+  }
+
+  html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child h1 + p {
+    max-width: 31rem !important;
+    font-size: 0.98rem !important;
+    line-height: 1.65 !important;
+  }
+
+  html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child > div:last-child a {
+    width: 100%;
+    min-height: 3.2rem;
+  }
+
+  html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) > div:nth-child(2) > img.absolute.inset-0.h-full.w-full.object-cover {
+    object-position: 64% center !important;
+    filter: saturate(0.78) contrast(1.04) brightness(0.82);
+  }
+
+  html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(4) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  html[lang="pt-BR"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) {
+    padding-left: 2.5rem !important;
+    padding-right: 2.5rem !important;
+  }
+}
