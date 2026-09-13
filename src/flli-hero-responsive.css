@@ -260,10 +260,11 @@ html[lang="it-IT"] .flli-hero--media .flli-hero-copy h1 {
   }
 
   .flli-hero--media .flli-hero-body {
-    /* Ajuste: subir metade da descida anterior (nudge) */
-    align-items: flex-end;
+    /* Centraliza o conteúdo do Hero no eixo vertical no mobile */
+    align-items: center;
+    justify-content: center;
     flex: 1 1 auto;
-    padding: 1.0rem 0.9rem 1.2rem !important;
+    padding: 1.0rem 0.9rem !important;
   }
 
   .flli-hero--media .flli-hero-copy {
