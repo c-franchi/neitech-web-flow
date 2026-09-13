@@ -4,21 +4,36 @@ import { cloneFlliContent, defaultFlliContent, FlliContent, FlliLocale, FlliProj
 
 const COLLECTION = 'flli_site_content';
 
-const LEGACY_PROJECTS: Record<FlliLocale, Array<[string, string, string, string]>> = {
+// Títulos que já foram usados nas versões anteriores do portfólio. Quando um
+// desses valores ainda estiver salvo no Firestore, substituímos apenas o texto
+// do card pelo projeto atual correspondente. As imagens permanecem em media.projectImages.
+const LEGACY_PROJECT_TITLES: Record<FlliLocale, string[][]> = {
   br: [
-    ['Commerce', 'Venda, pagamento e logística', 'Experiências de e-commerce com catálogo, checkout, pagamentos, retirada, frete e administração.', 'E-commerce · Checkout · Admin'],
-    ['Operations', 'Presença e gestão de eventos', 'Sistemas rápidos para cadastro, busca, confirmação, relatórios e rotinas administrativas.', 'Web app · Dados · Relatórios'],
-    ['Learning', 'Conteúdo e comunidade', 'Plataformas de assinatura para organizar aulas, conteúdo exclusivo, membros e relacionamento.', 'Membership · Conteúdo · UX'],
+    ['Venda, pagamento e logística', 'Quarteto Kids'],
+    ['Presença e gestão de eventos', 'Reuniões CCB'],
+    ['Conteúdo e comunidade', 'Clube da Tia Mary'],
   ],
   it: [
-    ['Commerce', 'Vendita, pagamento e logistica', 'Esperienze e-commerce con catalogo, checkout, pagamenti, ritiro, spedizione e amministrazione.', 'E-commerce · Checkout · Admin'],
-    ['Operations', 'Presenze e gestione eventi', 'Sistemi veloci per registrazione, ricerca, conferma, report e attività amministrative.', 'Web app · Dati · Report'],
-    ['Learning', 'Contenuti e community', 'Piattaforme in abbonamento per organizzare lezioni, contenuti esclusivi, membri e relazioni.', 'Membership · Contenuti · UX'],
+    ['Vendita, pagamento e logistica', 'Quarteto Kids'],
+    ['Presenze e gestione eventi', 'Reuniões CCB'],
+    ['Contenuti e community', 'Clube da Tia Mary'],
   ],
 };
 
-const sameLegacyProject = (item: unknown[], legacy: [string, string, string, string]) =>
-  legacy.every((value, index) => String(item[index] ?? '') === value);
+const LEGACY_PROJECT_CATEGORIES = ['Commerce', 'Operations', 'Learning'];
+
+const shouldMigrateProject = (locale: FlliLocale, item: unknown[], index: number) => {
+  const title = String(item[1] ?? '').trim();
+  const category = String(item[0] ?? '').trim();
+  const knownTitles = LEGACY_PROJECT_TITLES[locale][index] || [];
+
+  // Título conhecido de uma versão anterior.
+  if (knownTitles.includes(title)) return true;
+
+  // Estrutura genérica inicial do portfólio, caso algum texto tenha sido salvo
+  // com pequenas alterações na descrição/tags.
+  return category === LEGACY_PROJECT_CATEGORIES[index] && index < 3;
+};
 
 const normalizeProjects = (locale: FlliLocale, storedProjects: unknown): FlliProjectItem[] => {
   const baseProjects = defaultFlliContent[locale].projects;
@@ -27,9 +42,8 @@ const normalizeProjects = (locale: FlliLocale, storedProjects: unknown): FlliPro
   return storedProjects.map((rawItem, index) => {
     const item = Array.isArray(rawItem) ? rawItem : [];
     const base = baseProjects[index] || (['Projeto', 'Novo projeto', '', '', ''] as FlliProjectItem);
-    const legacy = LEGACY_PROJECTS[locale][index];
 
-    if (legacy && sameLegacyProject(item, legacy)) {
+    if (index < baseProjects.length && shouldMigrateProject(locale, item, index)) {
       return [...base] as FlliProjectItem;
     }
 
