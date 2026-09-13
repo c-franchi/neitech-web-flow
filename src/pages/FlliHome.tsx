@@ -20,6 +20,12 @@ const upsertMeta = (selector: string, attributes: Record<string, string>, conten
   if (content !== undefined) tag.setAttribute('content', content);
 };
 
+const normalizeExternalUrl = (value?: string) => {
+  const trimmed = value?.trim() || '';
+  if (!trimmed) return '';
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+};
+
 const FlliHome = ({ locale }: FlliHomeProps) => {
   const { toast } = useToast();
   const [t, setT] = useState<FlliContent>(() => cloneFlliContent(defaultFlliContent[locale]));
@@ -207,27 +213,60 @@ const FlliHome = ({ locale }: FlliHomeProps) => {
         <div className="mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
           <p className="text-[12px] font-bold uppercase tracking-[0.22em] text-[#686d4e] md:text-[11px] md:tracking-[0.3em]">{t.projectsKicker}</p>
           <h2 className="mt-5 max-w-3xl font-serif text-4xl leading-[0.95] tracking-[-0.04em] md:text-5xl">{t.projectsTitle}</h2>
-          <div className="mt-16 grid gap-5 lg:grid-cols-3">
-            {t.projects.map(([kind, title, text, tags], index) => {
+          <div className="mt-16 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {t.projects.map(([kind, title, text, tags, url], index) => {
               const projectImage = t.media.projectImages[index] || '';
+              const projectUrl = normalizeExternalUrl(url);
+              const darkCard = index % 3 === 1;
               return (
-                <article key={kind} className={`group flex overflow-hidden rounded-[2rem] border border-black/10 transition duration-500 hover:-translate-y-1 lg:min-h-[27rem] ${index === 1 ? 'bg-[#74795a] text-white' : index === 2 ? 'bg-[#d9d4c5]' : 'bg-[#e9e5d8]'}`}>
+                <article key={`${kind}-${title}-${index}`} className={`group flex overflow-hidden rounded-[2rem] border border-black/10 transition duration-500 hover:-translate-y-1 ${darkCard ? 'bg-[#74795a] text-white' : index % 3 === 2 ? 'bg-[#d9d4c5]' : 'bg-[#e9e5d8]'}`}>
                   <div className="flex w-full flex-col">
                     {projectImage && (
-                      <div className="relative h-48 overflow-hidden border-b border-black/10 sm:h-56">
+                      <div className="relative h-52 overflow-hidden border-b border-black/10 sm:h-60">
                         <img src={projectImage} alt={title} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
-                        {index === 1 && <div className="absolute inset-0 bg-black/10" />}
+                        {darkCard && <div className="absolute inset-0 bg-black/10" />}
                       </div>
                     )}
                     <div className="flex flex-1 flex-col justify-between p-7">
-                      <div className="flex items-center justify-between">
-                        <span className={`text-[12px] font-bold uppercase tracking-[0.25em] md:text-[10px] ${index === 1 ? 'text-white/55' : 'text-black/40'}`}>{kind}</span>
-                        <span className={`flex h-10 w-10 items-center justify-center rounded-full border ${index === 1 ? 'border-white/20' : 'border-black/10'}`}><ArrowUpRight className="h-4 w-4 transition group-hover:-translate-y-1 group-hover:translate-x-1" /></span>
+                      <div className="flex items-center justify-between gap-4">
+                        <span className={`text-[12px] font-bold uppercase tracking-[0.25em] md:text-[10px] ${darkCard ? 'text-white/55' : 'text-black/40'}`}>{kind}</span>
+                        {projectUrl ? (
+                          <a
+                            href={projectUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`${locale === 'it' ? 'Apri' : 'Abrir'} ${title}`}
+                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition ${darkCard ? 'border-white/20 hover:bg-white/10' : 'border-black/10 hover:bg-black/5'}`}
+                          >
+                            <ArrowUpRight className="h-4 w-4 transition group-hover:-translate-y-1 group-hover:translate-x-1" />
+                          </a>
+                        ) : (
+                          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${darkCard ? 'border-white/20' : 'border-black/10'}`}>
+                            <ArrowUpRight className="h-4 w-4 opacity-35" />
+                          </span>
+                        )}
                       </div>
-                      <div className={projectImage ? 'mt-10' : ''}>
+
+                      <div className={projectImage ? 'mt-8' : 'mt-14'}>
                         <h3 className="font-serif text-4xl leading-[1.02]">{title}</h3>
-                        <p className={`mt-5 text-[15px] leading-7 md:text-sm md:leading-6 ${index === 1 ? 'text-white/60' : 'text-black/50'}`}>{text}</p>
-                        <p className={`mt-8 border-t pt-5 text-[12px] font-bold uppercase tracking-[0.18em] md:text-[10px] ${index === 1 ? 'border-white/20 text-white/45' : 'border-black/10 text-black/40'}`}>{tags}</p>
+                        <p className={`mt-5 text-[15px] leading-7 md:text-sm md:leading-6 ${darkCard ? 'text-white/60' : 'text-black/50'}`}>{text}</p>
+                        <p className={`mt-8 border-t pt-5 text-[12px] font-bold uppercase tracking-[0.18em] md:text-[10px] ${darkCard ? 'border-white/20 text-white/45' : 'border-black/10 text-black/40'}`}>{tags}</p>
+
+                        {projectUrl ? (
+                          <a
+                            href={projectUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`mt-5 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] transition ${darkCard ? 'text-white hover:text-white/70' : 'text-[#5d6249] hover:text-black'}`}
+                          >
+                            {locale === 'it' ? 'Visita il progetto' : 'Visitar projeto'}
+                            <ArrowUpRight className="h-3.5 w-3.5" />
+                          </a>
+                        ) : (
+                          <span className={`mt-5 inline-block text-[10px] font-bold uppercase tracking-[0.14em] ${darkCard ? 'text-white/35' : 'text-black/30'}`}>
+                            {locale === 'it' ? 'Progetto in sviluppo' : 'Projeto em desenvolvimento'}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
