@@ -48,7 +48,7 @@ const PoliticaPrivacidade: React.FC = () => (
     <section>
       <h2 className="text-xl font-semibold mb-2">8. Contato</h2>
       <p>
-        Em caso de dúvidas sobre esta política, entre em contato pelo e-mail: contato@nyv8.com.br
+        Em caso de dúvidas sobre esta política, entre em contato pelo e-mail: neifranchi@gmail.com
       </p>
     </section>
   </main>

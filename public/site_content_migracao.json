@@ -4,7 +4,7 @@
     "name": "hero",
     "label": "Hero/Banner Principal",
     "content": {
-      "titulo": "Bem-vindo à NYV8 Digital",
+      "titulo": "Bem-vindo à F.LLI FRANCHI",
       "subtitulo": "Soluções criativas para seu negócio",
       "imagem": "",
       "cta": "Solicite um orçamento",
@@ -150,7 +150,7 @@
     "label": "Rodapé",
     "content": {
       "anoAtual": 2026,
-      "empresa": "NYV8 Digital",
+      "empresa": "F.LLI FRANCHI",
       "links": {
         "services": [
           { "label": "Desenvolvimento Web", "href": "#services" },
@@ -167,7 +167,7 @@
         ]
       },
       "contato": {
-        "email": "contato@nyv8digital.com.br",
+        "email": "neifranchi@gmail.com",
         "telefone": "(16) 99781-3038",
         "whatsapp": "https://wa.me/5516997813038",
         "endereco": "Araraquara, SP"

@@ -1,7 +1,7 @@
 export type FlliLocale = 'br' | 'it';
 
 export type FlliServiceItem = [string, string, string];
-export type FlliProjectItem = [string, string, string, string];
+export type FlliProjectItem = [string, string, string, string, string];
 export type FlliProcessItem = [string, string, string];
 
 export interface FlliMedia {
@@ -95,9 +95,9 @@ export const defaultFlliContent: Record<FlliLocale, FlliContent> = {
     projectsKicker: 'Projetos selecionados',
     projectsTitle: 'Soluções para negócios reais.',
     projects: [
-      ['Commerce', 'Venda, pagamento e logística', 'Experiências de e-commerce com catálogo, checkout, pagamentos, retirada, frete e administração.', 'E-commerce · Checkout · Admin'],
-      ['Operations', 'Presença e gestão de eventos', 'Sistemas rápidos para cadastro, busca, confirmação, relatórios e rotinas administrativas.', 'Web app · Dados · Relatórios'],
-      ['Learning', 'Conteúdo e comunidade', 'Plataformas de assinatura para organizar aulas, conteúdo exclusivo, membros e relacionamento.', 'Membership · Conteúdo · UX'],
+      ['Música & IA', 'Criando Músicas', 'Plataforma digital para criação de músicas personalizadas, transformando histórias, homenagens e momentos especiais em experiências musicais únicas.', 'Música personalizada · IA · Web · Experiência digital', 'https://criandomusicas.com.br'],
+      ['Gestão & Automação', 'Gestão comercial integrada', 'Sistema digital para centralizar atendimento, clientes, pagamentos e operações comerciais em uma interface simples, rápida e organizada.', 'Web App · Dashboard · Automação · Gestão', ''],
+      ['E-commerce', 'Quarteto Kids', 'E-commerce infantil completo com catálogo, variações, checkout, PIX e cartão, frete, retirada em loja, cupons e painel administrativo.', 'E-commerce · PWA · Stripe · Mercado Pago', 'https://quartetokids.com.br'],
     ],
     processKicker: 'Como trabalhamos',
     processTitle: 'Clareza antes de código.',
@@ -155,9 +155,9 @@ export const defaultFlliContent: Record<FlliLocale, FlliContent> = {
     projectsKicker: 'Progetti selezionati',
     projectsTitle: 'Soluzioni per attività reali.',
     projects: [
-      ['Commerce', 'Vendita, pagamento e logistica', 'Esperienze e-commerce con catalogo, checkout, pagamenti, ritiro, spedizione e amministrazione.', 'E-commerce · Checkout · Admin'],
-      ['Operations', 'Presenze e gestione eventi', 'Sistemi veloci per registrazione, ricerca, conferma, report e attività amministrative.', 'Web app · Dati · Report'],
-      ['Learning', 'Contenuti e community', 'Piattaforme in abbonamento per organizzare lezioni, contenuti esclusivi, membri e relazioni.', 'Membership · Contenuti · UX'],
+      ['Hospitality', 'Lindolux Luxury B&B', 'Esperienza digitale premium per una struttura ricettiva di lusso, progettata per valorizzare ambienti, ospitalità e prenotazioni attraverso un\'identità elegante.', 'Hospitality · Luxury · Web Design · UX', ''],
+      ['Food & Experience', 'Sapori d’Italia', 'Esperienza digitale dedicata alla gastronomia italiana, con presentazione dei prodotti, storytelling visivo e una navigazione pensata per valorizzare sapori e tradizione.', 'Food · E-commerce · Web Design · Branding', ''],
+      ['AI & Sustainability', 'Il Tuo Assistente Virtuale Verde', 'Assistente virtuale digitale orientato alla sostenibilità, progettato per offrire informazioni, automazione e supporto attraverso un\'esperienza semplice e accessibile.', 'AI · Assistente virtuale · Automazione · Green Tech', ''],
     ],
     processKicker: 'Come lavoriamo',
     processTitle: 'Chiarezza prima del codice.',

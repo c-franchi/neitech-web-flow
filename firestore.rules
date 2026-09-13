@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email != null
+        && (request.auth.token.email == 'neifranchi@gmail.com' || request.auth.token.email == 'quartetokids.contato@gmail.com');
+    }
+
+    // F.LLI site content: public read, admin-only write
+    match /flli_site_content/{docId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Solicitações de orçamento: allow public create/read, admin update/delete
+    match /solicitacoes_orcamento/{docId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Usuários clientes, histórico e detalhes do formulário: allow create from client, admin manage
+    match /usuarios_clientes/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /historico_interacoes/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /detalhes_formulario/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Site sections used by administrative editor - admin only
+    match /site_sections/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /site_sections_staging/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Fallback: deny everything else by default
+    match /{document=**} {
+      allow read: if false;
+      allow write: if false;
+    }
+  }
+}

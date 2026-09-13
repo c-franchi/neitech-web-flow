@@ -9,7 +9,6 @@ import RichTextEditor from './RichTextEditor';
 import StyleEditorPanel, { SectionStyles } from './StyleEditorPanel';
 import { Plus, Trash2 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
-import { signInAnonymously } from 'firebase/auth';
 
 // Mapeamento de nomes de campos para labels amigáveis em português
 const fieldLabels: Record<string, string> = {
@@ -142,9 +141,9 @@ const AdminContentPanel: React.FC = () => {
   const [showHistory, setShowHistory] = useState<string | null>(null);
 
   useEffect(() => {
-    // Garante sessão Firebase Auth para uploads ao Storage
+    // Admin content editing requires an authenticated admin (Google Sign-In via /admin).
     if (!auth.currentUser) {
-      signInAnonymously(auth).catch(() => {});
+      console.warn('AdminContentPanel: usuário não autenticado. Autentique via /admin (Google).');
     }
   }, []);
 

@@ -17,7 +17,7 @@ export const initialSections: SiteSection[] = [
     name: 'hero',
     label: 'Hero/Banner Principal',
     content: {
-      titulo: 'Bem-vindo à NYV8 Digital',
+      titulo: 'Bem-vindo à F.LLI FRANCHI',
       subtitulo: 'Soluções criativas para seu negócio',
       imagem: '',
       cta: 'Solicite um orçamento',
@@ -40,7 +40,7 @@ export const initialSections: SiteSection[] = [
     label: 'Sobre Nós',
     content: {
       titulo: 'Quem somos',
-      texto: 'A NYV8 Digital é especialista em soluções digitais...'
+      texto: 'A F.LLI FRANCHI é especialista em soluções digitais...'
     },
     updatedAt: new Date(),
     updatedBy: ''
@@ -99,7 +99,7 @@ export const initialSections: SiteSection[] = [
       titulo: 'O que dizem nossos clientes',
       subtitulo: 'Veja o que nossos clientes falam sobre nosso trabalho',
       depoimentos: [
-        { name: 'Ana Souza', role: 'Clínica Vida', content: 'A NYV8 Digital superou nossas expectativas! O site ficou moderno, rápido e já trouxe novos clientes para a clínica.', rating: 5, avatar: '' },
+        { name: 'Ana Souza', role: 'Clínica Vida', content: 'A F.LLI FRANCHI superou nossas expectativas! O site ficou moderno, rápido e já trouxe novos clientes para a clínica.', rating: 5, avatar: '' },
         { name: 'Carlos Lima', role: 'Lima Engenharia', content: 'Equipe atenciosa, entregaram nosso portfólio digital no prazo e com excelente qualidade. Recomendo!', rating: 5, avatar: '' },
         { name: 'Juliana Torres', role: 'Juliana MakeUp', content: 'O cartão digital ficou incrível e facilitou muito meu networking. Atendimento diferenciado!', rating: 5, avatar: '' },
       ]
@@ -126,7 +126,7 @@ export const initialSections: SiteSection[] = [
     name: 'menu',
     label: 'Menu Principal',
     content: {
-      logo: '/img/nyv8-menu.png',
+      logo: '/brand/flli-monogram.svg',
       itens: [
         { label: 'Início', href: '#home' },
         { label: 'Serviços', href: '#services' },
@@ -142,13 +142,13 @@ export const initialSections: SiteSection[] = [
     name: 'rodape',
     label: 'Rodapé',
     content: {
-      logo: '/img/nyv8-menu.png',
+      logo: '/brand/flli-monogram.svg',
       descricao: 'Soluções digitais inovadoras para o seu negócio. Especialistas em tecnologia, design e transformação digital.',
       email: 'neifranchi@gmail.com',
       telefone: '(16) 99781-3038',
       whatsapp: '5516997813038',
       cidade: 'Araraquara, SP',
-      copyright: 'NYV8 Digital. Todos os direitos reservados.',
+      copyright: 'F.LLI FRANCHI. Todos os direitos reservados.',
       linkServicos: [
         { label: 'Desenvolvimento Web', href: '#services' },
         { label: 'Aplicativos Mobile', href: '#services' },

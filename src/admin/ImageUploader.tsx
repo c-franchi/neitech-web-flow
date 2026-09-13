@@ -7,9 +7,10 @@ interface ImageUploaderProps {
   value: string;
   onChange: (url: string) => void;
   label?: string;
+  pathPrefix?: string;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onChange, label }) => {
+const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onChange, label, pathPrefix }) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -29,7 +30,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onChange, label })
     setError('');
     try {
       const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const storageRef = ref(storage, `site_images/${Date.now()}_${safeName}`);
+      const prefix = pathPrefix && pathPrefix.length > 0 ? pathPrefix.replace(/\/+$/,'') : 'site_images';
+      const storagePath = `${prefix}/${Date.now()}_${safeName}`;
+      const storageRef = ref(storage, storagePath);
       await uploadBytes(storageRef, file);
       const url = await getDownloadURL(storageRef);
       onChange(url);

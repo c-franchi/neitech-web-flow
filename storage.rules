@@ -4,7 +4,7 @@ service firebase.storage {
     function isAdmin() {
       return request.auth != null
         && request.auth.token.email != null
-        && request.auth.token.email == 'neifranchi@gmail.com';
+        && (request.auth.token.email == 'neifranchi@gmail.com' || request.auth.token.email == 'quartetokids.contato@gmail.com');
     }
 
     match /site_images/{allPaths=**} {

@@ -1,15 +1,21 @@
 // src/hooks/useIsAdmin.ts
 import { useState, useEffect } from 'react';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
-const AUTH_KEY = 'nyv8_admin_auth';
+const ADMIN_EMAILS = ['neifranchi@gmail.com', 'quartetokids.contato@gmail.com'];
 
 export function useIsAdmin() {
   const [isAdmin, setIsAdmin] = useState(false);
+
   useEffect(() => {
-    setIsAdmin(localStorage.getItem(AUTH_KEY) === 'true');
-    const onStorage = () => setIsAdmin(localStorage.getItem(AUTH_KEY) === 'true');
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
+      const email = user?.email?.toLowerCase() || '';
+      setIsAdmin(Boolean(email && ADMIN_EMAILS.includes(email)));
+    });
+
+    return () => unsubscribe();
   }, []);
+
   return isAdmin;
 }

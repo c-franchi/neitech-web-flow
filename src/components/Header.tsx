@@ -80,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ data, topOffset = 0, zIndexClassName = 
     }));
   }, [data?.itens]);
 
-  const logoSrc = data?.logo || '/img/nyv8-menu.png';
+  const logoSrc = data?.logo || '/brand/flli-monogram.svg';
 
   return (
     <header
@@ -100,7 +100,7 @@ const Header: React.FC<HeaderProps> = ({ data, topOffset = 0, zIndexClassName = 
           <div data-header-motion className="flex items-center space-x-2">
             <img 
               src={logoSrc}
-              alt="NYV8 Digital - Logo" 
+              alt="F.LLI FRANCHI - Logo" 
               loading="lazy" decoding="async"
               className="h-12 w-auto"
             />

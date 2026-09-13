@@ -208,7 +208,8 @@ const FlliHome = ({ locale }: FlliHomeProps) => {
           <p className="text-[12px] font-bold uppercase tracking-[0.22em] text-[#686d4e] md:text-[11px] md:tracking-[0.3em]">{t.projectsKicker}</p>
           <h2 className="mt-5 max-w-3xl font-serif text-4xl leading-[0.95] tracking-[-0.04em] md:text-5xl">{t.projectsTitle}</h2>
           <div className="mt-16 grid gap-5 lg:grid-cols-3">
-            {t.projects.map(([kind, title, text, tags], index) => {
+            {t.projects.map((proj, index) => {
+              const [kind, title, text, tags, link] = proj as [string, string, string, string, string];
               const projectImage = t.media.projectImages[index] || '';
               return (
                 <article key={kind} className={`group flex overflow-hidden rounded-[2rem] border border-black/10 transition duration-500 hover:-translate-y-1 lg:min-h-[27rem] ${index === 1 ? 'bg-[#74795a] text-white' : index === 2 ? 'bg-[#d9d4c5]' : 'bg-[#e9e5d8]'}`}>
@@ -228,6 +229,15 @@ const FlliHome = ({ locale }: FlliHomeProps) => {
                         <h3 className="font-serif text-4xl leading-[1.02]">{title}</h3>
                         <p className={`mt-5 text-[15px] leading-7 md:text-sm md:leading-6 ${index === 1 ? 'text-white/60' : 'text-black/50'}`}>{text}</p>
                         <p className={`mt-8 border-t pt-5 text-[12px] font-bold uppercase tracking-[0.18em] md:text-[10px] ${index === 1 ? 'border-white/20 text-white/45' : 'border-black/10 text-black/40'}`}>{tags}</p>
+                        {link?.trim() ? (
+                          <div className="mt-3">
+                            <a href={link.startsWith('http') ? link : `https://${link}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold underline">
+                              {locale === 'br' ? 'Visitar projeto' : 'Visita il progetto'} <ArrowUpRight className="h-4 w-4" />
+                            </a>
+                          </div>
+                        ) : (
+                          <div className="mt-3 text-sm text-black/40">{locale === 'br' ? 'Projeto em desenvolvimento' : 'Progetto in sviluppo'}</div>
+                        )}
                       </div>
                     </div>
                   </div>

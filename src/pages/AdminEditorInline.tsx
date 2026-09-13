@@ -13,7 +13,6 @@ import Footer from '../components/Footer';
 import SectionEditorPanel from '../admin/SectionEditorPanel';
 import { X, Edit3, ArrowLeft, Save } from 'lucide-react';
 import { auth } from '../lib/firebase';
-import { signInAnonymously } from 'firebase/auth';
 import type { SectionStyles } from '../types/sectionStyles';
 
 // Mapeia nome da seção → componente de preview
@@ -29,9 +28,10 @@ const AdminEditorInline: React.FC = () => {
   const editorTopBarHeight = 52;
 
   useEffect(() => {
-    // Garante sessão Firebase Auth para uploads ao Storage
+    // Require admin login via Google on /admin — if not authenticated, redirect to /admin
     if (!auth.currentUser) {
-      signInAnonymously(auth).catch(() => {});
+      navigate('/admin');
+      return;
     }
     loadSections();
   }, []);

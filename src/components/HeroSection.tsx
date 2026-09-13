@@ -68,10 +68,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ data, editMode = false, onFie
   };
 
   // Conteúdo dinâmico ou padrão
-  const titulo = data?.titulo || 'NYV8 Digital';
+  const titulo = data?.titulo || 'F.LLI FRANCHI';
   const subtitulo = data?.subtitulo || 'Soluções digitais sob medida para o seu negócio';
   const descricao = data?.descricao || 'Agência especializada em criar experiências digitais personalizadas, com foco em resultados, inovação e crescimento para empresas de todos os portes.';
-  const imagem = data?.imagem || '/img/nyv8-hero.png';
+  const imagem = data?.imagem || '/brand/flli-social-card.svg';
   const cta = data?.cta || 'Começar Projeto';
   const ctaLinkRaw = data?.ctaLink || '#contact';
   // Normaliza links legados: /contato → #contact

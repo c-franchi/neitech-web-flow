@@ -4,6 +4,8 @@ import { cloneFlliContent, defaultFlliContent, FlliContent, FlliLocale } from '@
 
 const COLLECTION = 'flli_site_content';
 
+const PROJECTS_CONTENT_VERSION = 2;
+
 const mergeContent = (locale: FlliLocale, stored?: Partial<FlliContent>): FlliContent => {
   const base = cloneFlliContent(defaultFlliContent[locale]);
   if (!stored) return base;
@@ -15,7 +17,7 @@ const mergeContent = (locale: FlliLocale, stored?: Partial<FlliContent>): FlliCo
     navIds: base.navIds,
     proof: Array.isArray(stored.proof) ? [...stored.proof] : base.proof,
     services: Array.isArray(stored.services) ? stored.services.map((item) => [...item] as [string, string, string]) : base.services,
-    projects: Array.isArray(stored.projects) ? stored.projects.map((item) => [...item] as [string, string, string, string]) : base.projects,
+    projects: Array.isArray(stored.projects) ? stored.projects.map((item) => [...item] as [string, string, string, string, string]) : base.projects,
     process: Array.isArray(stored.process) ? stored.process.map((item) => [...item] as [string, string, string]) : base.process,
     media: {
       ...base.media,
@@ -39,7 +41,41 @@ export async function getFlliContent(locale: FlliLocale): Promise<FlliContent> {
   const data = snapshot.data();
   try {
     if (typeof data.contentJson === 'string') {
-      return mergeContent(locale, JSON.parse(data.contentJson) as Partial<FlliContent>);
+      const parsed = JSON.parse(data.contentJson) as Partial<FlliContent> & { projectsContentVersion?: number };
+
+      // Migration: projectsContentVersion
+      if ((parsed.projectsContentVersion || 0) < PROJECTS_CONTENT_VERSION) {
+        // preserve existing document fields, but replace only `projects` with defaults
+        const existing = parsed;
+        const base = cloneFlliContent(defaultFlliContent[locale]);
+
+        const migrated: Partial<FlliContent> = {
+          ...existing,
+          // preserve media entirely
+          media: existing.media || base.media,
+          projects: base.projects,
+        };
+
+        // write back migrated document: update contentJson and projectsContentVersion
+        try {
+          await setDoc(
+            doc(db, COLLECTION, locale),
+            {
+              contentJson: JSON.stringify({ ...migrated }),
+              projectsContentVersion: PROJECTS_CONTENT_VERSION,
+              migratedAt: serverTimestamp(),
+            },
+            { merge: true },
+          );
+          console.info(`F.LLI: projetos ${locale} migrados para versão ${PROJECTS_CONTENT_VERSION}`);
+        } catch (writeErr) {
+          console.error('F.LLI: falha ao gravar migração de projetos', writeErr);
+        }
+
+        return mergeContent(locale, migrated as Partial<FlliContent>);
+      }
+
+      return mergeContent(locale, parsed as Partial<FlliContent>);
     }
   } catch (error) {
     console.warn(`Conteúdo F.LLI ${locale} inválido no Firestore.`, error);

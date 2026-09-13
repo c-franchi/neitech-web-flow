@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { Heart, Code, Mail, Phone, MapPin } from 'lucide-react';
 import AnimatedSection from './AnimatedSection';
 import { loadSectionFonts } from '../utils/loadGoogleFont';
@@ -56,13 +57,13 @@ const Footer: React.FC<FooterProps> = ({ data }) => {
     ]
   };
 
-  const logoSrc = data?.logo || '/img/nyv8-menu.png';
+  const logoSrc = data?.logo || '/brand/flli-monogram.svg';
   const descricao = data?.descricao || 'Soluções digitais inovadoras para o seu negócio. Especialistas em tecnologia, design e transformação digital.';
   const email = data?.email || 'neifranchi@gmail.com';
   const telefone = data?.telefone || '(16) 99781-3038';
   const whatsapp = data?.whatsapp || '5516997813038';
   const cidade = data?.cidade || 'Araraquara, SP';
-  const copyright = data?.copyright || 'NYV8 Digital. Todos os direitos reservados.';
+  const copyright = data?.copyright || 'F.LLI FRANCHI. Todos os direitos reservados.';
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -71,7 +72,7 @@ const Footer: React.FC<FooterProps> = ({ data }) => {
     }
   };
 
-  const isAdmin = typeof window !== 'undefined' ? (localStorage.getItem('nyv8_admin_auth') === 'true') : false;
+  const isAdmin = useIsAdmin();
   const navigate = typeof window !== 'undefined' ? (window.location ? (path) => window.location.href = path : () => {}) : () => {};
 
   return (
@@ -88,7 +89,7 @@ const Footer: React.FC<FooterProps> = ({ data }) => {
             <div className="flex items-center space-x-3">
               <img 
                 src={logoSrc}
-                alt="Logo da NYV8 Digital, agência de soluções digitais" 
+                alt="F.LLI FRANCHI - Logo" 
                 loading="lazy" decoding="async"
                 className="h-16 w-auto"
               />
@@ -181,7 +182,7 @@ const Footer: React.FC<FooterProps> = ({ data }) => {
               <Heart size={16} className="text-red-500 animate-pulse" />
               <span>e</span>
               <Code size={16} className="text-blue-400" />
-              <span>por NYV8 Digital</span>
+              <span>por F.LLI FRANCHI</span>
             </div>
           </div>
         </AnimatedSection>

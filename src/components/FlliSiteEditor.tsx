@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ExternalLink, Loader2, RotateCcw, Save } from 'lucide-react';
-import ImageUploader from '@/admin/ImageUploader';
+// ImageUploader removed from this editor; image management moved to FlliImageManager
 import { cloneFlliContent, defaultFlliContent, FlliContent, FlliLocale } from '@/content/flliContent';
 import { getFlliContent, resetFlliContent, saveFlliContent } from '@/services/flliContentService';
 import { useToast } from '@/hooks/use-toast';
@@ -135,7 +135,9 @@ const FlliSiteEditor: React.FC<Props> = ({ adminEmail }) => {
   };
 
   const updateProject = (index: number, position: number, value: string) => {
-    const next = content.projects.map((item) => [...item] as [string, string, string, string]);
+    const next = content.projects.map((item) => [...item] as [string, string, string, string, string]);
+    // ensure tuple has 5 elements
+    while (next[index].length < 5) next[index].push('');
     next[index][position] = value;
     update('projects', next);
   };
@@ -249,7 +251,7 @@ const FlliSiteEditor: React.FC<Props> = ({ adminEmail }) => {
       <div className="mb-7">
         <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#686d4e]">Editor do site</p>
         <h1 className="mt-2 font-serif text-4xl tracking-[-0.035em]">Editar conteúdo {locale === 'br' ? 'Brasil' : 'Itália'}</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-black/50">Edite textos e imagens do site atual. Os arquivos são enviados ao Firebase Storage e as alterações passam a aparecer na página sem precisar alterar o código.</p>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-black/50">Edite textos do site atual. As alterações passam a aparecer na página sem precisar alterar o código.</p>
       </div>
 
       <div className="space-y-4">
@@ -260,39 +262,7 @@ const FlliSiteEditor: React.FC<Props> = ({ adminEmail }) => {
           </div>
         </EditorSection>
 
-        <EditorSection title="Imagens do site" subtitle="Troque logo, banner, imagens dos projetos, contato e compartilhamento." open>
-          <div className="grid gap-4 md:grid-cols-2">
-            <MediaCard title="Logo / monograma" description="Usado no cabeçalho e rodapé. Preferência: PNG, SVG ou WebP com fundo transparente.">
-              <ImageUploader value={content.media.logoUrl} onChange={(url) => updateMedia('logoUrl', url || '/brand/flli-monogram.svg')} />
-            </MediaCard>
-
-            <MediaCard title="Imagem principal do banner" description="Se não houver imagem, o cartão gráfico original continuará aparecendo. Recomendado: horizontal ou quadrada, alta resolução.">
-              <ImageUploader value={content.media.heroImageUrl} onChange={(url) => updateMedia('heroImageUrl', url)} />
-            </MediaCard>
-
-            <MediaCard title="Imagem da seção de contato" description="Imagem opcional exibida ao lado do formulário. Se ficar vazia, a seção mantém o layout atual.">
-              <ImageUploader value={content.media.contactImageUrl} onChange={(url) => updateMedia('contactImageUrl', url)} />
-            </MediaCard>
-
-            <MediaCard title="Imagem para compartilhamento" description="Imagem usada como og:image ao compartilhar o link em WhatsApp e redes sociais. Recomendado: 1200 × 630 px.">
-              <ImageUploader value={content.media.socialImageUrl} onChange={(url) => updateMedia('socialImageUrl', url)} />
-            </MediaCard>
-          </div>
-
-          <div className="mt-6 border-t border-black/10 pt-5">
-            <p className="mb-1 text-xs font-bold uppercase tracking-[0.1em] text-black/50">Imagens dos projetos</p>
-            <p className="mb-4 text-xs leading-5 text-black/40">Cada imagem aparece dentro do respectivo card. Se não selecionar uma imagem, o card mantém o visual original.</p>
-            <div className="grid gap-4 md:grid-cols-3">
-              {content.projects.map((project, index) => (
-                <MediaCard key={index} title={`Projeto ${index + 1}`} description={project[1]}>
-                  <ImageUploader value={content.media.projectImages[index] || ''} onChange={(url) => updateProjectImage(index, url)} />
-                </MediaCard>
-              ))}
-            </div>
-          </div>
-
-          <p className="mt-5 rounded-xl bg-amber-50 px-4 py-3 text-xs leading-5 text-amber-800">As imagens são configuradas separadamente para Brasil e Itália. Se quiser usar as mesmas imagens nas duas versões, envie-as também na outra aba de idioma.</p>
-        </EditorSection>
+        {/* Imagens agora são gerenciadas separadamente em FlliImageManager. */}
 
         <EditorSection title="Banner principal" subtitle="Primeira mensagem que o visitante vê.">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -357,6 +327,9 @@ const FlliSiteEditor: React.FC<Props> = ({ adminEmail }) => {
                   </div>
                   <div className="sm:col-span-2">
                     <TextField label="Tags / tecnologias" value={item[3]} onChange={(value) => updateProject(index, 3, value)} />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <TextField label="Link" value={item[4] || ''} onChange={(value) => updateProject(index, 4, value)} hint="Ex.: https://example.com (deixe vazio se não houver)" />
                   </div>
                 </div>
               </div>

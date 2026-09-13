@@ -3,11 +3,12 @@ import { ClipboardList, LogIn, LogOut, Pencil, ShieldCheck } from 'lucide-react'
 import { onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth';
 import FlliAdminDashboard from '@/components/FlliAdminDashboard';
 import FlliSiteEditor from '@/components/FlliSiteEditor';
+import FlliImageManager from '@/components/FlliImageManager';
 import { auth, googleProvider } from '@/lib/firebase';
 
-const ADMIN_EMAILS = ['neifranchi@gmail.com'];
+const ADMIN_EMAILS = ['neifranchi@gmail.com', 'quartetokids.contato@gmail.com'];
 
-type AdminView = 'requests' | 'site';
+type AdminView = 'requests' | 'content' | 'images';
 
 const isAllowedAdmin = (user: User | null) => {
   const email = user?.email?.toLowerCase();
@@ -53,12 +54,24 @@ const Admin: React.FC = () => {
     } catch (loginError: any) {
       console.error('F.LLI admin login error:', loginError);
       const code = loginError?.code || '';
-      if (code === 'auth/popup-closed-by-user') {
-        setError('Login cancelado.');
-      } else if (code === 'auth/unauthorized-domain') {
-        setError('O domínio fllifranchi.com ainda precisa ser autorizado no Firebase Authentication.');
-      } else {
-        setError('Não foi possível entrar com o Google. Verifique a configuração do Firebase Authentication.');
+      switch (code) {
+        case 'auth/popup-closed-by-user':
+          setError('Login cancelado.');
+          break;
+        case 'auth/unauthorized-domain':
+          setError('Este domínio ainda não está autorizado no Firebase Authentication.');
+          break;
+        case 'auth/popup-blocked':
+          setError('O navegador bloqueou a janela de login. Libere pop-ups para este site.');
+          break;
+        case 'auth/cancelled-popup-request':
+          setError('Solicitação de login cancelada. Tente novamente.');
+          break;
+        case 'auth/network-request-failed':
+          setError('Erro de rede. Verifique sua conexão e tente novamente.');
+          break;
+        default:
+          setError('Não foi possível entrar com o Google. Verifique a configuração do Firebase Authentication.');
       }
     } finally {
       setAuthenticating(false);
@@ -104,10 +117,16 @@ const Admin: React.FC = () => {
                 <ClipboardList className="h-3.5 w-3.5" /> Solicitações
               </button>
               <button
-                onClick={() => setActiveView('site')}
-                className={`inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] transition ${activeView === 'site' ? 'bg-[#74795a] text-white' : 'border border-black/10 bg-white/70 text-black/60 hover:bg-white'}`}
+                onClick={() => setActiveView('content')}
+                className={`inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] transition ${activeView === 'content' ? 'bg-[#74795a] text-white' : 'border border-black/10 bg-white/70 text-black/60 hover:bg-white'}`}
               >
-                <Pencil className="h-3.5 w-3.5" /> Editar site
+                <Pencil className="h-3.5 w-3.5" /> Editar textos
+              </button>
+              <button
+                onClick={() => setActiveView('images')}
+                className={`inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] transition ${activeView === 'images' ? 'bg-[#4b5563] text-white' : 'border border-black/10 bg-white/70 text-black/60 hover:bg-white'}`}
+              >
+                <ShieldCheck className="h-3.5 w-3.5" /> Imagens
               </button>
             </nav>
 
@@ -120,11 +139,15 @@ const Admin: React.FC = () => {
           </div>
         </header>
 
-        {activeView === 'requests' ? (
-          <FlliAdminDashboard />
-        ) : (
+        {activeView === 'requests' && <FlliAdminDashboard />}
+        {activeView === 'content' && (
           <div className="px-4 py-8 sm:px-6 lg:px-10">
             <FlliSiteEditor adminEmail={user.email || 'admin'} />
+          </div>
+        )}
+        {activeView === 'images' && (
+          <div className="px-4 py-8 sm:px-6 lg:px-10">
+            <FlliImageManager adminEmail={user.email || ''} />
           </div>
         )}
       </div>
