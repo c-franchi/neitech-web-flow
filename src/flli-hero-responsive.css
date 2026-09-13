@@ -260,10 +260,10 @@ html[lang="it-IT"] .flli-hero--media .flli-hero-copy h1 {
   }
 
   .flli-hero--media .flli-hero-body {
-    /* Descer o conteúdo no mobile para maior equilíbrio visual */
+    /* Ajuste: subir metade da descida anterior (nudge) */
     align-items: flex-end;
     flex: 1 1 auto;
-    padding: 1.4rem 0.9rem 1.2rem !important;
+    padding: 1.0rem 0.9rem 1.2rem !important;
   }
 
   .flli-hero--media .flli-hero-copy {
