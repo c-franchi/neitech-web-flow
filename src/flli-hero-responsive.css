@@ -90,6 +90,15 @@
   filter: saturate(0.84) contrast(1.05) brightness(0.9);
 }
 
+/* Fade-in background image to avoid flashing initial logo/background */
+.flli-hero-bg img.hero-bg-img {
+  opacity: 0;
+  transition: opacity 480ms ease-in-out, filter 480ms ease-in-out;
+}
+.flli-hero-bg img.hero-bg-img.loaded {
+  opacity: 1;
+}
+
 .flli-hero--media::after {
   content: '';
   position: absolute;
@@ -264,7 +273,7 @@ html[lang="it-IT"] .flli-hero--media .flli-hero-copy h1 {
     /* Ajuste: mover o título um pouco para baixo em mobile aumentando o padding-top */
     align-items: flex-start;
     flex: 1 1 auto;
-    padding: 1.2rem 0.9rem 1rem !important;
+    padding: 1.2rem 1.05rem 1.1rem !important;
   }
 
   .flli-hero--media .flli-hero-copy {

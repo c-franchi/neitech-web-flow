@@ -153,7 +153,12 @@ const FlliHome = ({ locale }: FlliHomeProps) => {
           <div className="flli-hero-bg" aria-hidden="true">
             <picture>
               {mobileHeroImage && <source media="(max-width: 767px)" srcSet={mobileHeroImage} />}
-              <img src={desktopHeroImage || mobileHeroImage} alt="" />
+              <img
+                className="hero-bg-img"
+                src={desktopHeroImage || mobileHeroImage}
+                alt=""
+                onLoad={(e) => e.currentTarget.classList.add('loaded')}
+              />
             </picture>
           </div>
         )}
