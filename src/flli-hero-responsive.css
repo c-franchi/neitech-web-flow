@@ -1,0 +1,259 @@
+/* F.LLI FRANCHI — Hero cinematográfico responsivo BR / IT
+   Carregado depois de index.css para corrigir o enquadramento bilíngue
+   e garantir que a faixa institucional permaneça visível no desktop. */
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) {
+  background: rgba(10, 11, 10, 0.92) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  color: #f4efe4 !important;
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.12);
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) a,
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) button {
+  color: #f4efe4 !important;
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) nav a {
+  color: rgba(244, 239, 228, 0.62) !important;
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) nav a:hover {
+  color: #ffffff !important;
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) > div > div:last-child > a,
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) > div > div:last-child > button {
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header:has(+ section img.absolute.inset-0.h-full.w-full.object-cover) > nav {
+  background: rgba(10, 11, 10, 0.98) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+/* A altura do section já inclui o conteúdo e a faixa institucional. */
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  height: calc(100dvh - 5rem);
+  min-height: 36rem;
+  flex-direction: column;
+  overflow: hidden;
+  background: #0b0c0b !important;
+  color: #f4efe4 !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg,
+      rgba(8, 9, 8, 0.98) 0%,
+      rgba(8, 9, 8, 0.94) 30%,
+      rgba(8, 9, 8, 0.78) 47%,
+      rgba(8, 9, 8, 0.42) 68%,
+      rgba(8, 9, 8, 0.12) 100%),
+    linear-gradient(0deg, rgba(6, 7, 6, 0.35), rgba(6, 7, 6, 0.02) 55%);
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > .pointer-events-none {
+  display: none !important;
+}
+
+/* Corpo do hero: cresce apenas no espaço restante, sem empurrar a faixa para fora da viewport. */
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) {
+  position: relative;
+  display: flex !important;
+  flex: 1 1 auto;
+  align-items: center;
+  min-height: 0 !important;
+  width: 100%;
+  padding-top: clamp(2rem, 4.5vh, 3.75rem) !important;
+  padding-bottom: clamp(2rem, 4.5vh, 3.75rem) !important;
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child {
+  position: relative;
+  z-index: 3;
+  width: min(100%, 47rem);
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child > p:first-child {
+  color: #c6a46a !important;
+  text-shadow: 0 1px 20px rgba(0, 0, 0, 0.35);
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child h1 {
+  max-width: 47rem !important;
+  color: #f5f0e5 !important;
+  font-size: clamp(3rem, 5.7vw, 5.85rem) !important;
+  line-height: 0.91 !important;
+  letter-spacing: -0.058em !important;
+  text-wrap: balance;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+}
+
+html[lang="it-IT"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child h1 {
+  max-width: 44rem !important;
+  font-size: clamp(2.9rem, 5.25vw, 5.45rem) !important;
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child h1 span {
+  color: #c6a46a !important;
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child h1 + p {
+  max-width: 41rem !important;
+  color: rgba(244, 239, 228, 0.67) !important;
+  font-size: clamp(0.96rem, 1.15vw, 1.08rem) !important;
+  line-height: 1.65 !important;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.28);
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child > div:last-child a:first-child {
+  background: linear-gradient(135deg, #d3b073, #a78248) !important;
+  color: #12120f !important;
+  border: 1px solid rgba(232, 205, 153, 0.55) !important;
+  box-shadow: 0 14px 40px rgba(118, 84, 37, 0.24);
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child > div:last-child a:first-child:hover {
+  background: linear-gradient(135deg, #e0c28b, #b38b50) !important;
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child > div:last-child a:nth-child(2) {
+  color: #f5f0e5 !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
+  background: rgba(13, 14, 13, 0.24) !important;
+  backdrop-filter: blur(10px);
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child > div:last-child a:nth-child(2):hover {
+  border-color: rgba(255, 255, 255, 0.58) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* A imagem cadastrada no painel vira o background do hero nos dois idiomas. */
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  min-height: 0 !important;
+  pointer-events: none;
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) > div:first-child {
+  display: none !important;
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) > div:nth-child(2) {
+  position: absolute !important;
+  inset: 0 !important;
+  overflow: hidden !important;
+  transform: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #0b0c0b !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) > div:nth-child(2) > img.absolute.inset-0.h-full.w-full.object-cover {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: 70% center !important;
+  filter: saturate(0.82) contrast(1.04) brightness(0.90);
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) > div:nth-child(2) > div,
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) > div:nth-child(2) > img:not(:first-child) {
+  display: none !important;
+}
+
+/* Faixa institucional fixa no rodapé do hero e sempre dentro da primeira viewport. */
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(4) {
+  position: relative;
+  z-index: 3;
+  flex: 0 0 auto;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  background: rgba(8, 9, 8, 0.86) !important;
+  backdrop-filter: blur(12px);
+}
+
+:is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(4) > div {
+  color: rgba(244, 239, 228, 0.48) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+@media (min-width: 1024px) {
+  :is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) {
+    padding-left: 2.5rem !important;
+    padding-right: 2.5rem !important;
+  }
+}
+
+@media (max-width: 767px) {
+  :is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) {
+    height: auto;
+    min-height: calc(100svh - 5rem);
+  }
+
+  :is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover)::before {
+    background:
+      linear-gradient(180deg,
+        rgba(8, 9, 8, 0.18) 0%,
+        rgba(8, 9, 8, 0.38) 28%,
+        rgba(8, 9, 8, 0.78) 57%,
+        rgba(8, 9, 8, 0.97) 88%,
+        rgba(8, 9, 8, 1) 100%),
+      linear-gradient(90deg, rgba(8, 9, 8, 0.70), rgba(8, 9, 8, 0.06) 78%);
+  }
+
+  :is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) {
+    align-items: flex-end;
+    flex: none;
+    min-height: calc(100svh - 12rem) !important;
+    padding: 5.25rem 1.25rem 3rem !important;
+  }
+
+  :is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child {
+    width: 100%;
+  }
+
+  :is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child h1,
+  html[lang="it-IT"] main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child h1 {
+    max-width: 23rem !important;
+    font-size: clamp(2.55rem, 12vw, 4rem) !important;
+    line-height: 0.95 !important;
+  }
+
+  :is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child h1 + p {
+    max-width: 31rem !important;
+    font-size: 0.96rem !important;
+    line-height: 1.6 !important;
+  }
+
+  :is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:first-child > div:last-child a {
+    width: 100%;
+    min-height: 3.1rem;
+  }
+
+  :is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(3) > div:nth-child(2) > div:nth-child(2) > img.absolute.inset-0.h-full.w-full.object-cover {
+    object-position: 64% center !important;
+    filter: saturate(0.78) contrast(1.04) brightness(0.82);
+  }
+
+  :is(html[lang="pt-BR"], html[lang="it-IT"]) main > header + section:has(img.absolute.inset-0.h-full.w-full.object-cover) > div:nth-of-type(4) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
