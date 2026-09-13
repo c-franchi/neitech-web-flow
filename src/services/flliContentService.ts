@@ -1,10 +1,63 @@
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { cloneFlliContent, defaultFlliContent, FlliContent, FlliLocale } from '@/content/flliContent';
+import { cloneFlliContent, defaultFlliContent, FlliContent, FlliLocale, FlliProjectItem } from '@/content/flliContent';
 
 const COLLECTION = 'flli_site_content';
 
 const PROJECTS_CONTENT_VERSION = 2;
+
+// Títulos que já foram usados nas versões anteriores do portfólio. Quando um
+// desses valores ainda estiver salvo no Firestore, substituímos apenas o texto
+// do card pelo projeto atual correspondente. As imagens permanecem em media.projectImages.
+const LEGACY_PROJECT_TITLES: Record<FlliLocale, string[][]> = {
+  br: [
+    ['Venda, pagamento e logística', 'Quarteto Kids'],
+    ['Presença e gestão de eventos', 'Reuniões CCB'],
+    ['Conteúdo e comunidade', 'Clube da Tia Mary'],
+  ],
+  it: [
+    ['Vendita, pagamento e logistica', 'Quarteto Kids'],
+    ['Presenze e gestione eventi', 'Reuniões CCB'],
+    ['Contenuti e community', 'Clube da Tia Mary'],
+  ],
+};
+
+const LEGACY_PROJECT_CATEGORIES = ['Commerce', 'Operations', 'Learning'];
+
+const shouldMigrateProject = (locale: FlliLocale, item: unknown[], index: number) => {
+  const title = String(item[1] ?? '').trim();
+  const category = String(item[0] ?? '').trim();
+  const knownTitles = LEGACY_PROJECT_TITLES[locale][index] || [];
+
+  // Título conhecido de uma versão anterior.
+  if (knownTitles.includes(title)) return true;
+
+  // Estrutura genérica inicial do portfólio, caso algum texto tenha sido salvo
+  // com pequenas alterações na descrição/tags.
+  return category === LEGACY_PROJECT_CATEGORIES[index] && index < 3;
+};
+
+const normalizeProjects = (locale: FlliLocale, storedProjects: unknown): FlliProjectItem[] => {
+  const baseProjects = defaultFlliContent[locale].projects;
+  if (!Array.isArray(storedProjects)) return cloneFlliContent(defaultFlliContent[locale]).projects;
+
+  return storedProjects.map((rawItem, index) => {
+    const item = Array.isArray(rawItem) ? rawItem : [];
+    const base = baseProjects[index] || (['Projeto', 'Novo projeto', '', '', ''] as FlliProjectItem);
+
+    if (index < baseProjects.length && shouldMigrateProject(locale, item, index)) {
+      return [...base] as FlliProjectItem;
+    }
+
+    return [
+      String(item[0] ?? base[0] ?? ''),
+      String(item[1] ?? base[1] ?? ''),
+      String(item[2] ?? base[2] ?? ''),
+      String(item[3] ?? base[3] ?? ''),
+      String(item[4] ?? base[4] ?? ''),
+    ];
+  });
+};
 
 const mergeContent = (locale: FlliLocale, stored?: Partial<FlliContent>): FlliContent => {
   const base = cloneFlliContent(defaultFlliContent[locale]);
@@ -17,7 +70,7 @@ const mergeContent = (locale: FlliLocale, stored?: Partial<FlliContent>): FlliCo
     navIds: base.navIds,
     proof: Array.isArray(stored.proof) ? [...stored.proof] : base.proof,
     services: Array.isArray(stored.services) ? stored.services.map((item) => [...item] as [string, string, string]) : base.services,
-    projects: Array.isArray(stored.projects) ? stored.projects.map((item) => [...item] as [string, string, string, string, string]) : base.projects,
+    projects: normalizeProjects(locale, stored.projects),
     process: Array.isArray(stored.process) ? stored.process.map((item) => [...item] as [string, string, string]) : base.process,
     media: {
       ...base.media,

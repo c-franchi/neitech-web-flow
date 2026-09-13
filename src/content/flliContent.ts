@@ -7,6 +7,7 @@ export type FlliProcessItem = [string, string, string];
 export interface FlliMedia {
   logoUrl: string;
   heroImageUrl: string;
+  heroMobileImageUrl: string;
   projectImages: string[];
   contactImageUrl: string;
   socialImageUrl: string;
@@ -62,6 +63,7 @@ export interface FlliContent {
 const defaultMedia = (): FlliMedia => ({
   logoUrl: '/brand/flli-monogram.svg',
   heroImageUrl: '',
+  heroMobileImageUrl: '',
   projectImages: ['', '', ''],
   contactImageUrl: '',
   socialImageUrl: '',
@@ -93,11 +95,29 @@ export const defaultFlliContent: Record<FlliLocale, FlliContent> = {
       ['04', 'Design & Conteúdo Digital', 'Identidade visual, interfaces, banners, peças digitais e sistemas de comunicação coerentes com a marca.'],
     ],
     projectsKicker: 'Projetos selecionados',
-    projectsTitle: 'Soluções para negócios reais.',
+    projectsTitle: 'Projetos digitais construídos para experiências reais.',
     projects: [
-      ['Música & IA', 'Criando Músicas', 'Plataforma digital para criação de músicas personalizadas, transformando histórias, homenagens e momentos especiais em experiências musicais únicas.', 'Música personalizada · IA · Web · Experiência digital', 'https://criandomusicas.com.br'],
-      ['Gestão & Automação', 'Gestão comercial integrada', 'Sistema digital para centralizar atendimento, clientes, pagamentos e operações comerciais em uma interface simples, rápida e organizada.', 'Web App · Dashboard · Automação · Gestão', ''],
-      ['E-commerce', 'Quarteto Kids', 'E-commerce infantil completo com catálogo, variações, checkout, PIX e cartão, frete, retirada em loja, cupons e painel administrativo.', 'E-commerce · PWA · Stripe · Mercado Pago', 'https://quartetokids.com.br'],
+      [
+        'Música personalizada',
+        'Criando Músicas',
+        'Plataforma digital que transforma histórias, homenagens e momentos especiais em músicas personalizadas, com uma apresentação envolvente e fluxo simples para solicitar a criação.',
+        'Landing Page · Música · Conversão · UX',
+        'https://criandomusicas.com.br',
+      ],
+      [
+        'SaaS / Gestão',
+        'Gestão comercial integrada',
+        'Sistema web pensado para centralizar atendimento, agenda, pagamentos e vendas em uma única operação, com painel visual e foco em agilidade para negócios de serviço.',
+        'Web App · Dashboard · Gestão · Automação',
+        '',
+      ],
+      [
+        'E-commerce',
+        'Quarteto Kids',
+        'Loja infantil online com catálogo e variações, checkout, PIX e cartão, cálculo de frete, retirada em loja, cupons e painel administrativo.',
+        'E-commerce · PWA · Stripe · Mercado Pago',
+        'https://quartetokids.com.br',
+      ],
     ],
     processKicker: 'Como trabalhamos',
     processTitle: 'Clareza antes de código.',
@@ -153,11 +173,29 @@ export const defaultFlliContent: Record<FlliLocale, FlliContent> = {
       ['04', 'Design & Contenuti Digitali', 'Identità visiva, interfacce, banner, materiali digitali e sistemi di comunicazione coerenti con il brand.'],
     ],
     projectsKicker: 'Progetti selezionati',
-    projectsTitle: 'Soluzioni per attività reali.',
+    projectsTitle: 'Progetti digitali pensati per esperienze reali.',
     projects: [
-      ['Hospitality', 'Lindolux Luxury B&B', 'Esperienza digitale premium per una struttura ricettiva di lusso, progettata per valorizzare ambienti, ospitalità e prenotazioni attraverso un\'identità elegante.', 'Hospitality · Luxury · Web Design · UX', ''],
-      ['Food & Experience', 'Sapori d’Italia', 'Esperienza digitale dedicata alla gastronomia italiana, con presentazione dei prodotti, storytelling visivo e una navigazione pensata per valorizzare sapori e tradizione.', 'Food · E-commerce · Web Design · Branding', ''],
-      ['AI & Sustainability', 'Il Tuo Assistente Virtuale Verde', 'Assistente virtuale digitale orientato alla sostenibilità, progettato per offrire informazioni, automazione e supporto attraverso un\'esperienza semplice e accessibile.', 'AI · Assistente virtuale · Automazione · Green Tech', ''],
+      [
+        'Hospitality',
+        'Lindolux Luxury B&B',
+        'Sito premium per una struttura ricettiva di lusso, con forte impatto visivo, presentazione degli ambienti e dei servizi e un percorso pensato per accompagnare l’utente verso la prenotazione.',
+        'Hospitality · Luxury · Responsive · UX',
+        '',
+      ],
+      [
+        'Food & Hospitality',
+        'Sapori d’Italia',
+        'Esperienza digitale dedicata alla cucina italiana, con fotografia immersiva, presentazione dell’offerta e call to action pensate per valorizzare il prodotto e aumentare la conversione.',
+        'Food · Landing Page · Visual Design · Responsive',
+        '',
+      ],
+      [
+        'AI / Sustainability',
+        'Il Tuo Assistente Virtuale Verde',
+        'Assistente digitale con posizionamento sostenibile, progettato per spiegare le funzionalità, guidare l’utente e semplificare l’accesso a servizi e informazioni in modo chiaro e moderno.',
+        'AI · Assistente virtuale · Sustainability · UX',
+        '',
+      ],
     ],
     processKicker: 'Come lavoriamo',
     processTitle: 'Chiarezza prima del codice.',
