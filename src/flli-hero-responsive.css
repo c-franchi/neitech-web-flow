@@ -258,9 +258,11 @@ html[lang="it-IT"] .flli-hero--media .flli-hero-copy h1 {
   }
 
   .flli-hero--media .flli-hero-body {
-    align-items: flex-end;
+    /* Em dispositivos móveis movemos o conteúdo um pouco para cima
+       e reduzimos o padding inferior para melhorar a leitura. */
+    align-items: center;
     flex: 1 1 auto;
-    padding: 1.55rem 1.25rem 1.3rem !important;
+    padding: 1.1rem 1rem 0.9rem !important;
   }
 
   .flli-hero--media .flli-hero-copy {

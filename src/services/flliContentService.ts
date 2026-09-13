@@ -125,10 +125,64 @@ export async function getFlliContent(locale: FlliLocale): Promise<FlliContent> {
           console.error('F.LLI: falha ao gravar migração de projetos', writeErr);
         }
 
-        return mergeContent(locale, migrated as Partial<FlliContent>);
+        // Append a cache-busting query param based on document timestamps so
+        // freshly uploaded images are requested by browsers after admin updates.
+        const mergedAfterMigration = mergeContent(locale, migrated as Partial<FlliContent>);
+        const cbTimestamp = (() => {
+          const ts = (data as any).updatedAt ?? (data as any).migratedAt;
+          if (ts && typeof ts.toMillis === 'function') return String(ts.toMillis());
+          return String(Date.now());
+        })();
+
+        const appendVersion = (url: string | undefined) => {
+          if (!url) return '';
+          try {
+            // preserve existing querystrings
+            return url + (url.includes('?') ? '&' : '?') + 'v=' + cbTimestamp;
+          } catch (e) {
+            return url;
+          }
+        };
+
+        mergedAfterMigration.media = {
+          ...mergedAfterMigration.media,
+          heroImageUrl: appendVersion(mergedAfterMigration.media.heroImageUrl),
+          heroMobileImageUrl: appendVersion(mergedAfterMigration.media.heroMobileImageUrl),
+          projectImages: Array.isArray(mergedAfterMigration.media.projectImages)
+            ? mergedAfterMigration.media.projectImages.map((u) => appendVersion(u))
+            : mergedAfterMigration.media.projectImages,
+        };
+
+        return mergedAfterMigration;
       }
 
-      return mergeContent(locale, parsed as Partial<FlliContent>);
+      // Merge stored content with defaults, then attach cache-busting to images
+      const merged = mergeContent(locale, parsed as Partial<FlliContent>);
+      const cbTimestamp = (() => {
+        const ts = (data as any).updatedAt ?? (data as any).migratedAt;
+        if (ts && typeof ts.toMillis === 'function') return String(ts.toMillis());
+        return String(Date.now());
+      })();
+
+      const appendVersion = (url: string | undefined) => {
+        if (!url) return '';
+        try {
+          return url + (url.includes('?') ? '&' : '?') + 'v=' + cbTimestamp;
+        } catch (e) {
+          return url;
+        }
+      };
+
+      merged.media = {
+        ...merged.media,
+        heroImageUrl: appendVersion(merged.media.heroImageUrl),
+        heroMobileImageUrl: appendVersion(merged.media.heroMobileImageUrl),
+        projectImages: Array.isArray(merged.media.projectImages)
+          ? merged.media.projectImages.map((u) => appendVersion(u))
+          : merged.media.projectImages,
+      };
+
+      return merged;
     }
   } catch (error) {
     console.warn(`Conteúdo F.LLI ${locale} inválido no Firestore.`, error);
