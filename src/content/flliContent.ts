@@ -7,6 +7,7 @@ export type FlliProcessItem = [string, string, string];
 export interface FlliMedia {
   logoUrl: string;
   heroImageUrl: string;
+  heroMobileImageUrl: string;
   projectImages: string[];
   contactImageUrl: string;
   socialImageUrl: string;
@@ -62,6 +63,7 @@ export interface FlliContent {
 const defaultMedia = (): FlliMedia => ({
   logoUrl: '/brand/flli-monogram.svg',
   heroImageUrl: '',
+  heroMobileImageUrl: '',
   projectImages: ['', '', ''],
   contactImageUrl: '',
   socialImageUrl: '',
